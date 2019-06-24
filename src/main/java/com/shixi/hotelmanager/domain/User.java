@@ -16,7 +16,7 @@ public class User {
 
     private int userId;
     private String username;
-    private String IDCard;
+    private String IdCard;
     private String gender;
     private String telephone;
     private String email;
