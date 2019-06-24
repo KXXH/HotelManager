@@ -4,18 +4,38 @@ import com.shixi.hotelmanager.Utils.PasswordEncoder;
 import com.shixi.hotelmanager.entity.User;
 import com.shixi.hotelmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private DataSource dataSource;
+
+    @Qualifier("userService")
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //允许基于HttpServletRequest使用限制访问
@@ -30,6 +50,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //自定义登录界面
                 .and().formLogin().loginPage("/toLogin").loginProcessingUrl("/login").failureUrl("/toLogin?error").permitAll()
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .and().rememberMe()
+                .tokenRepository(persistentTokenRepository())
+                .tokenValiditySeconds(60*60)
+                .userDetailsService(userDetailsService)
                 .and().exceptionHandling().accessDeniedPage("/toLogin?deny")
                 .and().httpBasic()
                 .and().sessionManagement().invalidSessionUrl("/toLogin")
@@ -41,7 +65,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth)throws Exception{
         auth.userDetailsService(userService).passwordEncoder(new PasswordEncoder());
-        
     }
 
 }

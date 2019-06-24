@@ -14,7 +14,8 @@
 <form th:action="@{/login}" method="post">
     <div><label> User Name : <input type="text" name="username"/> </label></div>
     <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="submit"/> <input type="reset" value="reset"/></div>
+    <div><input type="submit" value="submit"/> <input type="reset" value="reset"/>
+    <input name="remember-me" type="checkbox"> 下次自动登录</div>
 </form>
 <p>Click <a th:href="@{/home}">here</a> go to home page.</p>
 </body>

@@ -7,3 +7,6 @@ spring:
     url: jdbc:mysql://localhost:3306/hotel
     username: root
     password: root
+
+graphiql:
+  enabled: true
