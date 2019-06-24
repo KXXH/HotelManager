@@ -1,5 +1,6 @@
 package com.shixi.hotelmanager.controller;
 
+import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserServiceImpl;
@@ -16,15 +17,23 @@ public class UserController {
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    UserServiceImpl userService = new UserServiceImpl();
+
     @GetMapping("/get")
     public List<User> list(){
         return userMapper.selectList(null);
     }
 
-    @RequestMapping("/select/{condition}")
-    public List<User> selectByCondituin(@PathVariable String condition){
-        UserServiceImpl userService = new UserServiceImpl();
+    @RequestMapping(value = "simple_select")
+    public List<User> selectByCondition(Condition condition){
         List<User> users = userService.selectByMap(condition,userMapper);
         return users;
     }
+    @RequestMapping("/complex_select/{conditions}")
+    public List<User> selectByConditions(@PathVariable String conditions){
+        List<User> users = userService.selectByMaps(conditions,userMapper);
+        return users;
+    }
+
 }
