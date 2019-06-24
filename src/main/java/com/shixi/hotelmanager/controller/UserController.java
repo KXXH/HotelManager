@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import com.shixi.hotelmanager.service.UserServiceImpl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
