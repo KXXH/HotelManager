@@ -44,10 +44,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectList(queryWrapper);
     }
 
-    @Override
-    public boolean deleteByid(int id) throws UserNotFoundException {
-        return  false;
-    }
+    
 
     @Override
     public boolean addUser(
@@ -101,5 +98,16 @@ public class UserServiceImpl implements UserService {
         else{
             return true;
         }
+    }
+    public boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException {
+        User user = userMapper.selectById(id);
+        if (user == null){
+            throw new UserNotFoundException();
+        }
+        int result = userMapper.deleteById(id);
+        if (result == 1)
+            return true;
+        else
+            return false;
     }
 }

@@ -98,7 +98,22 @@ public class UserController {
 
     @RequestMapping(value = "delete")
     public Map<String,String> deleteUser(@RequestParam int id){
-        return null;
-
+        System.out.println(id);
+        Map<String,String> m = new HashMap<>();
+        try{
+            boolean flag = userService.deleteByid(id,userMapper);
+            if (flag){
+                m.put("status","1");
+                m.put("msg","删除用户成功");
+            }else {
+                m.put("status","0");
+                m.put("msg","删除用户失败");
+            }
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            m.put("status","-1");
+            m.put("msg","用户不存在");
+        }
+        return m;
     }
 }
