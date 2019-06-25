@@ -15,9 +15,9 @@
         $(document).ready(function(){
             /** 新增   **/
             $("#addBtn").fancybox({
-                'href'  : 'house_edit.html',
-                'width' : 733,
-                'height' : 530,
+                'href'  : 'user_add.html',
+                'width' : 433,
+                'height' : 400,
                 'type' : 'iframe',
                 'hideOnOverlayClick' : false,
                 'showCloseButton' : false,
@@ -41,8 +41,8 @@
 
             /**编辑   **/
             $("a.edit").fancybox({
-                'width' : 733,
-                'height' : 530,
+                'width' : 433,
+                'height' : 400,
                 'type' : 'iframe',
                 'hideOnOverlayClick' : false,
                 'showCloseButton' : false,
@@ -85,7 +85,7 @@
             // 非空判断
             if(fyID == '') return;
             if(confirm("您确定要删除吗？")){
-                $("#submitForm").attr("action", "/xngzf/archives/delFangyuan.action?fyID=" + fyID).submit();
+                $("#submitForm").attr("action", "/admin/user/delete?id=" + fyID).submit();
             }
         }
 
@@ -185,7 +185,8 @@
         </div>
         <div class="ui_content">
             <div class="ui_tb">
-                <table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+
+                <table id="table_list1" class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
                     <tr>
                         <th width="30"><input type="checkbox" id="all" onclick="selectOrClearAllCheckbox(this);" />
                         </th>
@@ -198,26 +199,48 @@
                         <th>邮箱</th>
                         <th>密码</th>
                         <th>操作</th>
+                        <script>
+                            $.get('/admin/user/get',function(json){
+
+                                console.log(JSON.stringify(json));
+                                var table=document.getElementById("table_list1");
+                                table.className="table";
+                                for(var i=0;i<json.length;i++){
+                                    console.log(JSON.stringify(json[i].username));
+                                    var row=table.insertRow(i+1);
+                                    var cell1=row.insertCell(0);
+                                    cell1.innerHTML="<td><input type=\"checkbox\" name=\"IDCheck\" value=\"14458579642011\" class=\"acb\" /></td>";
+                                    var cell2=row.insertCell(1);
+                                    cell2.innerHTML=json[i].id;
+                                    var cell3=row.insertCell(2);
+                                    cell3.innerHTML="0";//cell2.innerHTML=json[i].userId;
+                                    var cell4=row.insertCell(3);
+                                    cell4.innerHTML=json[i].username;
+                                    var cell5=row.insertCell(4);
+                                    cell5.innerHTML="0";//cell2.innerHTML=json[i].idCard;
+                                    var cell6=row.insertCell(5);
+                                    cell6.innerHTML=json[i].gender;
+                                    var cell7=row.insertCell(6);
+                                    cell7.innerHTML=json[i].telephone;
+                                    var cell8=row.insertCell(7);
+                                    cell8.innerHTML=json[i].email;
+                                    var cell9=row.insertCell(8);
+                                    cell9.innerHTML="0";//cell2.innerHTML=json[i].password;
+                                    var cell10=row.insertCell(9);
+                                    cell10.innerHTML="<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
+                                        "\t\t\t\t\t\t\t\t<a href=\"javascript:del('"+json[i].id+"');\">删除</a>";
+                                    //                        var html='<td>\n' +
+                                    //                            '\t\t\t\t\t\t\t\t<a href="house_edit.html?fyID=14458579642011" class="edit">编辑</a>\n' +
+                                    //                            '\t\t\t\t\t\t\t\t<a href="javascript:del(\'14458579642011\');">删除</a>\n' +
+                                    //                            '\t\t\t\t\t\t\t</td>';
+                                    //                        var $content = $("#table_list2");
+                                    //                        $content.append(html);
+                                }
+                            })
+                        </script>
                     </tr>
-
-                    <tr>
-                        <td><input type="checkbox" name="IDCheck" value="14458579642011" class="acb" /></td>
-                        <td>城中区</td>
-                        <td>瑞景河畔16号楼1-111</td>
-                        <td>65.97㎡</td>
-                        <td>65.97㎡</td>
-                        <td>一室一厅一卫</td>
-                        <td>混凝土</td>
-                        <td>公租房</td>
-                        <td>建成待租</td>
-                        <td>
-                            <a href="house_edit.html?fyID=14458579642011" class="edit">编辑</a>
-                            <a href="javascript:del('14458579642011');">删除</a>
-                        </td>
-                    </tr>
-
-
                 </table>
+
             </div>
             <div class="ui_tb_h30">
                 <div class="ui_flt" style="height: 30px; line-height: 30px;">
