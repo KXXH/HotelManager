@@ -61,4 +61,9 @@ public class UserServiceImpl implements UserService {
             return true;
         }
     }
+
+    @Override
+    public boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException {
+        return addUser(user.getUsername(),user.getPassword(),user.getGender(),user.getTelephone(),user.getEmail(),user.getIdCard(),user.getAvatar(),userMapper);
+    }
 }

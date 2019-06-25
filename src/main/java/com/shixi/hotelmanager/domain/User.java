@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @AllArgsConstructor
@@ -20,11 +21,11 @@ public class User {
     private int id;
 
     private int userId;
-    @Length(max=25,min=5,message = "用户名长度在5-25位之间") @NotBlank(message = "用户名不能为空")
+    @Length(max=25,min=5,message = "用户名长度在5-25位之间")  @NotBlank(message = "用户名不能为空") @Pattern(regexp = "^[\\u4e00-\\u9fa5a-zA-Z][\\u4e00-\\u9fa5_a-zA-Z0-9]*$",message = "用户名必须以英文字母或中文字符开头，且只能包含中文字符、英文字母和数字、下划线")
     private String username;
-    @Length(min=18,max=18,message = "身份证号必须为18位") @NotBlank(message = "身份证号不能为空")
+    @Length(min=15,max=18,message = "身份证号必须为18位") @NotBlank(message = "身份证号不能为空") @Pattern(regexp="^(\\d{18,18}|\\d{15,15}|(\\d{17,17}[x|X]))$", message="身份证格式错误")
     private String IdCard;
-    @Length(max=2,message = "性别最多长度为2位")
+    @Length(max=2,message = "性别最多长度为2位") @Pattern(regexp = "(male)|(female)|(unknown)",message = "性别格式错误")
     private String gender;
     @Length(min=11,max=15,message = "手机号长度在11-15位之间")
     private String telephone;

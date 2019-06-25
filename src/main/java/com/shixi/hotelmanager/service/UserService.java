@@ -23,4 +23,6 @@ public interface UserService {
             String avatar,
             UserMapper userMapper
     ) throws UserInfoDuplicateException;
+    boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException;
+    boolean updateUser(User user,UserMapper userMapper);
 }
