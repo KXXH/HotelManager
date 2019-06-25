@@ -26,8 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Resource
-    private RedisTemplate<String, User> redisTemplate;
+
 
     @Override
     public List<User> selectByMap(Condition condition, UserMapper userMapper) {
@@ -112,21 +111,7 @@ public class UserServiceImpl implements UserService {
     }
     public boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException {
         logger.info("获取用户start...");
-        // 从缓存中获取用户信息
-        String key = "user_" + id;
-        ValueOperations<String, User> operations = redisTemplate.opsForValue();
-
-        // 缓存存在
-        boolean hasKey = redisTemplate.hasKey(key);
-        if (hasKey) {
-            User user = operations.get(key);
-            logger.info("从缓存中获取了用户 id = " + id);
-        }
-        // 缓存不存在，从 DB 中获取
         User user = userMapper.selectById(id);
-        // 插入缓存
-        operations.set(key, user, 10, TimeUnit.SECONDS);
-
         if (user == null){
             throw new UserNotFoundException();
         }
