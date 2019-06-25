@@ -46,4 +46,9 @@ public class UserController {
         }
         return m;
     }
+
+    @RequestMapping(value = "delete")
+    public Map<String,String> deleteUser(@RequestParam int id){
+
+    }
 }

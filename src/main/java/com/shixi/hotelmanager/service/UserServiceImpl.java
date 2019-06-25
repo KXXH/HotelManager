@@ -3,15 +3,12 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import io.micrometer.core.instrument.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Wrapper;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -40,5 +37,10 @@ public class UserServiceImpl implements UserService {
 
         //System.out.println(userMapper);
         return userMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public boolean deleteByid(int id) throws UserNotFoundException {
+
     }
 }

@@ -16,7 +16,7 @@ public class Condition {
     private String username;
     @Length(max=18,message = "身份证号必须为18位")
     private String IdCard;
-    @Length(message = "性别最多长度为2位")
+    @Length(max = 8,message = "性别最多长度为8位")
     private String gender;
     @Length(max=15,message = "手机号长度在11-15位之间")
     private String telephone;
