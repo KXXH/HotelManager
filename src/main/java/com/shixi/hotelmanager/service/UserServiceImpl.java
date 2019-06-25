@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectList(queryWrapper);
     }
 
-    
 
     @Override
     public boolean addUser(
@@ -77,11 +76,6 @@ public class UserServiceImpl implements UserService {
             userMapper.insert(user);
             return true;
         }
-    }
-
-    @Override
-    public List<User> selectByMap(String condition, UserMapper userMapper) {
-        return null;
     }
 
     @Override
