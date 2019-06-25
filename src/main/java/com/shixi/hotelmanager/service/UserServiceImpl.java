@@ -40,7 +40,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteByid(int id) throws UserNotFoundException {
-
+    public boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException {
+        User user = userMapper.selectById(id);
+        if (user == null){
+            throw new UserNotFoundException();
+        }
+        int result = userMapper.deleteById(id);
+        if (result == 1)
+            return true;
+        else
+            return false;
     }
 }

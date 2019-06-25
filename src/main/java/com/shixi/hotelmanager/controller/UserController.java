@@ -2,6 +2,7 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,22 @@ public class UserController {
 
     @RequestMapping(value = "delete")
     public Map<String,String> deleteUser(@RequestParam int id){
-
+        System.out.println(id);
+        Map<String,String> m = new HashMap<>();
+        try{
+            boolean flag = userService.deleteByid(id,userMapper);
+            if (flag){
+                m.put("status","1");
+                m.put("msg","删除用户成功");
+            }else {
+                m.put("status","0");
+                m.put("msg","删除用户失败");
+            }
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            m.put("status","-1");
+            m.put("msg","用户不存在");
+        }
+        return m;
     }
 }

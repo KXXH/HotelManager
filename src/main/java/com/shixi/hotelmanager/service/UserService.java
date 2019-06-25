@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface UserService {
     List<User> selectByMap(Condition condition, UserMapper userMapper);
-    boolean deleteByid(int id) throws UserNotFoundException;
+    boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException;
 }
