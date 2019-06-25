@@ -21,7 +21,7 @@ public interface UserService {
             UserMapper userMapper
     ) throws UserInfoDuplicateException;
     boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException;
-    boolean updateUser(User user,UserMapper userMapper) throws UserNotFoundException;
+    boolean updateUser(User user,UserMapper userMapper) throws UserNotFoundException, UserInfoDuplicateException;
     List<User> selectByMap(Condition condition, UserMapper userMapper);
     boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException;
 }
