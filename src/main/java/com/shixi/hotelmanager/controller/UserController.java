@@ -7,6 +7,7 @@ import com.shixi.hotelmanager.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +27,17 @@ public class UserController {
     }
 
     @RequestMapping(value = "simple_select")
-    public List<User> selectByCondition(User user){
+    public List<User> selectByCondition(@Valid User user){
         List<User> users = userService.selectByMap(user,userMapper);
+
         return users;
     }
+
+
     @RequestMapping("/complex_select/{conditions}")
     public List<User> selectByConditions(@PathVariable String conditions){
         List<User> users = userService.selectByMaps(conditions,userMapper);
         return users;
     }
 
-    @RequestMapping(value = "test")
-    public String test(User user){
-        System.out.println(user.getTelephone().length());
-        return user.getGender();
-    }
 }
