@@ -2,6 +2,7 @@ package com.shixi.hotelmanager.service;
 
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 
@@ -20,7 +21,7 @@ public interface UserService {
             UserMapper userMapper
     ) throws UserInfoDuplicateException;
     boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException;
-    boolean updateUser(User user,UserMapper userMapper);
+    boolean updateUser(User user,UserMapper userMapper) throws UserNotFoundException;
     List<User> selectByMap(Condition condition, UserMapper userMapper);
     boolean deleteByid(int id) throws UserNotFoundException;
 }

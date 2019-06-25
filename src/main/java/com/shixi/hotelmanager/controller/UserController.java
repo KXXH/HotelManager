@@ -4,6 +4,7 @@ import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("/user")
+@RequestMapping("/admin/user")
 @RestController
 public class UserController {
     @Autowired
@@ -50,7 +51,9 @@ public class UserController {
             m.put("msg","用户信息重复");
             return m;
         }
+        return m;
     }
+
     @RequestMapping(value = "simple_select")
     public Map<String,Object> selectByCondition(@Valid Condition condition, BindingResult bindingResult){
         Map<String,Object> m = new HashMap<>();
@@ -79,11 +82,23 @@ public class UserController {
             m.put("msg","必须传入id");
             return m;
         }
-
+        else {
+            try {
+                userService.updateUser(user,userMapper);
+            } catch (UserNotFoundException e) {
+                m.put("status","error");
+                m.put("msg","用户未找到!");
+                e.printStackTrace();
+                return m;
+            }
+            m.put("status","ok");
+            return m;
+        }
     }
 
     @RequestMapping(value = "delete")
     public Map<String,String> deleteUser(@RequestParam int id){
+        return null;
 
     }
 }
