@@ -5,6 +5,7 @@ import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,17 +28,22 @@ public class UserController {
     }
 
     @RequestMapping(value = "simple_select")
-    public List<User> selectByCondition(@Valid User user){
-        List<User> users = userService.selectByMap(user,userMapper);
-
-        return users;
+    public Map<String,Object> selectByCondition(@Valid Condition condition, BindingResult bindingResult){
+        Map<String,Object> m = new HashMap<>();
+        if(bindingResult.hasErrors()){
+            m.put("status","-1");
+            m.put("msg",bindingResult.getAllErrors());
+            return m;
+        }
+        List<User> users = userService.selectByMap(condition,userMapper);
+        if(users.size()>0){
+            m.put("status","1");
+            m.put("msg","查询用户成功");
+            m.put("users",users);
+        }else{
+            m.put("status","0");
+            m.put("msg","查询用户为空");
+        }
+        return m;
     }
-
-
-    @RequestMapping("/complex_select/{conditions}")
-    public List<User> selectByConditions(@PathVariable String conditions){
-        List<User> users = userService.selectByMaps(conditions,userMapper);
-        return users;
-    }
-
 }

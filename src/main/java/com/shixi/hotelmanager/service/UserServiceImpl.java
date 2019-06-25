@@ -17,13 +17,13 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
 
     @Override
-    public List<User> selectByMap(User user, UserMapper userMapper) {
+    public List<User> selectByMap(Condition condition, UserMapper userMapper) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        String username = user.getUsername();
-        String IdCard = user.getIdCard();
-        String gender = user.getGender();
-        String telephone = user.getTelephone();
-        String email = user.getEmail();
+        String username = condition.getUsername();
+        String IdCard = condition.getIdCard();
+        String gender = condition.getGender();
+        String telephone = condition.getTelephone();
+        String email = condition.getEmail();
         queryWrapper.like("email","@");
 
         if(StringUtils.isNotBlank(username))
@@ -39,18 +39,6 @@ public class UserServiceImpl implements UserService {
 
 
         //System.out.println(userMapper);
-        return userMapper.selectList(queryWrapper);
-    }
-    @Override
-    public List<User> selectByMaps(String conditions, UserMapper userMapper){
-        String[] condition = conditions.split(";");
-        Map<String,Object> map = new HashMap<>();
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        for(String each:condition){
-            String key = each.split(",")[0];
-            String value = each.split(",")[1];
-            queryWrapper.and(i -> i.eq(key,value));
-        }
         return userMapper.selectList(queryWrapper);
     }
 }
