@@ -27,9 +27,9 @@ public class UserController {
     @Autowired
     UserServiceImpl userService = new UserServiceImpl();
 
-    @GetMapping("/get")
-    public List<User> list(){
-        return userMapper.selectList(null);
+    @GetMapping("/getVerificationCode")
+    public String code(){
+        return "123";
     }
 
     @RequestMapping("/addUser")

@@ -9,7 +9,6 @@ import com.shixi.hotelmanager.mapper.UserMapper;
 import java.util.List;
 
 public interface UserService {
-    List<User> selectByMap(String condition, UserMapper userMapper);
     boolean addUser(
             String username,
             String password,
