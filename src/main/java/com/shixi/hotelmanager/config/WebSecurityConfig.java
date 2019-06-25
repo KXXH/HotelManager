@@ -4,15 +4,12 @@ import com.shixi.hotelmanager.Utils.PasswordEncoder;
 import com.shixi.hotelmanager.entity.User;
 import com.shixi.hotelmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -26,9 +23,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
-    @Qualifier("userService")
-    @Autowired
-    private UserDetailsService userDetailsService;
+    @Resource
+    private UserService<User> userService;
+
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
@@ -53,14 +50,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().rememberMe()
                 .tokenRepository(persistentTokenRepository())
                 .tokenValiditySeconds(60*60)
-                .userDetailsService(userDetailsService)
+                .userDetailsService(userService)
                 .and().exceptionHandling().accessDeniedPage("/toLogin?deny")
                 .and().httpBasic()
                 .and().sessionManagement().invalidSessionUrl("/toLogin")
                 .and().csrf().disable();
     }
-    @Resource
-    private UserService<User> userService;
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth)throws Exception{
