@@ -1,14 +1,10 @@
 package com.shixi.hotelmanager.service;
 
+import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
-import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 public interface UserService {
@@ -25,4 +21,6 @@ public interface UserService {
     ) throws UserInfoDuplicateException;
     boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException;
     boolean updateUser(User user,UserMapper userMapper);
+    List<User> selectByMap(Condition condition, UserMapper userMapper);
+    boolean deleteByid(int id) throws UserNotFoundException;
 }
