@@ -26,10 +26,3 @@ spring:
         max-idle: 7
         min-idle: 2
         max-wait: -1ms
-
-logging:
-  level:
-    ROOT: INFO
-    com:
-      xncoding: DEBUG
-  file: D:/logs/app.log

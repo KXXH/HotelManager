@@ -6,6 +6,7 @@ import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface UserService {
@@ -23,4 +24,5 @@ public interface UserService {
     boolean updateUser(User user,UserMapper userMapper) throws UserNotFoundException;
     List<User> selectByMap(Condition condition, UserMapper userMapper);
     boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException;
+    int deleteByids(ArrayList ids, UserMapper userMapper);
 }

@@ -1,21 +1,17 @@
 package com.shixi.hotelmanager.controller;
 
-import com.shixi.hotelmanager.domain.User;
-import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +110,16 @@ public class UserController {
             m.put("status","-1");
             m.put("msg","用户不存在");
         }
+        return m;
+    }
+
+    @RequestMapping(value = "muiltDelete")
+    public Map<String,String> deleteUsers(@RequestBody Map<String,Object> map){
+        ArrayList ids = (ArrayList) map.get("data");
+        Map<String,String> m = new HashMap<>();
+        int result = userService.deleteByids(ids,userMapper);
+        m.put("status","1");
+        m.put("msg","已删除"+result+"条!");
         return m;
     }
 }

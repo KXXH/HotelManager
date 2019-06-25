@@ -11,14 +11,13 @@ import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource
-    private RedisTemplate<String, User> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     public List<User> selectByMap(Condition condition, UserMapper userMapper) {
@@ -105,23 +104,30 @@ public class UserServiceImpl implements UserService {
         }
     }
     public boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException {
+        /*
         logger.info("获取用户start...");
         // 从缓存中获取用户信息
         String key = "user_" + id;
-        ValueOperations<String, User> operations = redisTemplate.opsForValue();
-
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String test="";
         // 缓存存在
         boolean hasKey = redisTemplate.hasKey(key);
         if (hasKey) {
-            User user = operations.get(key);
+            test = operations.get(key);
             logger.info("从缓存中获取了用户 id = " + id);
+        }else{
+            // 缓存不存在，从 DB 中获取
+            test = "test";
+            // 插入缓存
+            operations.set(key, test, 10, TimeUnit.SECONDS);
+            logger.info("内容是"+operations.get(key));
+            logger.info("向缓存中插入了用户 id = " + id);
         }
-        // 缓存不存在，从 DB 中获取
+        */
+        logger.info("正在查询用户！");
         User user = userMapper.selectById(id);
-        // 插入缓存
-        operations.set(key, user, 10, TimeUnit.SECONDS);
-
         if (user == null){
+            logger.error("用户不存在！");
             throw new UserNotFoundException();
         }
         int result = userMapper.deleteById(id);
@@ -129,5 +135,12 @@ public class UserServiceImpl implements UserService {
             return true;
         else
             return false;
+    }
+
+    @Override
+    public int deleteByids(ArrayList ids, UserMapper userMapper){
+        int result = userMapper.deleteBatchIds(ids);
+        logger.info("result:"+result);
+        return result;
     }
 }
