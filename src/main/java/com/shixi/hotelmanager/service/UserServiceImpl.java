@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.mapper.UserMapper;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +17,29 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
 
     @Override
-    public List<User> selectByMap(Condition condition, UserMapper userMapper) {
-        String key = condition.getCondition();
-        String value = condition.getValue();
-        //System.out.println(key+":"+value);
-        Map<String,Object> map = new HashMap<>();
-        map.put(key,value);
+    public List<User> selectByMap(User user, UserMapper userMapper) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        String username = user.getUsername();
+        String IdCard = user.getIdCard();
+        String gender = user.getGender();
+        String telephone = user.getTelephone();
+        String email = user.getEmail();
+        queryWrapper.like("email","@");
+
+        if(StringUtils.isNotBlank(username))
+            queryWrapper.and(wrapper -> wrapper.like("username",username));
+        if(StringUtils.isNotBlank(IdCard))
+            queryWrapper.and(wrapper -> wrapper.like("id_card",IdCard));
+        if(StringUtils.isNotBlank(gender))
+            queryWrapper.and(wrapper -> wrapper.eq("gender",gender));
+        if(StringUtils.isNotBlank(telephone))
+            queryWrapper.and(wrapper -> wrapper.like("telephone",telephone));
+        if(email.length()>1)
+            queryWrapper.and(wrapper -> wrapper.like("email",email));
+
+
         //System.out.println(userMapper);
-        return userMapper.selectByMap(map);
+        return userMapper.selectList(queryWrapper);
     }
     @Override
     public List<User> selectByMaps(String conditions, UserMapper userMapper){

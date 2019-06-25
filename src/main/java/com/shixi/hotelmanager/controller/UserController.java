@@ -26,8 +26,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "simple_select")
-    public List<User> selectByCondition(Condition condition){
-        List<User> users = userService.selectByMap(condition,userMapper);
+    public List<User> selectByCondition(User user){
+        List<User> users = userService.selectByMap(user,userMapper);
         return users;
     }
     @RequestMapping("/complex_select/{conditions}")
@@ -36,4 +36,9 @@ public class UserController {
         return users;
     }
 
+    @RequestMapping(value = "test")
+    public String test(User user){
+        System.out.println(user.getTelephone().length());
+        return user.getGender();
+    }
 }
