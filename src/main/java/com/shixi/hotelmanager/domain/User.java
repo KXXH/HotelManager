@@ -27,7 +27,7 @@ public class User {
     private String IdCard;
     @Length(max=8,message = "性别最多长度为8位") @Pattern(regexp = "(male)|(female)|(unknown)",message = "性别格式错误")
     private String gender;
-    @Length(min=11,max=15,message = "手机号长度在11-15位之间")
+    @Length(min=11,max=15,message = "手机号长度在11-15位之间") @Pattern(regexp = "^[1]([3-9])[0-9]{9}$",message = "手机号码格式不正确")
     private String telephone;
     @Length(max=255,message = "邮箱长度最大为255位") @Email(message = "必须符合邮箱格式")
     private String email;

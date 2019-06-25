@@ -15,6 +15,7 @@ class CodeRecord{
     private String telephone;
     private int code;
     private Long timestamp;
+    private String status;
 }
 
 @Service
@@ -34,13 +35,14 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         }
         int code=random.nextInt(9000)+1000;
         System.out.println(telephone+":"+code);
-        registerCodeMap.put(sessionId,new CodeRecord(telephone,code,new Date().getTime()));
+        registerCodeMap.put(sessionId,new CodeRecord(telephone,code,new Date().getTime(),"unchecked"));
         //TODO: send SMS Here.
         return code;
     }
 
     @Override
     public boolean verificationCode(int code,String telephone, String sessionId) {
+        if(registerCodeMap==null) registerCodeMap=new HashMap<>();
         CodeRecord codeRecord=registerCodeMap.get(sessionId);
         Long currentTimestamp=new Date().getTime();
         if(codeRecord!=null&&currentTimestamp-codeRecord.getTimestamp()<60*1000){

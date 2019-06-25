@@ -8,18 +8,14 @@ import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.dao.DuplicateKeyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -84,7 +80,12 @@ public class UserServiceImpl implements UserService {
             user.setIdCard(id_card);
             user.setTelephone(telephone);
             user.setUserId(123);
-            userMapper.insert(user);
+            try{
+                userMapper.insert(user);
+            }catch(DuplicateKeyException e){
+                throw new UserInfoDuplicateException();
+            }
+
             return true;
         }
     }
