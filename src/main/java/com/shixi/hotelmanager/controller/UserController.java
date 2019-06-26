@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.shixi.hotelmanager.mapper.userMapper;
+import com.shixi.hotelmanager.entity.User;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +74,21 @@ public class UserController {
             m.put("status","0");
             m.put("msg","查询用户为空");
         }
+        return m;
+    }
+    @GetMapping("/select/{name}")
+    public List<User> select(@PathVariable String name){
+        Map<String,Object> map=new HashMap<>();
+
+        map.put("username",name);
+        List<User> users = mapper.selectByMap(map);
+        return users;
+    }
+    @GetMapping("/del/{id}")
+    public Map<String,Integer> del(@PathVariable String id){
+        int count=mapper.deleteById(id);
+        HashMap<String,Integer> m=new HashMap<>();
+        m.put("count",count);
         return m;
     }
 
