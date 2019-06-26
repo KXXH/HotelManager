@@ -34,3 +34,4 @@ mvnw
 
 .mvn/**
 *.log
+*.log
