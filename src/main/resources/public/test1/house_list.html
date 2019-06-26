@@ -84,8 +84,14 @@
         function del(fyID){
             // 非空判断
             if(fyID == '') return;
+            console.log("hhhhh");
             if(confirm("您确定要删除吗？")){
-                $("#submitForm").attr("action", "/admin/user/delete?id=" + fyID).submit();
+                console.log("hehehe");
+                $.get('/admin/user/delete?id='+fyID,function(map){
+                    confirm(""+map["msg"]);
+                    //window.location.href = 'house_list.html';//注意链接名和文件名
+                    location.reload();
+                })
             }
         }
 

@@ -1,202 +1,281 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>信息管理系统</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type="text/javascript" src="scripts/jquery/jquery-1.7.1.js"></script>
     <link href="style/authority/basic_layout.css" rel="stylesheet" type="text/css">
     <link href="style/authority/common_style.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="scripts/authority/commonAll.js"></script>
-    <script type="text/javascript" src="scripts/jquery/jquery-1.4.4.min.js"></script>
-    <script src="scripts/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+    <script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.js"></script>
+    <script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/authority/jquery.fancybox-1.3.4.css" media="screen"></link>
     <script type="text/javascript" src="scripts/artDialog/artDialog.js?skin=default"></script>
+    <title>信息管理系统</title>
     <script type="text/javascript">
-        $(document).ready(function() {
-            /*
-             * 提交
-             */
-            $("#submitbutton").click(function() {
-                if(validateForm()){
-                    checkFyFhSubmit();
+        $(document).ready(function(){
+            /** 新增   **/
+            $("#addBtn").fancybox({
+                'href'  : 'user_add.html',
+                'width' : 433,
+                'height' : 400,
+                'type' : 'iframe',
+                'hideOnOverlayClick' : false,
+                'showCloseButton' : false,
+                'onClosed' : function() {
+                    window.location.href = 'house_list.html';
                 }
             });
 
-            /*
-             * 取消
-             */
-            $("#cancelbutton").click(function() {
-                /**  关闭弹出iframe  **/
-                window.parent.$.fancybox.close();
+            /** 导入  **/
+            $("#importBtn").fancybox({
+                'href'  : '/xngzf/archives/importFangyuan.action',
+                'width' : 633,
+                'height' : 260,
+                'type' : 'iframe',
+                'hideOnOverlayClick' : false,
+                'showCloseButton' : false,
+                'onClosed' : function() {
+                    window.location.href = 'house_list.html';
+                }
             });
 
-            var result = 'null';
-            if(result =='success'){
-                /**  关闭弹出iframe  **/
-                window.parent.$.fancybox.close();
-            }
+            /**编辑   **/
+            $("a.edit").fancybox({
+                'width' : 433,
+                'height' : 400,
+                'type' : 'iframe',
+                'hideOnOverlayClick' : false,
+                'showCloseButton' : false,
+                'onClosed' : function() {
+                    window.location.href = 'house_list.html';
+                }
+            });
         });
+        /** 用户角色   **/
+        var userRole = '';
 
-        /** 检测房源房号是否存在  **/
-        function checkFyFh(){
-            // 分别获取小区编号、栋号、层号、房号
-            var fyID = $('#fyID').val();
-            var fyXqCode = $("#fyXq").val();
-            var fyDh = $("#fyDh").val();
-            var fyCh = $("#fyCh").val();
-            var fyFh = $("#fyFh").val();
-            if(fyXqCode!="" && fyDh!="" && fyCh!="" && fyFh!=""){
-                // 给房屋坐落地址赋值
-                $("#fyZldz").val($('#fyDh option:selected').text() + fyCh + "-" + fyFh);
-                // 异步判断该房室是否存在，如果已存在，给用户已提示哦
-                $.ajax({
-                    type:"POST",
-                    url:"checkFyFhIsExists.action",
-                    data:{"fangyuanEntity.fyID":fyID,"fangyuanEntity.fyXqCode":fyXqCode, "fangyuanEntity.fyDhCode":fyDh, "fangyuanEntity.fyCh":fyCh, "fangyuanEntity.fyFh":fyFh},
-                    dataType : "text",
-                    success:function(data){
-// 					alert(data);
-                        // 如果返回数据不为空，更改“房源信息”
-                        if(data=="1"){
-                            art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'该房室在系统中已经存在哦，\n请维护其他房室数据', ok:true,});
-                            $("#fyFh").css("background", "#EEE");
-                            $("#fyFh").focus();
-                            return false;
-                        }
-                    }
-                });
+        /** 模糊查询来电用户  **/
+        function search(){
+            $("#submitForm").attr("action", "house_list.html?page=" + 1).submit();
+        }
+
+        /** 新增   **/
+        function add(){
+            $("#submitForm").attr("action", "/xngzf/archives/luruFangyuan.action").submit();
+        }
+
+        /** Excel导出  **/
+        function exportExcel(){
+            if( confirm('您确定要导出吗？') ){
+                var fyXqCode = $("#fyXq").val();
+                var fyXqName = $('#fyXq option:selected').text();
+//	 		alert(fyXqCode);
+                if(fyXqCode=="" || fyXqCode==null){
+                    $("#fyXqName").val("");
+                }else{
+//	 			alert(fyXqCode);
+                    $("#fyXqName").val(fyXqName);
+                }
+                $("#submitForm").attr("action", "/xngzf/archives/exportExcelFangyuan.action").submit();
             }
         }
 
-        /** 检测房源房号是否存在并提交form  **/
-        function checkFyFhSubmit(){
-            // 分别获取小区编号、栋号、层号、房号
-            var fyID = $('#fyID').val();
-            var fyXqCode = $("#fyXq").val();
-            var fyDh = $("#fyDh").val();
-            var fyCh = $("#fyCh").val();
-            var fyFh = $("#fyFh").val();
-            if(fyXqCode!="" && fyDh!="" && fyCh!="" && fyFh!=""){
-                // 给房屋坐落地址赋值
-                $("#fyZldz").val($('#fyDh option:selected').text()  + fyCh + "-" + fyFh);
-                // 异步判断该房室是否存在，如果已存在，给用户已提示哦
-                $.ajax({
-                    type:"POST",
-                    url:"checkFyFhIsExists.action",
-                    data:{"fangyuanEntity.fyID":fyID,"fangyuanEntity.fyXqCode":fyXqCode, "fangyuanEntity.fyDhCode":fyDh, "fangyuanEntity.fyCh":fyCh, "fangyuanEntity.fyFh":fyFh},
-                    dataType : "text",
-                    success:function(data){
-// 					alert(data);
-                        // 如果返回数据不为空，更改“房源信息”
-                        if(data=="1"){
-                            art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'该房室在系统中已经存在哦，\n请维护其他房室数据', ok:true,});
-                            $("#fyFh").css("background", "#EEE");
-                            $("#fyFh").focus();
-                            return false;
-                        }else{
-                            $("#submitForm").attr("action", "/xngzf/archives/saveOrUpdateFangyuan.action").submit();
-                        }
-                    }
-                });
+        /** 删除 **/
+        function del(fyID){
+            // 非空判断
+            if(fyID == '') return;
+            console.log("hhhhh");
+            if(confirm("您确定要删除吗？")){
+                console.log("hehehe");
+                $.get('/admin/user/delete?id='+fyID,function(map){
+                    confirm(""+map["msg"]);
+                    //window.location.href = 'house_list.html';//注意链接名和文件名
+                    location.reload();
+                })
             }
-            return true;
         }
 
-        /** 表单
-         * 验证  **/
-        function validateForm(){
-            if($("#username").val()==""){
-                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'用户名不能为空', ok:true,});
-                return false;
+        /** 批量删除 **/
+        function batchDel(){
+            if($("input[name='IDCheck']:checked").size()<=0){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'至少选择一条', ok:true,});
+                return;
             }
-            if($("#id_card").val()==""){
-                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'身份证号不能为空', ok:true,});
-                return false
+            // 1）取出用户选中的checkbox放入字符串传给后台,form提交
+            var allIDCheck = "";
+            $("input[name='IDCheck']:checked").each(function(index, domEle){
+                bjText = $(domEle).parent("td").parent("tr").last().children("td").last().prev().text();
+// 			alert(bjText);
+                // 用户选择的checkbox, 过滤掉“已审核”的，记住哦
+                if($.trim(bjText)=="已审核"){
+// 				$(domEle).removeAttr("checked");
+                    $(domEle).parent("td").parent("tr").css({color:"red"});
+                    $("#resultInfo").html("已审核的是不允许您删除的，请联系管理员删除！！！");
+// 				return;
+                }else{
+                    allIDCheck += $(domEle).val() + ",";
+                }
+            });
+            // 截掉最后一个","
+            if(allIDCheck.length>0) {
+                allIDCheck = allIDCheck.substring(0, allIDCheck.length-1);
+                // 赋给隐藏域
+                $("#allIDCheck").val(allIDCheck);
+                if(confirm("您确定要批量删除这些记录吗？")){
+                    // 提交form
+                    $("#submitForm").attr("action", "/xngzf/archives/batchDelFangyuan.action").submit();
+                }
             }
-            if($("#gender").val()==""){
-                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'请选择性别', ok:true,});
-                return false;
+        }
+
+        /** 普通跳转 **/
+        function jumpNormalPage(page){
+            $("#submitForm").attr("action", "house_list.html?page=" + page).submit();
+        }
+
+        /** 输入页跳转 **/
+        function jumpInputPage(totalPage){
+            // 如果“跳转页数”不为空
+            if($("#jumpNumTxt").val() != ''){
+                var pageNum = parseInt($("#jumpNumTxt").val());
+                // 如果跳转页数在不合理范围内，则置为1
+                if(pageNum<1 | pageNum>totalPage){
+                    art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'请输入合适的页数，\n自动为您跳到首页', ok:true,});
+                    pageNum = 1;
+                }
+                $("#submitForm").attr("action", "house_list.html?page=" + pageNum).submit();
+            }else{
+                // “跳转页数”为空
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'请输入合适的页数，\n自动为您跳到首页', ok:true,});
+                $("#submitForm").attr("action", "house_list.html?page=" + 1).submit();
             }
-            if($("#telephone").val()==""){
-                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'电话号码不能为空', ok:true,});
-                return false;
-            }
-            if($("#password").val()==""){
-                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'密码不能为空', ok:true,});
-                return false;
-            }
-            return true;
         }
     </script>
+    <style>
+        .alt td{ background:black !important;}
+    </style>
 </head>
 <body>
-<form id="submitForm" name="submitForm" action="/xngzf/archives/initFangyuan.action" method="post">
-    <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+<form id="submitForm" name="submitForm" action="" method="post">
+    <input type="hidden" name="allIDCheck" value="" id="allIDCheck"/>
+    <input type="hidden" name="fangyuanEntity.fyXqName" value="" id="fyXqName"/>
     <div id="container">
-        <div id="nav_links">
-            当前位置：基础数据&nbsp;>&nbsp;<span style="color: #1A5CC6;">房源编辑</span>
-            <div id="page_close">
-                <a href="javascript:parent.$.fancybox.close();">
-                    <img src="images/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
-                </a>
+        <div class="ui_content">
+            <div class="ui_text_indent">
+                <div id="box_border">
+                    <div id="box_top">搜索</div>
+                    <div id="box_center">
+
+                        用户名&nbsp;&nbsp;<input type="text" id="username" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
+                        身份证号&nbsp;&nbsp;<input type="text" id="idCard" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
+                        性别
+                        <select name="fangyuanEntity.fyHxCode" id="gender" class="ui_select01">
+                            <option value="">--请选择--</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                            <
+                        </select>
+                        电话号码&nbsp;&nbsp;<input type="text" id="telephone" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
+                        邮箱地址&nbsp;&nbsp;<input type="text" id="email" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
+                        密码&nbsp;&nbsp;<input type="text" id="password" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
+                    </div>
+                    <div id="box_bottom">
+                        <input type="button" value="查询" class="ui_input_btn01" onclick="search();" />
+                        <input type="button" value="新增" class="ui_input_btn01" id="addBtn" />
+                        <input type="button" value="删除" class="ui_input_btn01" onclick="batchDel();" />
+                        <input type="button" value="导入" class="ui_input_btn01" id="importBtn" />
+                        <input type="button" value="导出" class="ui_input_btn01" onclick="exportExcel();" />
+                    </div>
+                </div>
             </div>
         </div>
         <div class="ui_content">
-            <table  cellspacing="0" cellpadding="0" width="100%" align="left" border="0">
-                <tr>
-                    <td class="ui_text_rt">用户ID</td>
-                    <td class="ui_text_lt">
-                        <input type="text" id="user_id" name="fangyuanEntity.fyCh" value=""  class="ui_input_txt01"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="ui_text_rt">用户名</td>
-                    <td class="ui_text_lt">
-                        <input type="text" id="username" name="fangyuanEntity.fyFh"  value="" class="ui_input_txt01" onkeyup="checkFyFh();"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="ui_text_rt">身份证号</td>
-                    <td class="ui_text_lt">
-                        <input type="text" id="IDcard" name="fangyuanEntity.fyZongMj"  value="" class="ui_input_txt01"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="ui_text_rt">性别</td>
-                    <td class="ui_text_lt">
-                        <select name="fangyuanEntity.fyHxCode" id="gender" class="ui_select01">
-                            <option value="">--请选择--</option>
-                            <!--<option value="76" selected="selected">一室一厅一卫</option>-->
-                            <option value="男">男</option>
-                            <option value="女">女</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="ui_text_rt">电话号码</td>
-                    <td class="ui_text_lt">
-                        <input type="text" id="telephone" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt01"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="ui_text_rt">邮箱地址</td>
-                    <td class="ui_text_lt">
-                        <input type="text" id="email" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt01"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="ui_text_rt">密码</td>
-                    <td class="ui_text_lt">
-                        <input type="text" id="password" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt01"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td class="ui_text_lt">
-                        &nbsp;<input id="submitbutton" type="button" value="提交" class="ui_input_btn01"/>
-                        &nbsp;<input id="cancelbutton" type="button" value="取消" class="ui_input_btn01"/>
-                    </td>
-                </tr>
-            </table>
+            <div class="ui_tb">
+
+                <table id="table_list1" class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+                    <tr>
+                        <th width="30"><input type="checkbox" id="all" onclick="selectOrClearAllCheckbox(this);" />
+                        </th>
+                        <th>ID</th>
+                        <th>用户ID</th>
+                        <th>用户名</th>
+                        <th>身份证号</th>
+                        <th>性别</th>
+                        <th>电话号码</th>
+                        <th>邮箱</th>
+                        <th>密码</th>
+                        <th>操作</th>
+                        <script>
+                            $.get('/admin/user/get',function(json){
+
+                                console.log(JSON.stringify(json));
+                                var table=document.getElementById("table_list1");
+                                table.className="table";
+                                for(var i=0;i<json.length;i++){
+                                    console.log(JSON.stringify(json[i].username));
+                                    var row=table.insertRow(i+1);
+                                    var cell1=row.insertCell(0);
+                                    cell1.innerHTML="<td><input type=\"checkbox\" name=\"IDCheck\" value=\"14458579642011\" class=\"acb\" /></td>";
+                                    var cell2=row.insertCell(1);
+                                    cell2.innerHTML=json[i].id;
+                                    var cell3=row.insertCell(2);
+                                    cell3.innerHTML="0";//cell2.innerHTML=json[i].userId;
+                                    var cell4=row.insertCell(3);
+                                    cell4.innerHTML=json[i].username;
+                                    var cell5=row.insertCell(4);
+                                    cell5.innerHTML="0";//cell2.innerHTML=json[i].idCard;
+                                    var cell6=row.insertCell(5);
+                                    cell6.innerHTML=json[i].gender;
+                                    var cell7=row.insertCell(6);
+                                    cell7.innerHTML=json[i].telephone;
+                                    var cell8=row.insertCell(7);
+                                    cell8.innerHTML=json[i].email;
+                                    var cell9=row.insertCell(8);
+                                    cell9.innerHTML="0";//cell2.innerHTML=json[i].password;
+                                    var cell10=row.insertCell(9);
+                                    cell10.innerHTML="<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
+                                        "\t\t\t\t\t\t\t\t<a href=\"javascript:del('"+json[i].id+"');\">删除</a>";
+                                    //                        var html='<td>\n' +
+                                    //                            '\t\t\t\t\t\t\t\t<a href="house_edit.html?fyID=14458579642011" class="edit">编辑</a>\n' +
+                                    //                            '\t\t\t\t\t\t\t\t<a href="javascript:del(\'14458579642011\');">删除</a>\n' +
+                                    //                            '\t\t\t\t\t\t\t</td>';
+                                    //                        var $content = $("#table_list2");
+                                    //                        $content.append(html);
+                                }
+                            })
+                        </script>
+                    </tr>
+                </table>
+
+            </div>
+            <div class="ui_tb_h30">
+                <div class="ui_flt" style="height: 30px; line-height: 30px;">
+                    共有
+                    <span class="ui_txt_bold04">90</span>
+                    条记录，当前第
+                    <span class="ui_txt_bold04">1
+						/
+						9</span>
+                    页
+                </div>
+                <div class="ui_frt">
+                    <!--    如果是第一页，则只显示下一页、尾页 -->
+
+                    <input type="button" value="首页" class="ui_input_btn01" />
+                    <input type="button" value="上一页" class="ui_input_btn01" />
+                    <input type="button" value="下一页" class="ui_input_btn01"
+                           onclick="jumpNormalPage(2);" />
+                    <input type="button" value="尾页" class="ui_input_btn01"
+                           onclick="jumpNormalPage(9);" />
+
+
+
+                    <!--     如果是最后一页，则只显示首页、上一页 -->
+
+                    转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页
+                    <input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />
+                </div>
+            </div>
         </div>
     </div>
 </form>
