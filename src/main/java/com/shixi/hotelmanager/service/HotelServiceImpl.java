@@ -40,6 +40,7 @@ public class HotelServiceImpl  implements HotelService {
     }
 
     private QueryWrapper<Hotel> setCondition(HotelSearchConditionType conditionType, QueryWrapper<Hotel> wrapper){
+        if(conditionType==null) return wrapper;
         wrapper.le(conditionType.getHigh()!=null,conditionType.getTarget(),conditionType.getHigh());
         wrapper.ge(conditionType.getLow()!=null,conditionType.getTarget(),conditionType.getLow());
         wrapper.like(conditionType.getLike()!=null,conditionType.getTarget(),conditionType.getLike());

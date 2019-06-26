@@ -10,4 +10,6 @@ public interface HotelService {
     List<Hotel> selectByPage(int page, int size, HotelMapper hotelMapper);
 
     List<Hotel> searchHotel(int current, int size, HotelSearchConditionType conditionType, HotelMapper hotelMapper);
+
+    
 }

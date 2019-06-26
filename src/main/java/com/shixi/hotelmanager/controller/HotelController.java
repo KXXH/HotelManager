@@ -24,6 +24,7 @@ public class HotelController {
     @Autowired
     HotelServiceImpl hotelService;
 
+    //ABANDONED
     @RequestMapping("/get")
     public Map<String,Object> get(@RequestParam(value = "current_page",defaultValue = "1") String currentPage,@RequestParam(value = "page_size",defaultValue = "20") String pageSize){
         HashMap<String,Object> m=new HashMap<>();
@@ -32,6 +33,13 @@ public class HotelController {
         return m;
     }
 
+    /**
+     * 查询酒店信息接口，支持多重条件过滤，使用and或or嵌套一个condition即可。
+     * 不支持条件嵌套，即and和or是线性出现在最终的SQL语句中的
+     *
+     * @param searchDTO
+     * @return
+     */
     @RequestMapping("/search")
     public Map<String,Object> search(@RequestBody HotelSearchDTO searchDTO){
         HashMap<String,Object> m=new HashMap<>();
