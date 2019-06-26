@@ -2,8 +2,7 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.HotelSearchDTO;
-import com.shixi.hotelmanager.mapper.HotelMapper;
-import com.shixi.hotelmanager.service.HotelServiceImpl;
+import com.shixi.hotelmanager.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,18 +17,16 @@ import java.util.Map;
 @RestController
 @RequestMapping("/hotel")
 public class HotelController {
-    @Autowired
-    HotelMapper hotelMapper;
 
     @Autowired
-    HotelServiceImpl hotelService;
+    HotelService hotelService;
 
     //ABANDONED
     @RequestMapping("/get")
     public Map<String,Object> get(@RequestParam(value = "current_page",defaultValue = "1") String currentPage,@RequestParam(value = "page_size",defaultValue = "20") String pageSize){
         HashMap<String,Object> m=new HashMap<>();
         m.put("status","ok");
-        m.put("data",hotelService.selectByPage(Integer.parseInt(currentPage),Integer.parseInt(pageSize),hotelMapper));
+        m.put("data",hotelService.selectByPage(Integer.parseInt(currentPage),Integer.parseInt(pageSize)));
         return m;
     }
 
@@ -47,8 +44,7 @@ public class HotelController {
             List<Hotel> ans=hotelService.searchHotel(
                     searchDTO.getCurrentPage(),
                     searchDTO.getSize(),
-                    searchDTO.getCondition(),
-                    hotelMapper
+                    searchDTO.getCondition()
             );
             m.put("status","ok");
             m.put("data",ans);
@@ -62,10 +58,7 @@ public class HotelController {
 
     @RequestMapping("/admin/delHotel")
     public Map<String,Object> delHotel(@RequestBody List<Integer> delIds){
-        int count=0;
-        for(int id : delIds){
-            count+=hotelMapper.deleteById(id);
-        }
+        int count=hotelService.delHotel(delIds);
         HashMap<String,Object> m=new HashMap<>();
         m.put("status","ok");
         m.put("count",count);
