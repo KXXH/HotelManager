@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/hotel")
+@RequestMapping("/admin/hotel")
 public class HotelController {
     @Autowired
     HotelMapper hotelMapper;
