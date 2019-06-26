@@ -2,6 +2,7 @@ package com.shixi.hotelmanager.config;
 
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -12,14 +13,30 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  */
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
-
+    /**
+     * 视图控制器
+     *
+     * @param registry
+     */
     @Override
     protected void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("home");
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/toLogin").setViewName("login");
-        registry.addViewController("/user").setViewName("user");
-        registry.addViewController("/user/get").setViewName("user/get");
-        //registry.addViewController("/admin").setViewName("admin/admin");
+        registry.addViewController("/admin_test").setViewName("admin_test");
+        super.addViewControllers(registry);
     }
+
+    /**
+     * 配置静态资源访问
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/public/**").addResourceLocations("classpath:/public/");
+        super.addResourceHandlers(registry);
+    }
+
+
 }
