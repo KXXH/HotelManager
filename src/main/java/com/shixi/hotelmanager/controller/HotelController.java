@@ -58,6 +58,17 @@ public class HotelController {
             m.put("msg","参数错误");
             return m;
         }
+    }
 
+    @RequestMapping("/admin/delHotel")
+    public Map<String,Object> delHotel(@RequestBody List<Integer> delIds){
+        int count=0;
+        for(int id : delIds){
+            count+=hotelMapper.deleteById(id);
+        }
+        HashMap<String,Object> m=new HashMap<>();
+        m.put("status","ok");
+        m.put("count",count);
+        return m;
     }
 }

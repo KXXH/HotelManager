@@ -11,5 +11,5 @@ public interface HotelService {
 
     List<Hotel> searchHotel(int current, int size, HotelSearchConditionType conditionType, HotelMapper hotelMapper);
 
-    
+
 }
