@@ -35,4 +35,6 @@ public class User {
     private String password;
     @NotBlank(message = "头像不能为空")
     private String avatar;
+    @NotBlank(message = "角色不能为空")
+    private String role;
 }

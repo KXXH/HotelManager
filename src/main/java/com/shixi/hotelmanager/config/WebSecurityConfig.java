@@ -1,7 +1,7 @@
 package com.shixi.hotelmanager.config;
 
 import com.shixi.hotelmanager.Utils.PasswordEncoder;
-import com.shixi.hotelmanager.entity.User;
+import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

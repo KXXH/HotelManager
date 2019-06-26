@@ -10,13 +10,18 @@ import io.micrometer.core.instrument.util.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -26,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    UserMapper mapper;
 
     @Override
     public List<User> selectByMap(Condition condition, UserMapper userMapper) {
@@ -142,5 +150,24 @@ public class UserServiceImpl implements UserService {
         int result = userMapper.deleteBatchIds(ids);
         logger.info("result:"+result);
         return result;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        try{
+            HashMap<String ,Object> m=new HashMap<>();
+            m.put("username",username);
+            List<User> users=mapper.selectByMap(m);
+            if(users.size()<=0){
+                throw new UsernameNotFoundException("用户名不存在");
+            }
+            List<SimpleGrantedAuthority> authorities=new ArrayList<>();
+            System.out.println(users.get(0).getRole());
+            authorities.add(new SimpleGrantedAuthority(users.get(0).getRole().trim()));
+            return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

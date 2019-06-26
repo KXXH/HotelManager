@@ -5,11 +5,12 @@ import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface UserService {
+public interface UserService <T extends User> extends UserDetailsService {
     boolean addUser(
             String username,
             String password,
