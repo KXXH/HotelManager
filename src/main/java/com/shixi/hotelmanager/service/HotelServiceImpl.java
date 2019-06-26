@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements HotelService {
+public class HotelServiceImpl  implements HotelService {
     @Override
     public List<Hotel> selectByPage(int current, int size, HotelMapper hotelMapper) {
         Page<Hotel> page= new Page<>(current,size);

@@ -27,6 +27,8 @@ public class Hotel extends Model<Hotel> {
 
     private String brandName;
 
+    private String hotelName;
+
     private String hotelFormerlyName;
 
     private String hotelTranslatedName;
