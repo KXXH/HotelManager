@@ -3,9 +3,8 @@ package com.shixi.hotelmanager.controller;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.VerificationCodeQueryTooFrequent;
-import com.shixi.hotelmanager.mapper.UserMapper;
-import com.shixi.hotelmanager.service.UserServiceImpl;
-import com.shixi.hotelmanager.service.VerificationCodeServiceImpl;
+import com.shixi.hotelmanager.service.UserService;
+import com.shixi.hotelmanager.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -27,13 +26,10 @@ import java.util.Map;
 @Validated
 public class RegisterController {
     @Autowired
-    VerificationCodeServiceImpl verificationCodeService;
+    VerificationCodeService verificationCodeService;
 
     @Autowired
-    UserServiceImpl userService;
-
-    @Autowired
-    UserMapper userMapper;
+    UserService userService;
 
     @RequestMapping("/sendCode")
     public Map<String,Object> sendCode(
@@ -97,7 +93,7 @@ public class RegisterController {
                 return m;
             }else{
                 try{
-                    userService.addUser(user,userMapper);
+                    userService.addUser(user);
                 }catch(UserInfoDuplicateException e){
                     m.put("status","error");
                     m.put("msg","用户信息重复");
