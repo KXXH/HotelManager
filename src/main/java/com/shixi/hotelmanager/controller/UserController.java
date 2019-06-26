@@ -10,6 +10,13 @@ import com.shixi.hotelmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import com.shixi.hotelmanager.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -20,9 +27,6 @@ import java.util.Map;
 @RequestMapping("/admin/user")
 @RestController
 public class UserController {
-    @Autowired
-    UserMapper userMapper;
-
     @Autowired
     UserService userService;
 
@@ -43,7 +47,7 @@ public class UserController {
             return m;
         }
         try{
-            userService.addUser(user,userMapper);
+            userService.addUser(user);
         }catch(UserInfoDuplicateException e){
             m.put("status","error");
             m.put("msg","用户信息重复");
@@ -60,7 +64,7 @@ public class UserController {
             m.put("msg",bindingResult.getAllErrors());
             return m;
         }
-        List<User> users = userService.selectByMap(condition,userMapper);
+        List<User> users = userService.selectByMap(condition);
         if(users.size()>0){
             m.put("status","1");
             m.put("msg","查询用户成功");
@@ -87,7 +91,7 @@ public class UserController {
         }
         else {
             try {
-                userService.updateUser(user,userMapper);
+                userService.updateUser(user);
             } catch (UserNotFoundException e) {
                 m.put("status","error");
                 m.put("msg","用户未找到!");
@@ -108,7 +112,7 @@ public class UserController {
         System.out.println(id);
         Map<String,String> m = new HashMap<>();
         try{
-            boolean flag = userService.deleteByid(id,userMapper);
+            boolean flag = userService.deleteByid(id);
             if (flag){
                 m.put("status","1");
                 m.put("msg","删除用户成功");
@@ -128,7 +132,7 @@ public class UserController {
     public Map<String,String> deleteUsers(@RequestBody Map<String,Object> map){
         ArrayList ids = (ArrayList) map.get("data");
         Map<String,String> m = new HashMap<>();
-        int result = userService.deleteByids(ids,userMapper);
+        int result = userService.deleteByids(ids);
         m.put("status","1");
         m.put("msg","已删除"+result+"条!");
         return m;

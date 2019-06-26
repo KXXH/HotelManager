@@ -3,6 +3,7 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.HotelSearchConditionType;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
@@ -13,10 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class HotelServiceImpl  implements HotelService {
+@Service(value="hotelService")
+public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements HotelService {
     @Override
-    public List<Hotel> selectByPage(int current, int size, HotelMapper hotelMapper) {
+    public List<Hotel> selectByPage(int current, int size) {
+        HotelMapper hotelMapper=baseMapper;
         Page<Hotel> page= new Page<>(current,size);
         System.out.println("current="+current+",page="+size);
         QueryWrapper<Hotel> queryWrapper=new QueryWrapper<>();
@@ -25,10 +27,11 @@ public class HotelServiceImpl  implements HotelService {
     }
 
     @Override
-    public List<Hotel> searchHotel(int current, int size, HotelSearchConditionType conditionType, HotelMapper hotelMapper) {
+    public List<Hotel> searchHotel(int current, int size, HotelSearchConditionType conditionType) {
         Page<Hotel> page= new Page<>(current,size);
         QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
         wrapper=setCondition(conditionType,wrapper);
+        HotelMapper hotelMapper=baseMapper;
         while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
             if(conditionType.getOr()!=null){
                 conditionType = conditionType.getOr();
@@ -42,7 +45,17 @@ public class HotelServiceImpl  implements HotelService {
         return hotelMapper.selectPage(page,wrapper).getRecords();
     }
 
+    @Override
+    public int delHotel(List<Integer> delIds) {
+        int count=0;
+        for(int id : delIds){
+            count+=baseMapper.deleteById(id);
+        }
+        return count;
+    }
+
     private QueryWrapper<Hotel> setCondition(HotelSearchConditionType conditionType, QueryWrapper<Hotel> wrapper){
+        if(conditionType==null) return wrapper;
         wrapper.le(conditionType.getHigh()!=null,conditionType.getTarget(),conditionType.getHigh());
         wrapper.ge(conditionType.getLow()!=null,conditionType.getTarget(),conditionType.getLow());
         wrapper.like(conditionType.getLike()!=null,conditionType.getTarget(),conditionType.getLike());

@@ -1,6 +1,7 @@
 package com.shixi.hotelmanager.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
@@ -26,19 +27,16 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
 
-    @Autowired
-    UserMapper mapper;
-
-
     @Override
-    public List<User> selectByMap(Condition condition, UserMapper userMapper) {
+    public List<User> selectByMap(Condition condition) {
+        UserMapper userMapper=baseMapper;
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         String username = condition.getUsername();
         String IdCard = condition.getIdCard();
@@ -73,9 +71,9 @@ public class UserServiceImpl implements UserService {
             @Length(min=11,max=15) String telephone,
             @Length(max=255) @Email String email,
             @Length(min=18,max=18) @NotBlank String id_card,
-            @NotBlank String avatar,
-            UserMapper userMapper
+            @NotBlank String avatar
     ) throws UserInfoDuplicateException {
+        UserMapper userMapper=baseMapper;
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", username)
                 .or().eq("telephone", telephone)
@@ -104,13 +102,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException {
-        return addUser(user.getUsername(),user.getPassword(),user.getGender(),user.getTelephone(),user.getEmail(),user.getIdCard(),user.getAvatar(),userMapper);
+    public boolean addUser(User user) throws UserInfoDuplicateException {
+        UserMapper userMapper=baseMapper;
+        return addUser(user.getUsername(),user.getPassword(),user.getGender(),user.getTelephone(),user.getEmail(),user.getIdCard(),user.getAvatar());
     }
 
     @Override
-    public boolean updateUser(User user, UserMapper userMapper) throws UserNotFoundException, UserInfoDuplicateException {
+    public boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException {
         int count=0;
+        UserMapper userMapper=baseMapper;
         try{
             count=userMapper.updateById(user);
         }catch(DuplicateKeyException e){
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
             return true;
         }
     }
-    public boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException {
+    public boolean deleteByid(int id) throws UserNotFoundException {
         /*
         logger.info("获取用户start...");
         // 从缓存中获取用户信息
@@ -144,6 +144,7 @@ public class UserServiceImpl implements UserService {
             logger.info("向缓存中插入了用户 id = " + id);
         }
         */
+        UserMapper userMapper=baseMapper;
         logger.info("正在查询用户！");
         User user = userMapper.selectById(id);
         if (user == null){
@@ -158,7 +159,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int deleteByids(ArrayList ids, UserMapper userMapper){
+    public int deleteByids(ArrayList ids){
+        UserMapper userMapper=baseMapper;
         int result = userMapper.deleteBatchIds(ids);
         logger.info("result:"+result);
         return result;
@@ -169,7 +171,7 @@ public class UserServiceImpl implements UserService {
         try{
             HashMap<String ,Object> m=new HashMap<>();
             m.put("username",username);
-            List<User> users=mapper.selectByMap(m);
+            List<User> users=baseMapper.selectByMap(m);
             if(users.size()<=0){
                 throw new UsernameNotFoundException("用户名不存在");
             }
