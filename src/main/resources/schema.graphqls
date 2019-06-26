@@ -1,0 +1,6 @@
+type User{
+    id: Int
+    username: String
+    password: String
+    role: String
+}

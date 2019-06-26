@@ -7,3 +7,34 @@ spring:
     url: jdbc:mysql://localhost:3306/hotel
     username: root
     password: root
+
+  cache:
+    type: REDIS
+    redis:
+      cache-null-values: false
+      time-to-live: 600000ms
+      use-key-prefix: true
+    cache-names: userCache,allUsersCache
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    lettuce:
+      shutdown-timeout: 200ms
+      pool:
+        max-active: 7
+        max-idle: 7
+        min-idle: 2
+        max-wait: -1ms
+graphiql:
+  enabled: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    ROOT: INFO
+    com:
+      xncoding: DEBUG

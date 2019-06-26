@@ -4,11 +4,12 @@ import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
-import com.shixi.hotelmanager.mapper.UserMapper;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public interface UserService {
+public interface UserService <T extends User> extends UserDetailsService {
     boolean addUser(
             String username,
             String password,
@@ -16,11 +17,11 @@ public interface UserService {
             String telephone,
             String email,
             String id_card,
-            String avatar,
-            UserMapper userMapper
+            String avatar
     ) throws UserInfoDuplicateException;
-    boolean addUser(User user,UserMapper userMapper) throws UserInfoDuplicateException;
-    boolean updateUser(User user,UserMapper userMapper) throws UserNotFoundException;
-    List<User> selectByMap(Condition condition, UserMapper userMapper);
-    boolean deleteByid(int id,UserMapper userMapper) throws UserNotFoundException;
+    boolean addUser(User user) throws UserInfoDuplicateException;
+    boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException;
+    List<User> selectByMap(Condition condition);
+    boolean deleteByid(int id) throws UserNotFoundException;
+    int deleteByids(ArrayList ids);
 }
