@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+<input type="file" accept="image/*" id="smfile" name="smfile">
+<button onclick="upload()">上传</button>
+<img id="test_img" src="">
+<script>
+    function upload() {
+        var file=$('#smfile')[0].files[0];
+        if(file.size>500*1024){
+            alert('您选择的图片太大，不能上传！');
+            return;
+        }
+        var j=new FormData();
+        j.append('smfile',file);
+        var url='https://sm.ms/api/upload';
+        $.ajax(
+            {
+                type:'POST',
+                url:url,
+                data:j,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success:function(json){
+                    console.log(json.data.url);
+                    document.getElementById("test_img").src=json.data.url;
+                }
+            }
+        );
+    }
+</script>
+</body>
+</html>

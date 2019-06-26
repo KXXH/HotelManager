@@ -15,9 +15,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserMapper mapper;
+
 
     @Override
     public List<User> selectByMap(Condition condition, UserMapper userMapper) {
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
     public boolean addUser(
             @Length(max=25,min=5) @NotBlank String username,
             @Length(max=64,min=6) @NotBlank String password,
-            @Length(max=2) String gender,
+            @Length(max=8) String gender,
             @Length(min=11,max=15) String telephone,
             @Length(max=255) @Email String email,
             @Length(min=18,max=18) @NotBlank String id_card,
@@ -91,7 +92,12 @@ public class UserServiceImpl implements UserService {
             user.setIdCard(id_card);
             user.setTelephone(telephone);
             user.setUserId(123);
-            userMapper.insert(user);
+            try{
+                userMapper.insert(user);
+            }catch(DuplicateKeyException e){
+                throw new UserInfoDuplicateException();
+            }
+
             return true;
         }
     }
@@ -102,8 +108,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUser(User user, UserMapper userMapper) throws UserNotFoundException {
-        int count=userMapper.updateById(user);
+    public boolean updateUser(User user, UserMapper userMapper) throws UserNotFoundException, UserInfoDuplicateException {
+        int count=0;
+        try{
+            count=userMapper.updateById(user);
+        }catch(DuplicateKeyException e){
+            throw new UserInfoDuplicateException();
+        }
         if(count==0){
             throw new UserNotFoundException();
         }

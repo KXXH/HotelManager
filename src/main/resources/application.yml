@@ -28,3 +28,13 @@ spring:
         max-wait: -1ms
 graphiql:
   enabled: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    ROOT: INFO
+    com:
+      xncoding: DEBUG

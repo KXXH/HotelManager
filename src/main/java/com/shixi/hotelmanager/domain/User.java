@@ -25,9 +25,9 @@ public class User {
     private String username;
     @Length(min=15,max=18,message = "身份证号必须为18位") @NotBlank(message = "身份证号不能为空") @Pattern(regexp="^(\\d{18,18}|\\d{15,15}|(\\d{17,17}[x|X]))$", message="身份证格式错误")
     private String IdCard;
-    @Length(max=2,message = "性别最多长度为2位") @Pattern(regexp = "(male)|(female)|(unknown)",message = "性别格式错误")
+    @Length(max=8,message = "性别最多长度为8位") @Pattern(regexp = "(male)|(female)|(unknown)",message = "性别格式错误")
     private String gender;
-    @Length(min=11,max=15,message = "手机号长度在11-15位之间")
+    @Length(min=11,max=15,message = "手机号长度在11-15位之间") @Pattern(regexp = "^[1]([3-9])[0-9]{9}$",message = "手机号码格式不正确")
     private String telephone;
     @Length(max=255,message = "邮箱长度最大为255位") @Email(message = "必须符合邮箱格式")
     private String email;
