@@ -66,7 +66,8 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
     }
 
     @Override
-    public boolean addHotel(Hotel hotel,HotelMapper hotelMapper) throws HotelInfoDuplicateException{
+    public boolean addHotel(Hotel hotel) throws HotelInfoDuplicateException{
+        HotelMapper hotelMapper=baseMapper;
         QueryWrapper<Hotel> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("hotel_id", hotel.getHotelId())
                 .or().eq("addressline1", hotel.getAddressline1());
@@ -79,7 +80,8 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
     }
 
     @Override
-    public boolean updateHotel(Hotel hotel,HotelMapper hotelMapper) throws HotelNotFoundException,HotelInfoDuplicateException{
+    public boolean updateHotel(Hotel hotel) throws HotelNotFoundException,HotelInfoDuplicateException{
+        HotelMapper hotelMapper=baseMapper;
         int count=0;
         try{
             count=hotelMapper.updateById(hotel);

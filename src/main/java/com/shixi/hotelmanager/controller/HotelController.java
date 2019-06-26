@@ -4,8 +4,6 @@ import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.HotelSearchDTO;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
-import com.shixi.hotelmanager.mapper.HotelMapper;
-import com.shixi.hotelmanager.service.HotelServiceImpl;
 import com.shixi.hotelmanager.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -79,7 +77,7 @@ public class HotelController {
             return m;
         }
         try {
-            boolean flag = hotelService.addHotel(hotel,hotelMapper);
+            boolean flag = hotelService.addHotel(hotel);
             if(flag){
                 m.put("status","ok");
                 m.put("msg","增加成功！");
@@ -102,7 +100,7 @@ public class HotelController {
             return m;
         }
         try {
-            boolean flag = hotelService.updateHotel(hotel,hotelMapper);
+            boolean flag = hotelService.updateHotel(hotel);
             if(flag){
                 m.put("status","ok");
                 m.put("msg","修改成功！");
