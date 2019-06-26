@@ -31,6 +31,8 @@ public class UserController {
     @Autowired
     UserServiceImpl userService = new UserServiceImpl();
 
+    
+
     @RequestMapping("/addUser")
     public Map<String,Object> addUser(
             @Valid User user,BindingResult result
