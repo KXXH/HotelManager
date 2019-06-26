@@ -98,3 +98,53 @@ org.springframework.security.authentication.InternalAuthenticationServiceExcepti
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.lang.Thread.run(Thread.java:748)
+2019-06-26 16:26:33.479 [restartedMain] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field hotelService in com.shixi.hotelmanager.controller.HotelController required a bean of type 'com.shixi.hotelmanager.service.HotelServiceImpl' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.shixi.hotelmanager.service.HotelServiceImpl' in your configuration.
+
+2019-06-26 16:26:52.095 [restartedMain] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'hotelServiceImpl' could not be injected as a 'com.shixi.hotelmanager.service.HotelServiceImpl' because it is a JDK dynamic proxy that implements:
+	com.shixi.hotelmanager.service.HotelService
+
+
+Action:
+
+Consider injecting the bean as one of its interfaces or forcing the use of CGLib-based proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.
+
+2019-06-26 16:28:41.234 [restartedMain] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'hotelService' could not be injected as a 'com.shixi.hotelmanager.service.HotelServiceImpl' because it is a JDK dynamic proxy that implements:
+	com.shixi.hotelmanager.service.HotelService
+
+
+Action:
+
+Consider injecting the bean as one of its interfaces or forcing the use of CGLib-based proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.
+
