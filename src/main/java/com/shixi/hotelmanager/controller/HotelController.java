@@ -1,11 +1,11 @@
 package com.shixi.hotelmanager.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.Hotel;
-import com.shixi.hotelmanager.domain.HotelSearchConditionType;
+import com.shixi.hotelmanager.domain.HotelSearchDTO;
 import com.shixi.hotelmanager.mapper.HotelMapper;
 import com.shixi.hotelmanager.service.HotelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,29 +33,23 @@ public class HotelController {
     }
 
     @RequestMapping("/search")
-    public List<Hotel> search(@RequestBody HotelSearchConditionType conditionType){
-        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
-        System.out.println("Target: "+conditionType.getTarget());
-        System.out.println("eq: "+conditionType.getEq());
-        wrapper=setCondition(conditionType,wrapper);
-        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
-            if(conditionType.getOr()!=null){
-                conditionType = conditionType.getOr();
-                wrapper.or();
-                wrapper=setCondition(conditionType,wrapper);
-            }else{
-                conditionType = conditionType.getAnd();
-                wrapper=setCondition(conditionType,wrapper);
-            }
+    public Map<String,Object> search(@RequestBody HotelSearchDTO searchDTO){
+        HashMap<String,Object> m=new HashMap<>();
+        try{
+            List<Hotel> ans=hotelService.searchHotel(
+                    searchDTO.getCurrentPage(),
+                    searchDTO.getSize(),
+                    searchDTO.getCondition(),
+                    hotelMapper
+            );
+            m.put("status","ok");
+            m.put("data",ans);
+            return m;
+        }catch(BadSqlGrammarException e){
+            m.put("status","error");
+            m.put("msg","参数错误");
+            return m;
         }
-        List<Hotel> ans=hotelMapper.selectList(wrapper);
-        return ans;
-    }
-    private QueryWrapper<Hotel> setCondition(HotelSearchConditionType conditionType, QueryWrapper<Hotel> wrapper){
-        wrapper.le(conditionType.getHigh()!=null,conditionType.getTarget(),conditionType.getHigh());
-        wrapper.ge(conditionType.getLow()!=null,conditionType.getTarget(),conditionType.getLow());
-        wrapper.like(conditionType.getLike()!=null,conditionType.getTarget(),conditionType.getLike());
-        wrapper.eq(conditionType.getEq()!=null,conditionType.getTarget(),conditionType.getEq());
-        return wrapper;
+
     }
 }

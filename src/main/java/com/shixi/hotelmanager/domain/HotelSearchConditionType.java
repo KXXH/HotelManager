@@ -15,6 +15,8 @@ public class HotelSearchConditionType {
     private String like;
     private String eq;
     private String target;
+    private String orderByAsc;
+    private String orderByDesc;
     private HotelSearchConditionType and;
     private HotelSearchConditionType or;
 
