@@ -60,8 +60,11 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
         wrapper.ge(conditionType.getLow()!=null,conditionType.getTarget(),conditionType.getLow());
         wrapper.like(conditionType.getLike()!=null,conditionType.getTarget(),conditionType.getLike());
         wrapper.eq(conditionType.getEq()!=null,conditionType.getTarget(),conditionType.getEq());
+        wrapper.in(conditionType.getIn()!=null,conditionType.getTarget(),conditionType.getIn());
+
         wrapper.orderByAsc(conditionType.getOrderByAsc()!=null,conditionType.getOrderByAsc());
         wrapper.orderByDesc(conditionType.getOrderByDesc()!=null,conditionType.getOrderByDesc());
+
         return wrapper;
     }
 
