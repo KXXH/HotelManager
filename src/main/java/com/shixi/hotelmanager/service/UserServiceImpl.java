@@ -2,6 +2,8 @@ package com.shixi.hotelmanager.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shixi.hotelmanager.Utils.GetUserInfo;
+import com.shixi.hotelmanager.domain.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
@@ -11,7 +13,6 @@ import io.micrometer.core.instrument.util.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -168,6 +169,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info("正在验证用户信息！");
         try{
             HashMap<String ,Object> m=new HashMap<>();
             m.put("username",username);
@@ -183,5 +185,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public int changePasswd(ChangePasswdDTO changePasswdDTO){
+        User user = GetUserInfo.getInfo(baseMapper);
+        String realOldPasswd = user.getPassword();
+        logger.info("旧密码:"+realOldPasswd);
+        logger.info("输入旧密码:"+changePasswdDTO.getOldPassword());
+        if (changePasswdDTO.getOldPassword().equals(realOldPasswd)){
+            if(changePasswdDTO.getNewPassword().equals(changePasswdDTO.getConfirmation())){
+                user.setPassword(changePasswdDTO.getNewPassword());
+                baseMapper.updateById(user);
+                return 1;
+            }
+            else
+                return 2;
+        }
+        else
+            return 3;
     }
 }

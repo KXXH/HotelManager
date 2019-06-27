@@ -1,6 +1,8 @@
 package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
+import com.shixi.hotelmanager.Utils.UpdateUserInfo;
+import com.shixi.hotelmanager.domain.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.UserDeleteDTO;
@@ -29,8 +31,13 @@ public class UserController {
 
     @RequestMapping(value = "/username", method = RequestMethod.GET)
     @ResponseBody
-    public String getUserRole() {
-        return GetUserInfo.getInfo(userMapper).getRole();
+    public int getUserId() {
+        User user = GetUserInfo.getInfo(userMapper);
+        user.setUsername("hsj");
+        userMapper.updateById(user);
+        user.setUsername("hsj");
+        UpdateUserInfo.update(user);
+        return user.getId();
     }
     
 
@@ -133,6 +140,26 @@ public class UserController {
         int result = userService.deleteByids(ids);
         m.put("status","1");
         m.put("msg","已删除"+result+"条!");
+        return m;
+    }
+
+    @RequestMapping(value = "changePasswd")
+    public Map<String,String> changePassword(ChangePasswdDTO changePasswdDTO){
+        Map<String,String> m = new HashMap<>();
+        System.out.println(changePasswdDTO.getOldPassword());
+        int flag = userService.changePasswd(changePasswdDTO);
+        if(flag==1){
+            m.put("status","ok");
+            m.put("msg","修改密码成功");
+        }
+        else if (flag == 2){
+            m.put("status","error");
+            m.put("msg","密码不一致!");
+        }
+        else if (flag == 3){
+            m.put("status","error");
+            m.put("msg","原密码不正确!");
+        }
         return m;
     }
 }

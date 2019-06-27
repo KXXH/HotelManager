@@ -1,5 +1,6 @@
 package com.shixi.hotelmanager.service;
 
+import com.shixi.hotelmanager.domain.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
@@ -24,4 +25,5 @@ public interface UserService <T extends User> extends UserDetailsService {
     List<User> selectByMap(Condition condition);
     boolean deleteByid(int id) throws UserNotFoundException;
     int deleteByids(ArrayList ids);
+    int changePasswd(ChangePasswdDTO changePasswdDTO);
 }
