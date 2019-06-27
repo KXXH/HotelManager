@@ -33,5 +33,5 @@ mvnw.cmd
 mvnw
 
 .mvn/**
-LOG_HOME_IS_UNDEFINED/**
 *.log
+LOG_HOME_IS_UNDEFINED/**

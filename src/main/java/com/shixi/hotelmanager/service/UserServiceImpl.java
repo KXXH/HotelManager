@@ -3,6 +3,7 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.Utils.GetUserInfo;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
@@ -179,6 +180,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info("正在验证用户信息！");
         try{
             HashMap<String ,Object> m=new HashMap<>();
             m.put("username",username);
@@ -197,6 +199,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     @Override
+    public int changePasswd(ChangePasswdDTO changePasswdDTO){
+        User user = GetUserInfo.getInfo(baseMapper);
+        String realOldPasswd = user.getPassword();
+        logger.info("旧密码:"+realOldPasswd);
+        logger.info("输入旧密码:"+changePasswdDTO.getOldPassword());
+        if (changePasswdDTO.getOldPassword().equals(realOldPasswd)){
+            if(changePasswdDTO.getNewPassword().equals(changePasswdDTO.getConfirmation())){
+                user.setPassword(changePasswdDTO.getNewPassword());
+                baseMapper.updateById(user);
+                return 1;
+            }
+            else
+                return 2;
+        }
+        else
+            return 3;
+    }
     public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
         User currentUser= GetUserInfo.getInfo(baseMapper);
         if(currentUser == null){

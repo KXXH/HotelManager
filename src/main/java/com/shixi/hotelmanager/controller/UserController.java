@@ -1,24 +1,20 @@
 package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
+import com.shixi.hotelmanager.Utils.UpdateUserInfo;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
-import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
-import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
-import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
-import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +31,15 @@ public class UserController {
 
     @RequestMapping(value = "/username", method = RequestMethod.GET)
     @ResponseBody
-    public String getUserRole() {
-        return GetUserInfo.getInfo(userMapper).getRole();
+    public int getUserId() {
+        User user = GetUserInfo.getInfo(userMapper);
+        user.setUsername("hsj");
+        userMapper.updateById(user);
+        user.setUsername("hsj");
+        UpdateUserInfo.update(user);
+        return user.getId();
     }
+    
 
     @RequestMapping("/admin/addUser")
     public Map<String,Object> addUser(
@@ -132,8 +134,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "admin/muiltDelete")
-    public Map<String,String> deleteUsers(@RequestBody Map<String,Object> map){
-        ArrayList ids = (ArrayList) map.get("data");
+    public Map<String,String> deleteUsers(@RequestBody UserDeleteDTO userDeleteDTO){
+        ArrayList ids = userDeleteDTO.getIds();
         Map<String,String> m = new HashMap<>();
         int result = userService.deleteByids(ids);
         m.put("status","1");
@@ -141,6 +143,25 @@ public class UserController {
         return m;
     }
 
+    @RequestMapping(value = "changePasswd")
+    public Map<String,String> changePassword(ChangePasswdDTO changePasswdDTO){
+        Map<String,String> m = new HashMap<>();
+        System.out.println(changePasswdDTO.getOldPassword());
+        int flag = userService.changePasswd(changePasswdDTO);
+        if(flag==1){
+            m.put("status","ok");
+            m.put("msg","修改密码成功");
+        }
+        else if (flag == 2){
+            m.put("status","error");
+            m.put("msg","密码不一致!");
+        }
+        else if (flag == 3){
+            m.put("status","error");
+            m.put("msg","原密码不正确!");
+        }
+        return m;
+    }
     @RequestMapping("/updateUserinfo")
     public DefaultReturnDTO updateUser(User user) throws UserInfoDuplicateException, UserNotFoundException {
         userService.updateUserInfo(user);
