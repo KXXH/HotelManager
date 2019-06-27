@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+//    ajax标准格式
+    var j={'condition':{'like':'Hotel','orderByAsc':'hotel_name','target':'hotel_name','and':{'low':'350','target':'id','or':{'like':'chain','target':'chain_name'}}},'currentPage':2,'size':20}
+
+    $.ajax({
+        url:'/hotel/search',
+        type:'POST',
+        data:JSON.stringify(j),
+        dataType:"json",
+        contentType:"application/json; charset=utf-8",
+        success:function(data){
+
+        }
+    });
+</script>
+</body>
+</html>
