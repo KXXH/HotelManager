@@ -31,6 +31,7 @@ public class UserController {
     public String getUserRole() {
         return GetUserInfo.getInfo(userMapper).getRole();
     }
+    
 
     @RequestMapping("/addUser")
     public Map<String,Object> addUser(
