@@ -3,7 +3,7 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.Utils.GetUserInfo;
-import com.shixi.hotelmanager.domain.ChangePasswdDTO;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
