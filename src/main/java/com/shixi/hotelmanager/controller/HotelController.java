@@ -1,7 +1,7 @@
 package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.domain.Hotel;
-import com.shixi.hotelmanager.domain.HotelSearchDTO;
+import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import com.shixi.hotelmanager.service.HotelService;

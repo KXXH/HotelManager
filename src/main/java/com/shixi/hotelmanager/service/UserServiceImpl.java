@@ -2,6 +2,7 @@ package com.shixi.hotelmanager.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
@@ -9,9 +10,10 @@ import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
+import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,11 +22,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService {
@@ -33,6 +40,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+
+    @Resource
+    private VerificationCodeService verificationCodeService;
+
 
     @Override
     public List<User> selectByMap(Condition condition) {
@@ -182,6 +193,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }catch(Exception e){
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
+        User currentUser= GetUserInfo.getInfo(baseMapper);
+        if(currentUser == null){
+            throw new UserNotFoundException();
+        }
+
+        if(user.getUsername()!=null){
+            currentUser.setUsername(user.getUsername());
+        }
+        if(user.getEmail()!=null){
+            currentUser.setEmail(user.getEmail());
+        }
+        if(user.getGender()!=null){
+            currentUser.setGender(user.getGender());
+        }
+        Validator validator= Validation.byDefaultProvider().configure().messageInterpolator(new ResourceBundleMessageInterpolator(new PlatformResourceBundleLocator("error"))).buildValidatorFactory().getValidator();
+        Set<ConstraintViolation<User>> constraintViolations=validator.validate(currentUser);
+        if(constraintViolations.size()>0){
+            throw new ValidationException(constraintViolations.iterator().next().getMessage());
+        }
+        try{
+            saveOrUpdate(currentUser);
+        }catch(DuplicateKeyException e){
+            throw new UserInfoDuplicateException();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean updateTelephone(User user,int code,String sessionId) throws UserNotFoundException, UserInfoDuplicateException {
+        User currentUser= GetUserInfo.getInfo(baseMapper);
+        if(currentUser==null){
+            throw new UserNotFoundException();
+        }
+        String phone=user.getTelephone();
+        assert phone != null;
+        if(verificationCodeService.verificationCode(code,phone,sessionId)){
+            currentUser.setTelephone(phone);
+            try{
+                saveOrUpdate(currentUser);
+            }catch(DuplicateKeyException e){
+                throw new UserInfoDuplicateException();
+            }
+            return true;
+        }else{
+            return false;
         }
     }
 }

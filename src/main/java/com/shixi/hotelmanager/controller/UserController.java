@@ -2,16 +2,23 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
+import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
+import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
+import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,5 +139,28 @@ public class UserController {
         m.put("status","1");
         m.put("msg","已删除"+result+"条!");
         return m;
+    }
+
+    @RequestMapping("/updateUserinfo")
+    public DefaultReturnDTO updateUser(User user) throws UserInfoDuplicateException, UserNotFoundException {
+        userService.updateUserInfo(user);
+        return new DefaultSuccessDTO();
+    }
+
+    @RequestMapping("/updateTelephone")
+    public DefaultReturnDTO updateTelephone(
+            @Validated({UpdateTelephoneValudation.class}) User user,
+            BindingResult result,
+            @RequestParam("code") int code,
+            HttpSession session
+            ) throws UserNotFoundException, UserInfoDuplicateException {
+        if(result.hasErrors()){
+            throw new ValidationException(result.getAllErrors().iterator().next().toString());
+        }
+        if(userService.updateTelephone(user,code,session.getId())){
+            return new DefaultSuccessDTO();
+        }else{
+            return new VerificationFailDTO();
+        }
     }
 }

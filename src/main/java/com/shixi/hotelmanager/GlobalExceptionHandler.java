@@ -1,5 +1,8 @@
 package com.shixi.hotelmanager;
 
+import com.shixi.hotelmanager.domain.DTO.UserDTO.UserInfoDuplicateDTO;
+import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -31,5 +34,18 @@ public class GlobalExceptionHandler {
         System.out.println("bad request, " + exception.getMessage());
         //return "bad request, " + exception.getMessage();
         return m;
+    }
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public UserInfoDuplicateDTO handle(UserInfoDuplicateException exception){
+        return new UserInfoDuplicateDTO();
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public UserNotFoundException handle(UserNotFoundException e){
+        return new UserNotFoundException();
     }
 }

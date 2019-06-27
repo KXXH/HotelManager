@@ -24,4 +24,6 @@ public interface UserService <T extends User> extends UserDetailsService {
     List<User> selectByMap(Condition condition);
     boolean deleteByid(int id) throws UserNotFoundException;
     int deleteByids(ArrayList ids);
+    boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException;
+    boolean updateTelephone(User user,int code,String sessionId) throws UserNotFoundException, UserInfoDuplicateException;
 }
