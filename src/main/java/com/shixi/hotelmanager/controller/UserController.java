@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("/admin/user")
+@RequestMapping("/user")
 @RestController
 public class UserController {
     @Autowired
@@ -32,7 +32,7 @@ public class UserController {
         return GetUserInfo.getInfo(userMapper).getRole();
     }
 
-    @RequestMapping("/addUser")
+    @RequestMapping("/admin/addUser")
     public Map<String,Object> addUser(
             @Valid User user,BindingResult result
     ){
@@ -52,7 +52,7 @@ public class UserController {
         return m;
     }
 
-    @RequestMapping(value = "simple_select")
+    @RequestMapping(value = "admin/simple_select")
     public Map<String,Object> selectByCondition(@Valid Condition condition, BindingResult bindingResult){
         Map<String,Object> m = new HashMap<>();
         if(bindingResult.hasErrors()){
@@ -72,7 +72,7 @@ public class UserController {
         return m;
     }
 
-    @RequestMapping("/updateUser")
+    @RequestMapping("/admin/updateUser")
     public Map<String,Object> updateUser(@Valid User user,BindingResult result){
         HashMap<String,Object> m=new HashMap<>();
         if(result.hasErrors()){
@@ -103,7 +103,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "delete")
+    @RequestMapping(value = "admin/delete")
     public Map<String,String> deleteUser(@RequestParam int id){
         System.out.println(id);
         Map<String,String> m = new HashMap<>();
@@ -124,7 +124,7 @@ public class UserController {
         return m;
     }
 
-    @RequestMapping(value = "muiltDelete")
+    @RequestMapping(value = "admin/muiltDelete")
     public Map<String,String> deleteUsers(@RequestBody Map<String,Object> map){
         ArrayList ids = (ArrayList) map.get("data");
         Map<String,String> m = new HashMap<>();
