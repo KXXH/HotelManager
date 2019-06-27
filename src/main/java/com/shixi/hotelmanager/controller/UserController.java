@@ -3,6 +3,7 @@ package com.shixi.hotelmanager.controller;
 import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.domain.UserDeleteDTO;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
@@ -126,8 +127,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "muiltDelete")
-    public Map<String,String> deleteUsers(@RequestBody Map<String,Object> map){
-        ArrayList ids = (ArrayList) map.get("data");
+    public Map<String,String> deleteUsers(@RequestBody UserDeleteDTO userDeleteDTO){
+        ArrayList ids = userDeleteDTO.getIds();
         Map<String,String> m = new HashMap<>();
         int result = userService.deleteByids(ids);
         m.put("status","1");
