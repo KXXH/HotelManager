@@ -151,8 +151,13 @@ public class UserController {
     }
 
     @RequestMapping(value = "changePasswd")
-    public Map<String,String> changePassword(ChangePasswdDTO changePasswdDTO){
+    public Map<String,String> changePassword(@Valid ChangePasswdDTO changePasswdDTO,BindingResult result){
         Map<String,String> m = new HashMap<>();
+        if (result.hasErrors()){
+            m.put("status","error");
+            m.put("msg", String.valueOf(result.getAllErrors()));
+            return m;
+        }
         System.out.println(changePasswdDTO.getOldPassword());
         int flag = userService.changePasswd(changePasswdDTO);
         if(flag==1){
