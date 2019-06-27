@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.Hotel;
-import com.shixi.hotelmanager.domain.HotelSearchConditionType;
+import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchConditionType;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import com.shixi.hotelmanager.mapper.HotelMapper;

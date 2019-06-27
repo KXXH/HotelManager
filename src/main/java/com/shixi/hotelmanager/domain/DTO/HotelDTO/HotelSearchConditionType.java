@@ -1,4 +1,4 @@
-package com.shixi.hotelmanager.domain;
+package com.shixi.hotelmanager.domain.DTO.HotelDTO;
 
 
 import lombok.AllArgsConstructor;

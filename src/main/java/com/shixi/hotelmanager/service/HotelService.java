@@ -1,7 +1,7 @@
 package com.shixi.hotelmanager.service;
 
 import com.shixi.hotelmanager.domain.Hotel;
-import com.shixi.hotelmanager.domain.HotelSearchConditionType;
+import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchConditionType;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import org.springframework.stereotype.Service;
