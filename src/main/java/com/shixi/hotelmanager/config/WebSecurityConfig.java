@@ -67,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().exceptionHandling().accessDeniedPage("/toLogin?deny")
                 .and().httpBasic()
                 .and().sessionManagement().invalidSessionUrl("/toLogin")
+                .and().headers().frameOptions().sameOrigin()
                 .and().csrf().disable();
     }
 

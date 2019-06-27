@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HotelSearchDTO {
     private HotelSearchConditionType condition;
-    private int currentPage;
-    private int size;
+    private int currentPage;//1
+    private int size;//999
 }
