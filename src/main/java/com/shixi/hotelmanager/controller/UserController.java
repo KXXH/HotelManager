@@ -162,4 +162,27 @@ public class UserController {
         }
         return m;
     }
+    @RequestMapping("/updateUserinfo")
+    public DefaultReturnDTO updateUser(User user) throws UserInfoDuplicateException, UserNotFoundException {
+        userService.updateUserInfo(user);
+        return new DefaultSuccessDTO();
+    }
+
+    @RequestMapping("/updateTelephone")
+    public DefaultReturnDTO updateTelephone(
+            @Validated({UpdateTelephoneValudation.class}) User user,
+            BindingResult result,
+            @RequestParam("code") int code,
+            HttpSession session
+            ) throws UserNotFoundException, UserInfoDuplicateException {
+        if(result.hasErrors()){
+            throw new ValidationException(result.getAllErrors().iterator().next().toString());
+        }
+        if(userService.updateTelephone(user,code,session.getId())){
+            return new DefaultSuccessDTO();
+        }else{
+            return new VerificationFailDTO();
+            //ttt
+        }
+    }
 }
