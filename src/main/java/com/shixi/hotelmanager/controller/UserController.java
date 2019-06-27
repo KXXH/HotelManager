@@ -1,16 +1,15 @@
 package com.shixi.hotelmanager.controller;
 
+import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -24,7 +23,14 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    
+    @Autowired
+    UserMapper userMapper;
+
+    @RequestMapping(value = "/username", method = RequestMethod.GET)
+    @ResponseBody
+    public String getUserRole() {
+        return GetUserInfo.getInfo(userMapper).getRole();
+    }
 
     @RequestMapping("/addUser")
     public Map<String,Object> addUser(

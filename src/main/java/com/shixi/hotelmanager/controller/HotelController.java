@@ -2,20 +2,24 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.HotelSearchDTO;
+import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
+import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import com.shixi.hotelmanager.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/hotel")
+@RequestMapping("/admin/hotel")
 public class HotelController {
 
     @Autowired
@@ -64,4 +68,54 @@ public class HotelController {
         m.put("count",count);
         return m;
     }
+    @RequestMapping(value = "addHotel")
+    public Map<String,Object> addHotel(@Valid Hotel hotel, BindingResult bindingResult){
+        HashMap<String,Object> m = new HashMap<>();
+        if(bindingResult.hasErrors()){
+            m.put("msg",bindingResult.getAllErrors());
+            m.put("status","error");
+            return m;
+        }
+        try {
+            boolean flag = hotelService.addHotel(hotel);
+            if(flag){
+                m.put("status","ok");
+                m.put("msg","增加成功！");
+                return m;
+            }
+        }catch (HotelInfoDuplicateException e){
+            m.put("status","error");
+            m.put("msg","酒店参数重复！");
+            return m;
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "updateHotel")
+    public Map<String,Object> updateHotel(@Valid Hotel hotel,BindingResult bindingResult){
+        HashMap<String,Object> m = new HashMap<>();
+        if(bindingResult.hasErrors()){
+            m.put("msg",bindingResult.getAllErrors());
+            m.put("status","error");
+            return m;
+        }
+        try {
+            boolean flag = hotelService.updateHotel(hotel);
+            if(flag){
+                m.put("status","ok");
+                m.put("msg","修改成功！");
+                return m;
+            }
+        }catch (HotelInfoDuplicateException e){
+            m.put("status","error");
+            m.put("msg","酒店参数重复！");
+            return m;
+        } catch (HotelNotFoundException e) {
+            m.put("status","error");
+            m.put("msg","酒店不存在！");
+            return m;
+        }
+        return null;
+    }
+
 }

@@ -6,7 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.HotelSearchConditionType;
+import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
+import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import com.shixi.hotelmanager.mapper.HotelMapper;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,5 +66,36 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
         wrapper.orderByDesc(conditionType.getOrderByDesc()!=null,conditionType.getOrderByDesc());
 
         return wrapper;
+    }
+
+    @Override
+    public boolean addHotel(Hotel hotel) throws HotelInfoDuplicateException{
+        HotelMapper hotelMapper=baseMapper;
+        QueryWrapper<Hotel> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("hotel_id", hotel.getHotelId())
+                .or().eq("addressline1", hotel.getAddressline1());
+        if (hotelMapper.selectCount(queryWrapper) > 0) {
+            throw new HotelInfoDuplicateException();
+        } else {
+            hotelMapper.insert(hotel);
+            return true;
+        }
+    }
+
+    @Override
+    public boolean updateHotel(Hotel hotel) throws HotelNotFoundException,HotelInfoDuplicateException{
+        HotelMapper hotelMapper=baseMapper;
+        int count=0;
+        try{
+            count=hotelMapper.updateById(hotel);
+        }catch(DuplicateKeyException e){
+            throw new HotelInfoDuplicateException();
+        }
+        if(count==0){
+            throw new HotelNotFoundException();
+        }
+        else{
+            return true;
+        }
     }
 }
