@@ -2,10 +2,12 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.Utils.UpdateUserInfo;
-import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
+import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
+import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
