@@ -51,6 +51,8 @@
     var map = new BMap.Map('map');
     var poi = new BMap.Point(116.307852,40.057031);
     map.centerAndZoom(poi, 16);
+    var hotelData=[];
+    var markers=[];
     map.enableScrollWheelZoom();
     var overlays = [];
     var geolocation = new BMap.Geolocation();
@@ -96,12 +98,22 @@
                 success:function(json){
                     console.log(JSON.stringify(json));
                     map.clearOverlays();
+                    hotelData=json.data;
+                    markers=[];
                     for(var i=0;i<json.data.length;i++){
 
                         var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
                         var marker=new BMap.Marker(point,{
                             title:json.data[i].hotelTranslatedName
                         });
+                        markers.push(marker);
+                        var title=json.data[i].hotelTranslatedName;
+                        markers[i].addEventListener('click',function(){
+                            console.log("title=",hotelData[i].title);
+                           var info=new BMap.InfoWindow(hotelData[i].title);
+                           marker.openInfoWindow(info);
+                        });
+
                         map.addOverlay(marker);
                         console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
                         //map.centerAndZoom(point, 15);
@@ -127,7 +139,7 @@
             anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
             offset: new BMap.Size(5, 5), //偏离值
             drawingModes : [
-                BMAP_DRAWING_RECTANGLE,
+                BMAP_DRAWING_RECTANGLE
             ]
         },
         rectangleOptions: styleOptions //矩形的样式
@@ -139,7 +151,7 @@
         for(var i = 0; i < overlays.length; i++){
             map.removeOverlay(overlays[i]);
         }
-        overlays.length = 0
+        overlays.length = 0;
     }
 </script>
 </body>
