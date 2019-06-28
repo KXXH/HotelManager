@@ -54,7 +54,7 @@
                 //$("#fyZldz").val($('#fyDh option:selected').text()  + fyCh + "-" + fyFh);
                 // 异步判断该房室是否存在，如果已存在，给用户已提示哦
                 var data={"userId":userId,"username":username, "IdCard":IdCard, "gender":gender, "telephone":telephone, "email":email, "password":password, "avatar":avatar,"role":role};
-                $.post("/admin/user/addUser",data,function(json){
+                $.post("/user/admin/addUser",data,function(json){
                     if(json["status"]=="error"){
                         art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+json["msg"], ok:true,});
                     }
