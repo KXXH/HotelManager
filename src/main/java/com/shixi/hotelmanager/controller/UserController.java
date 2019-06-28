@@ -2,19 +2,26 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.Utils.UpdateUserInfo;
+import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
+import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
+import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
