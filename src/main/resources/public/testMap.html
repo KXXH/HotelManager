@@ -118,6 +118,8 @@
     var poi = new BMap.Point(116.307852,40.057031);
     var currenPage=1;
     map.centerAndZoom(poi, 16);
+    var hotelData=[];
+    var markers=[];
     map.enableScrollWheelZoom();
     var overlays = [];
     var hotels=[];
@@ -234,6 +236,14 @@
                         var marker=new BMap.Marker(point,{
                             title:json.data[i].hotelTranslatedName
                         });
+                        markers.push(marker);
+                        var title=json.data[i].hotelTranslatedName;
+                        markers[i].addEventListener('click',function(){
+                            console.log("title=",hotelData[i].title);
+                           var info=new BMap.InfoWindow(hotelData[i].title);
+                           marker.openInfoWindow(info);
+                        });
+
                         map.addOverlay(marker);
                         console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
                         //map.centerAndZoom(point, 15);

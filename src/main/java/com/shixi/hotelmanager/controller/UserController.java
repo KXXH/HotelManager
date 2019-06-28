@@ -9,6 +9,8 @@ import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
+import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
+import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.UserMapper;
