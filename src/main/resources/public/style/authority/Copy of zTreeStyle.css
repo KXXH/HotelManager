@@ -11,7 +11,7 @@ website:	http://code.google.com/p/jquerytree/
 	padding: 0;
 	margin: 0;
 	font-size: 14px;
-	font-family: "¿¬Ìå", Verdana, Arial, Helvetica, AppleGothic, sans-serif;
+	font-family: "ï¿½ï¿½ï¿½ï¿½", Verdana, Arial, Helvetica, AppleGothic, sans-serif;
 }
 
 .ztree {
@@ -119,8 +119,8 @@ website:	http://code.google.com/p/jquerytree/
 	background-color: transparent;
 	background-repeat: no-repeat;
 	background-attachment: scroll;
-/* 	background-image: url("../../images/authority/zTreeStandard.png"); */
-/* 	*background-image: url("../../images/authority/zTreeStandard.gif") */
+/* 	background-images: url("../../images/authority/zTreeStandard.png"); */
+/* 	*background-images: url("../../images/authority/zTreeStandard.gif") */
 }
 
 .ztree li span.button.chk {

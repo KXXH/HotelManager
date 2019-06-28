@@ -118,7 +118,7 @@ website:	http://code.google.com/p/jquerytree/
 	background-repeat: no-repeat;
 	background-attachment: scroll;
 	background-image: url("../../images/common/nav_item_v_hover.jpg");
-/* 	*background-image: url("../../images/common/zTreeStandard.gif") */
+/* 	*background-images: url("../../images/common/zTreeStandard.gif") */
 }
 
 .ztree li span.button.chk {

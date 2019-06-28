@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:font-weight="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>注册</title>
+
 
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -13,32 +14,36 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <script src="js/jquery.backstretch.min.js"></script>
 </head>
-<body>
+
+
+<body onload="initPage()">
 <div class="container">
+    
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8" style="margin-top: 3%">
             <form action="/register/registerUser" id="register_form" method="post">
                 <div class="form-group">
-                    <label for="Username">用户名</label>
-                    <input maxlength="25" minlength="5" v-model="username" pattern="^[\u4e00-\u9fa5a-zA-Z][\u4e00-\u9fa5_a-zA-Z0-9]*$" class="form-control" id="Username" name="Username" aria-describedby="UsernameHelp" placeholder="请输入用户名" onblur="verficationUsername()">
+                    <label for="Username" style="font-weight: 700">用户名</label>
+                    <input maxlength="25" minlength="5" v-model="username" pattern="^[\u4e00-\u9fa5a-zA-Z][\u4e00-\u9fa5_a-zA-Z0-9]*$" class="form-control" id="Username" name="Username" aria-describedby="UsernameHelp" placeholder="请输入用户名" onblur="verficationUsername()" required>
                     <small id="UsernameHelp" class="form-text text-muted">用户名只能包含汉字英文数字和下划线，开头不能以数字和下划线开始</small>
                 </div>
-                <label for="Password">密码</label>
+                <label for="Password" style="font-weight: 700">密码</label>
                 <div class="input-group">
                     <input maxlength="64" minlength="6" v-model="password" type="password" class="form-control" id="Password" name="Password" placeholder="请输入密码" required>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="show_passwd" onmousedown="mw()" onmouseleave="jm()">按住显示密码</button>
+                        <button class="btn btn-outline-secondary" type="button" id="show_passwd" onmousedown="mw()" onmouseleave="jm()"><b>按住显示密码</b></button>
                     </div>
                 </div>
-
-                <label for="Telephone">手机号</label>
+                <label for="Telephone" style="font-weight: 700;margin-top: 1%">手机号</label>
                 <div class="input-group">
 
                     <input v-model="telephone" pattern="^[1]([3-9])[0-9]{9}$" id="Telephone" name="Telephone" class="form-control" placeholder="请输入手机号" aria-label="请输入手机号" aria-describedby="button-addon2" required>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="getCode()">获取验证码</button>
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="getCode()"><b>获取验证码</b></button>
                     </div>
 
                 </div>
@@ -46,11 +51,11 @@
                     <small id="TelephoneHelp" class="form-text text-muted">我们不会将您的手机号泄露</small>
                 </div>
                 <div class="form-group">
-                    <label for="code">验证码</label>
+                    <label for="code" style="font-weight: 700">验证码</label>
                     <input v-model="verification" type="text" class="form-control" id="code" name="code" placeholder="请输入验证码" required>
                 </div>
                 <div class="form-group">
-                    <label for="Email">邮箱</label>
+                    <label for="Email" style="font-weight: 700">邮箱</label>
                     <input v-model="email" maxlength="255" type="email" class="form-control" id="Email" name="Email" aria-describedby="emailHelp" placeholder="请输入邮箱" required>
                     <small id="emailHelp" class="form-text text-muted">我们不会将您的邮箱泄露</small>
                 </div>
@@ -58,17 +63,20 @@
 
 
                 <div class="form-group">
-                    <label for="IdCard">身份证号</label>
+                    <label for="IdCard" style="font-weight: 700">身份证号</label>
                     <input v-model="idCard" pattern="^(\d{18,18}|\d{15,15}|(\d{17,17}[x|X]))$" class="form-control" id="IdCard" name="IdCard" aria-describedby="IdCardHelp" placeholder="请输入身份证号" required>
                     <small id="IdCardHelp" class="form-text text-muted">我们不会将您的身份证号泄露</small>
                 </div>
 
+                <input name="role" value="USER" style="display:none"/>
+                <input name="avatar" id="Avatar" style="display:none">
+
                 <div class="form-group" >
-                    <label for="Gender">您的性别</label>
-                    <select v-model="gender" class="form-control" id="Gender" required>
-                        <option>male</option>
-                        <option>female</option>
-                        <option>unknown</option>
+                    <label for="Gender" style="font-weight: 700">您的性别</label>
+                    <select v-model="gender" class="form-control" id="Gender" name="gender" required>
+                        <option value="male">男</option>
+                        <option value="female">女</option>
+                        <option value="unknown">保密</option>
                     </select>
                 </div>
 
@@ -77,12 +85,14 @@
                         <span class="input-group-text" id="inputGroupFileAddon01">头像选择</span>
                     </div>
                     <div class="custom-file">
-                        <input v-model="smfile" type="file" accept="image/*" class="custom-file-input" id="Smfile" name="avatar" aria-describedby="inputGroupFileAddon01" required>
+                        <input type="file" accept="image/*" class="custom-file-input" id="Smfile" name="smfile" aria-describedby="inputGroupFileAddon01">
                         <label class="custom-file-label" for="Smfile">Choose file</label>
                     </div>
                     <div>
                         <button type="button" class="btn btn-info" onclick="upload()">上传</button>
-                        <img id="test_img" src="" class="img-thumbnail">
+                    </div>
+                    <div style="margin-top: 1%">
+                        <img id="test_img" src="" width="50%">
                     </div>
                 </div>
 
@@ -194,11 +204,15 @@
                 processData: false,
                 contentType: false,
                 success:function(json){
-                    user.smfile = json.data.url;
-                    console.log(user.smfile);
+                    $("#Avatar").val(json.data.url);
+                    console.log($("#Avatar").val());
                     document.getElementById("test_img").src=json.data.url;
                 }
             }
         );
+    }
+
+    function initPage() {
+        $.backstretch("images/register.jpg");
     }
 </script>
