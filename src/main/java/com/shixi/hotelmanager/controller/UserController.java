@@ -2,10 +2,6 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.Utils.UpdateUserInfo;
-import com.shixi.hotelmanager.domain.Condition;
-import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
-import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
-import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
@@ -161,13 +157,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "changePasswd")
-    public Map<String,String> changePassword(@Valid ChangePasswdDTO changePasswdDTO,BindingResult result){
+    public Map<String,String> changePassword(ChangePasswdDTO changePasswdDTO){
         Map<String,String> m = new HashMap<>();
-        if (result.hasErrors()){
-            m.put("status","error");
-            m.put("msg", String.valueOf(result.getAllErrors()));
-            return m;
-        }
         System.out.println(changePasswdDTO.getOldPassword());
         int flag = userService.changePasswd(changePasswdDTO);
         if(flag==1){
