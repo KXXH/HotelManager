@@ -5,9 +5,12 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <style type="text/css">
         body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
-        #allmap {width: 100%; height:500px; overflow: hidden;}
+        #allmap {width: 100%; height:100%; overflow: hidden;}
         #result {width:100%;font-size:12px;}
         dl,dt,dd,ul,li{
             margin:0;
@@ -36,35 +39,117 @@
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
     <!--加载检索信息窗口-->
     <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
+    <script src="scripts/jquery.stellar.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
     <title>鼠标绘制工具</title>
 </head>
-<body>
-<div id="allmap" style="overflow:hidden;zoom:1;position:relative;">
+<body class="row">
+<div id="allmap" style="overflow:hidden;zoom:1;position:relative;" class="col-sm-12 col-md-6">
+    <div class="container" id="search_box">
+        <div class="input-group mb-3 row">
+            <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
+                <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
+                <button class="dropdown-item" onclick="search.label='范围查找'">范围查找</button>
+                <div role="separator" class="dropdown-divider"></div>
+                <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
+            </div>
+        </div>
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{target}}</button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" onclick="search.target='酒店名'">酒店名</button>
+                    <button class="dropdown-item" onclick="search.target='星级'">星级</button>
+                    <button class="dropdown-item" onclick="search.target='退房时间'">退房时间</button>
+                    <div role="separator" class="dropdown-divider"></div>
+                    <button class="dropdown-item" onclick="search.target='评价'">评价</button>
+                </div>
+            </div>
+
+            <div v-if="label=='范围查找'">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="First name" v-model="low">
+                </div>
+                -
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Last name" v-model="high">
+                </div>
+            </div>
+            <input type="text" class="form-control col" aria-label="Text input with dropdown button" v-if="label!='范围查找'" v-model="text">
+            <div class="input-group-append">
+            <button class="btn btn-outline-secondary col" type="button" onclick="doSearch()">查找</button>
+        </div>
+        </div>
+    </div>
     <div id="map" style="height:100%;-webkit-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;"></div>
 </div>
-<div id="result">
-    <table>
+<div id="result" class="col-sm-12 col-md-6" >
+    <table id="hotel_table" class="table">
+        <thead>
         <tr>
             <th>id</th>
             <th>酒店名</th>
             <th>星级</th>
         </tr>
-        <tr v-for="">
-            <th></th>
-            <th></th>
-            <th></th>
+        </thead>
+        <tr v-for="point in points">
+            <th>{{point.id}}</th>
+            <th>{{point.hotelTranslatedName}}</th>
+            <th>{{point.starRating}}</th>
         </tr>
     </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" id="last_page_btn" v-if="currentPage>1" onclick="lastPage.currentPage--;fetchData()">
+                <a class="page-link" href="#" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" onclick="lastPage.currentPage++;fetchData()">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 <script type="text/javascript">
     // 百度地图API功能
+    $(window).stellar();
     var map = new BMap.Map('map');
     var poi = new BMap.Point(116.307852,40.057031);
+    var currenPage=1;
     map.centerAndZoom(poi, 16);
     map.enableScrollWheelZoom();
     var overlays = [];
+    var hotels=[];
     var geolocation = new BMap.Geolocation();
+    var minLng=0;
+    var maxLng=0;
+    var minLat=0;
+    var maxLat=0;
+    var hotel_table=new Vue(
+        {
+            el:'#hotel_table',
+            data:{
+                points:[]
+            }
+        }
+    );
+    var lastPage=new Vue({
+        el:'#last_page_btn',
+        data:{
+            currentPage:1
+        }
+    });
+    var search=new Vue({
+        el:'#search_box',
+        data:{
+            label:"模糊查找",
+            text:"",
+            high:"",
+            low:"",
+            target:"酒店名"
+        }
+    });
     geolocation.getCurrentPosition(function(r){
         if(this.getStatus() == BMAP_STATUS_SUCCESS){
             var mk = new BMap.Marker(r.point);
@@ -75,52 +160,16 @@
         else {
             alert('failed'+this.getStatus());
         }
-    },{enableHighAccuracy: true})
+    },{enableHighAccuracy: true});
     var overlaycomplete = function(e){
         //overlays.push(e.overlay);
         drawingManager.close();
-        var minLng=e.overlay.getPath()[0].lng;
-        var maxLng=e.overlay.getPath()[2].lng;
-        var minLat=e.overlay.getPath()[2].lat;
-        var maxLat=e.overlay.getPath()[0].lat;
-        var j={
-            'currentPage':1,
-            'size':200,
-            'condition':{
-                'high':maxLng,
-                'low':minLng,
-                'target':'longitude',
-                'and':{
-                    'high':maxLat,
-                    'low':minLat,
-                    'target':'latitude'
-                }
-            }
-        };
-        $.ajax(
-            {
-                url:'/admin/hotel/search',
-                type:'POST',
-                data:JSON.stringify(j),
-                dataType:"json",
-                contentType:"application/json; charset=utf-8",
-                success:function(json){
-                    console.log(JSON.stringify(json));
-                    map.clearOverlays();
-                    for(var i=0;i<json.data.length;i++){
-
-                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
-                        var marker=new BMap.Marker(point,{
-                            title:json.data[i].hotelTranslatedName
-                        });
-                        map.addOverlay(marker);
-                        console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
-                        //map.centerAndZoom(point, 15);
-                        map.removeOverlay(e.overlay);
-                    }
-                }
-            });
-
+        minLng=e.overlay.getPath()[0].lng;
+        maxLng=e.overlay.getPath()[2].lng;
+        minLat=e.overlay.getPath()[2].lat;
+        maxLat=e.overlay.getPath()[0].lat;
+        fetchData();
+        map.removeOverlay(e.overlay);
     };
     var styleOptions = {
         strokeColor:"red",    //边线颜色。
@@ -152,6 +201,106 @@
         }
         overlays.length = 0
     }
+
+    function fetchData(){
+        var j={
+            'currentPage':lastPage.currentPage,
+            'size':20,
+            'condition':{
+                'high':maxLng,
+                'low':minLng,
+                'target':'longitude',
+                'and':{
+                    'high':maxLat,
+                    'low':minLat,
+                    'target':'latitude'
+                }
+            }
+        };
+        $.ajax(
+            {
+                url:'/admin/hotel/search',
+                type:'POST',
+                data:JSON.stringify(j),
+                dataType:"json",
+                contentType:"application/json; charset=utf-8",
+                success:function(json){
+                    console.log(JSON.stringify(json));
+                    map.clearOverlays();
+                    hotel_table.points=json.data;
+                    for(var i=0;i<json.data.length;i++){
+
+                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+                        var marker=new BMap.Marker(point,{
+                            title:json.data[i].hotelTranslatedName
+                        });
+                        map.addOverlay(marker);
+                        console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
+                        //map.centerAndZoom(point, 15);
+
+                    }
+                }
+            });
+    }
+
+    var targetToCol={
+        "酒店名":'hotel_translated_name',
+        "星级":"star_rating",
+        "退房时间":"checkout",
+        "评价":"rating_average"
+    };
+
+    function doSearch(){
+        lastPage.currentPage=1;
+        var j={
+            'target':targetToCol[search.target]
+        };
+        var postData={
+            "currentPage":lastPage.currentPage,
+            "size":20
+        };
+        switch (search.label){
+            case "范围查找":
+                j["low"]=search.low;
+                j["high"]=search.high;
+                break;
+            case "精确查找":
+                j["eq"]=search.text;
+                break;
+            case "模糊查找":
+                j["like"]=search.text;
+                break;
+            case "包含查找":
+                j['in']=search.text.split(",");
+                break;
+        }
+        postData["condition"]=j;
+        $.ajax(
+            {
+                url:'/admin/hotel/search',
+                type:'POST',
+                data:JSON.stringify(postData),
+                dataType:"json",
+                contentType:"application/json; charset=utf-8",
+                success:function(json){
+                    console.log(JSON.stringify(json));
+                    map.clearOverlays();
+                    hotel_table.points=json.data;
+                    for(var i=0;i<json.data.length;i++){
+
+                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+                        var marker=new BMap.Marker(point,{
+                            title:json.data[i].hotelTranslatedName
+                        });
+                        map.addOverlay(marker);
+                        console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
+                        //map.centerAndZoom(point, 15);
+
+                    }
+                }
+            });
+    }
+
 </script>
 </body>
 </html>
