@@ -136,17 +136,18 @@
 
         /** 删除 **/
         function del(fyID){
-            // 非空判断
-            if(fyID == '') return;
-            console.log("hhhhh");
-            if(confirm("您确定要删除吗？")){
-                console.log("hehehe");
-                $.get('/admin/user/delete?id='+fyID,function(map){
-                    confirm(""+map["msg"]);
-                    //window.location.href = 'house_list.html';//注意链接名和文件名
-                    location.reload();
-                })
-            }
+            // 非空判断 get暂时不支持
+            confirm("您没有权限");
+//            if(fyID == '') return;
+//            console.log("hhhhh");
+//            if(confirm("您确定要删除吗？")){
+//                console.log("hehehe");
+//                $.get('/hotel/admin/delHotel?id='+fyID,function(map){
+//                    confirm(""+map["status"]);
+//                    //window.location.href = 'house_list.html';//注意链接名和文件名
+//                    location.reload();
+//                })
+//            }
         }
 
         /** 批量删除 **/
@@ -295,12 +296,13 @@
             </div>
             <div class="ui_tb_h30">
                 <div class="ui_flt" style="height: 30px; line-height: 30px;">
-                    共有
-                    <span class="ui_txt_bold04">90</span>
-                    条记录，当前第
+                    <!--共有-->
+                    <!--<span class="ui_txt_bold04">90</span>-->
+                    <!--条记录，-->
+                    当前第
                     <span class="ui_txt_bold04">1
-						/
-						9</span>
+                        <!--/ 9-->
+						</span>
                     页
                 </div>
                 <div class="ui_frt">
