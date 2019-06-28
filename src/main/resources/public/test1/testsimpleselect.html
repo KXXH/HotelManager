@@ -67,7 +67,7 @@
             if(username!="" || IdCard!="" || gender!="" || telephone!=""|| email!="")
             {
                 var data={"username":username, "IdCard":IdCard, "gender":gender, "telephone":telephone, "email":email};
-                $.post("/user/admin/simple_select",data,function(json){
+                $.post("/admin/user/simple_select",data,function(json){
                     if(json["status"]=="-1"){
                         art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:'查询出错', ok:true,});
                     }
@@ -147,7 +147,7 @@
             console.log("hhhhh");
             if(confirm("您确定要删除吗？")){
                 console.log("hehehe");
-                $.get('/user/admin/delete?id='+fyID,function(map){
+                $.get('/admin/user/delete?id='+fyID,function(map){
                     confirm(""+map["msg"]);
                     //window.location.href = 'house_list.html';//注意链接名和文件名
                     location.reload();
@@ -266,7 +266,7 @@
                         <th>密码</th>
                         <th>操作</th>
                         <script>
-                        $.get('/user/get',function(json){
+                        $.get('/admin/user/get',function(json){
 
                         console.log(JSON.stringify(json));
                         var table=document.getElementById("table_list1");
