@@ -17,6 +17,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/register")
@@ -46,7 +47,12 @@ public class RegisterController {
                 m.put("status","error");
                 m.put("msg","验证码错误");
                 return m;
-            }else{
+            }else if(!Objects.equals(user.getRole(), "USER")){
+                m.put("status","error");
+                m.put("msg","用户角色不允许创建");
+                return m;
+            }
+            else{
                 try{
                     userService.addUser(user);
                 }catch(UserInfoDuplicateException e){
