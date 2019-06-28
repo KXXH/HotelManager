@@ -49,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 //不需要身份认证
                 .antMatchers("/").permitAll()
-                .antMatchers("/js/**", "/css/**", "/images/**", "/fronts/**", "/doc/**", "/login.html").permitAll()
+                .antMatchers("/js/**","/public/assets/**", "/css/**", "/images/**", "/fronts/**", "/doc/**", "/login.html").permitAll()
                 .antMatchers("/user").hasAnyRole("USER")
                 //.hasIpAddress()//读取配置权限配置
                 .antMatchers("/admin").access("hasRole('ADMIN')")
