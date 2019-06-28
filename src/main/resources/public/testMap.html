@@ -32,6 +32,7 @@
         li{
             line-height:28px;
         }
+
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6Or4Vw15n4xtNVOdnfeY3wl87OCutYRC"></script>
     <!--加载鼠标绘制工具-->
@@ -44,15 +45,15 @@
     <title>鼠标绘制工具</title>
 </head>
 <body class="row">
-<div id="allmap" style="overflow:hidden;zoom:1;position:relative;" class="col-sm-12 col-md-6">
-    <div class="container" id="search_box">
+<div id="allmap" style="overflow:hidden;zoom:1;position:relative" class="col-sm-12 col-md-6">
+    <div class="container m-3" id="search_box" >
         <div class="input-group mb-3 row">
             <div class="input-group-prepend">
             <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
             <div class="dropdown-menu">
                 <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
                 <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
-                <button class="dropdown-item" onclick="search.label='范围查找'">范围查找</button>
+                <button class="dropdown-item" onclick="search.label='范围查找';search.target='星级'">范围查找</button>
                 <div role="separator" class="dropdown-divider"></div>
                 <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
             </div>
@@ -60,26 +61,42 @@
             <div class="input-group-prepend">
                 <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{target}}</button>
                 <div class="dropdown-menu">
-                    <button class="dropdown-item" onclick="search.target='酒店名'">酒店名</button>
+                    <button class="dropdown-item" onclick="search.target='酒店名'" v-if="label!='范围查找'">酒店名</button>
                     <button class="dropdown-item" onclick="search.target='星级'">星级</button>
                     <button class="dropdown-item" onclick="search.target='退房时间'">退房时间</button>
                     <div role="separator" class="dropdown-divider"></div>
                     <button class="dropdown-item" onclick="search.target='评价'">评价</button>
+                    <button class="dropdown-item" onclick="search.target='经纬度'">经纬度</button>
                 </div>
             </div>
 
-            <div v-if="label=='范围查找'">
+            <div v-if="label=='范围查找'&&target!='经纬度'" class="form-row col">
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="First name" v-model="low">
+                    <input type="text" class="form-control" placeholder="From" v-model="low">
                 </div>
-                -
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Last name" v-model="high">
+                    <input type="text" class="form-control" placeholder="To" v-model="high">
+                </div>
+            </div>
+            <div v-if="target=='经纬度'" class="form-row col">
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="经度From" v-model="lng_low">
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="经度To" v-model="lng_high">
+                </div>
+            </div>
+            <div v-if="target=='经纬度'" class="form-row col">
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="纬度From" v-model="lat_low">
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="纬度To" v-model="lat_high">
                 </div>
             </div>
             <input type="text" class="form-control col" aria-label="Text input with dropdown button" v-if="label!='范围查找'" v-model="text">
             <div class="input-group-append">
-            <button class="btn btn-outline-secondary col" type="button" onclick="doSearch()">查找</button>
+            <button class="btn btn-outline-secondary col" type="button" onclick="lastPage.currentPage=1;doSearch()">查找</button>
         </div>
         </div>
     </div>
@@ -89,24 +106,28 @@
     <table id="hotel_table" class="table">
         <thead>
         <tr>
-            <th>id</th>
+
             <th>酒店名</th>
             <th>星级</th>
+            <th>退房时间</th>
+            <th>评价</th>
         </tr>
         </thead>
         <tr v-for="point in points">
-            <th>{{point.id}}</th>
+
             <th>{{point.hotelTranslatedName}}</th>
             <th>{{point.starRating}}</th>
+            <th>{{point.checkout}}</th>
+            <th>{{point.ratingAverage}}</th>
         </tr>
     </table>
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-            <li class="page-item" id="last_page_btn" v-if="currentPage>1" onclick="lastPage.currentPage--;fetchData()">
+            <li class="page-item" id="last_page_btn" v-if="currentPage>1" onclick="lastPage.currentPage--;doSearch()">
                 <a class="page-link" href="#" tabindex="-1">Previous</a>
             </li>
             <li class="page-item">
-                <a class="page-link" onclick="lastPage.currentPage++;fetchData()">Next</a>
+                <a class="page-link" onclick="lastPage.currentPage++;doSearch()">Next</a>
             </li>
         </ul>
     </nav>
@@ -149,9 +170,19 @@
             text:"",
             high:"",
             low:"",
+            lng_high:"",
+            lng_low:"",
+            lat_high:"",
+            lat_low:"",
             target:"酒店名"
         }
     });
+    var targetToCol={
+        "酒店名":'hotel_translated_name',
+        "星级":"star_rating",
+        "退房时间":"checkout",
+        "评价":"rating_average"
+    };
     geolocation.getCurrentPosition(function(r){
         if(this.getStatus() == BMAP_STATUS_SUCCESS){
             var mk = new BMap.Marker(r.point);
@@ -166,11 +197,14 @@
     var overlaycomplete = function(e){
         //overlays.push(e.overlay);
         drawingManager.close();
-        minLng=e.overlay.getPath()[0].lng;
-        maxLng=e.overlay.getPath()[2].lng;
-        minLat=e.overlay.getPath()[2].lat;
-        maxLat=e.overlay.getPath()[0].lat;
-        fetchData();
+        search.target="经纬度";
+        search.label="范围查找";
+        search.lng_low=minLng=e.overlay.getPath()[0].lng;
+        search.lng_high=maxLng=e.overlay.getPath()[2].lng;
+        search.lat_low=minLat=e.overlay.getPath()[2].lat;
+        search.lat_high=maxLat=e.overlay.getPath()[0].lat;
+        //fetchData();
+        doSearch();
         map.removeOverlay(e.overlay);
     };
     var styleOptions = {
@@ -197,6 +231,7 @@
     });
     //添加鼠标绘制工具监听事件，用于获取绘制结果
     drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+    doSearch();
     function clearAll() {
         for(var i = 0; i < overlays.length; i++){
             map.removeOverlay(overlays[i]);
@@ -246,69 +281,104 @@
 
                         map.addOverlay(marker);
                         console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
-                        //map.centerAndZoom(point, 15);
+                        map.centerAndZoom(json.data[i].city);
 
                     }
                 }
             });
     }
 
-    var targetToCol={
-        "酒店名":'hotel_translated_name',
-        "星级":"star_rating",
-        "退房时间":"checkout",
-        "评价":"rating_average"
-    };
+
 
     function doSearch(){
-        lastPage.currentPage=1;
-        var j={
-            'target':targetToCol[search.target]
-        };
-        var postData={
-            "currentPage":lastPage.currentPage,
-            "size":20
-        };
-        switch (search.label){
-            case "范围查找":
-                j["low"]=search.low;
-                j["high"]=search.high;
-                break;
-            case "精确查找":
-                j["eq"]=search.text;
-                break;
-            case "模糊查找":
-                j["like"]=search.text;
-                break;
-            case "包含查找":
-                j['in']=search.text.split(",");
-                break;
+        if(search.target!="经纬度"){
+
+            var j={
+                'target':targetToCol[search.target]
+            };
+            var postData={
+                "currentPage":lastPage.currentPage,
+                "size":20
+            };
+            switch (search.label){
+                case "范围查找":
+                    j["low"]=search.low;
+                    j["high"]=search.high;
+                    break;
+                case "精确查找":
+                    j["eq"]=search.text;
+                    break;
+                case "模糊查找":
+                    j["like"]=search.text;
+                    break;
+                case "包含查找":
+                    j['in']=search.text.split(",");
+                    break;
+            }
+            postData["condition"]=j;
+            $.ajax(
+                {
+                    url:'/admin/hotel/search',
+                    type:'POST',
+                    data:JSON.stringify(postData),
+                    dataType:"json",
+                    contentType:"application/json; charset=utf-8",
+                    success:function (json) {
+                        updateMap(json);
+                    }
+                });
+
         }
-        postData["condition"]=j;
-        $.ajax(
-            {
-                url:'/admin/hotel/search',
-                type:'POST',
-                data:JSON.stringify(postData),
-                dataType:"json",
-                contentType:"application/json; charset=utf-8",
-                success:function(json){
-                    console.log(JSON.stringify(json));
-                    map.clearOverlays();
-                    hotel_table.points=json.data;
-                    for(var i=0;i<json.data.length;i++){
-
-                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
-                        var marker=new BMap.Marker(point,{
-                            title:json.data[i].hotelTranslatedName
-                        });
-                        map.addOverlay(marker);
-                        console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
-                        //map.centerAndZoom(point, 15);
-
+        else{
+            var j={
+                'currentPage':lastPage.currentPage,
+                'size':20,
+                'condition':{
+                    'high':search.lng_high,
+                    'low':search.lng_low,
+                    'target':'longitude',
+                    'and':{
+                        'high':search.lat_high,
+                        'low':search.lat_low,
+                        'target':'latitude'
                     }
                 }
-            });
+            };
+            $.ajax(
+                {
+                    url:'/admin/hotel/search',
+                    type:'POST',
+                    data:JSON.stringify(j),
+                    dataType:"json",
+                    contentType:"application/json; charset=utf-8",
+                    success:function (json) {
+                        updateMap(json);
+                    }
+                });
+        }
+    }
+    function updateMap(json){
+            console.log(JSON.stringify(json));
+            map.clearOverlays();
+            hotel_table.points=json.data;
+            for(var i=0;i<json.data.length;i++){
+
+                var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+                var marker=new BMap.Marker(point,{
+                    title:json.data[i].hotelTranslatedName
+                });
+                markers.push(marker);
+                var title=json.data[i].hotelTranslatedName;
+                markers[i].addEventListener('click',function(){
+                    console.log("title=",hotelData[i].title);
+                    var info=new BMap.InfoWindow(hotelData[i].title);
+                    marker.openInfoWindow(info);
+                });
+
+                map.addOverlay(marker);
+                console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
+                map.centerAndZoom(json.data[i].city);
+            }
     }
 
 </script>
