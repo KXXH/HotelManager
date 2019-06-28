@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -34,7 +34,7 @@
         }
 
     </style>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6Or4Vw15n4xtNVOdnfeY3wl87OCutYRC"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=6Or4Vw15n4xtNVOdnfeY3wl87OCutYRC"></script>
     <!--加载鼠标绘制工具-->
     <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
@@ -78,7 +78,7 @@
                     <input type="text" class="form-control" placeholder="To" v-model="high">
                 </div>
             </div>
-            <div v-if="target=='经纬度'" class="form-row col">
+            <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
                 <div class="col">
                     <input type="number" class="form-control" placeholder="经度From" v-model="lng_low">
                 </div>
@@ -86,7 +86,7 @@
                     <input type="number" class="form-control" placeholder="经度To" v-model="lng_high">
                 </div>
             </div>
-            <div v-if="target=='经纬度'" class="form-row col">
+            <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
                 <div class="col">
                     <input type="number" class="form-control" placeholder="纬度From" v-model="lat_low">
                 </div>
@@ -113,7 +113,7 @@
             <th>评价</th>
         </tr>
         </thead>
-        <tr v-for="point in points">
+        <tr v-for="point in points" v-on:click="focus({{point.id}})">
 
             <th>{{point.hotelTranslatedName}}</th>
             <th>{{point.starRating}}</th>
@@ -142,6 +142,9 @@
     var hotelData=[];
     var markers=[];
     map.enableScrollWheelZoom();
+    map.setMapStyleV2({
+        styleId: '3bc368f4dae92c9e837c087634ead563'
+    });
     var overlays = [];
     var hotels=[];
     var geolocation = new BMap.Geolocation();
@@ -154,6 +157,17 @@
             el:'#hotel_table',
             data:{
                 points:[]
+            },
+            focus:function(id){
+                var j={
+                    'condition':{
+                        'eq':id,
+                        'target':'id'
+                    },
+                    'currentPage':1,
+                    'size':20
+                };
+
             }
         }
     );
