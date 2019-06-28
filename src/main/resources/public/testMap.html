@@ -144,7 +144,7 @@
         styleId: '3bc368f4dae92c9e837c087634ead563'
     });
     var overlays = [];
-    var hotels=[];
+    var bPoints=[];
     var geolocation = new BMap.Geolocation();
     var minLng=0;
     var maxLng=0;
@@ -374,9 +374,11 @@
             console.log(JSON.stringify(json));
             map.clearOverlays();
             hotel_table.points=json.data;
+            bPoints=[];
             for(var i=0;i<json.data.length;i++){
 
                 var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+                bPoints.push(point);
                 var marker=new BMap.Marker(point,{
                     title:json.data[i].hotelTranslatedName
                 });
@@ -390,8 +392,18 @@
 
                 map.addOverlay(marker);
                 console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
-                map.centerAndZoom(json.data[i].city);
+                //map.centerAndZoom(json.data[i].city);
+                setZoom(bPoints);
             }
+
+
+    }
+
+    function setZoom(bPoints) {
+        var view = map.getViewport(eval(bPoints));
+        var mapZoom = view.zoom;
+        var centerPoint = view.center;
+        map.centerAndZoom(centerPoint, mapZoom);
     }
 
 </script>
