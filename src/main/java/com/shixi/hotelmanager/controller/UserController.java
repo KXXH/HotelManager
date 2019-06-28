@@ -49,6 +49,10 @@ public class UserController {
         return user.getId();
     }
     
+    @RequestMapping("/get")
+    public List<User> get(){
+        return userMapper.selectList(null);
+    }
 
     @RequestMapping("/admin/addUser")
     public Map<String,Object> addUser(
