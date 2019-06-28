@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -105,13 +106,14 @@
     <table id="hotel_table" class="table">
         <thead>
         <tr>
+
             <th>酒店名</th>
             <th>星级</th>
             <th>退房时间</th>
             <th>评价</th>
         </tr>
         </thead>
-        <tr v-for="point in points">
+        <tr v-for="point in points" v-on:click="focus({{point.id}})">
 
             <th>{{point.hotelTranslatedName}}</th>
             <th>{{point.starRating}}</th>
