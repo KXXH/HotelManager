@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -49,15 +48,15 @@
     <div class="container m-3" id="search_box" >
         <div class="input-group mb-3 row">
             <div class="input-group-prepend">
-            <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
-            <div class="dropdown-menu">
-                <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
-                <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
-                <button class="dropdown-item" onclick="search.label='范围查找';search.target='星级'">范围查找</button>
-                <div role="separator" class="dropdown-divider"></div>
-                <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
+                <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
+                    <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
+                    <button class="dropdown-item" onclick="search.label='范围查找';search.target='星级'">范围查找</button>
+                    <div role="separator" class="dropdown-divider"></div>
+                    <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
+                </div>
             </div>
-        </div>
             <div class="input-group-prepend">
                 <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{target}}</button>
                 <div class="dropdown-menu">
@@ -96,8 +95,8 @@
             </div>
             <input type="text" class="form-control col" aria-label="Text input with dropdown button" v-if="label!='范围查找'" v-model="text">
             <div class="input-group-append">
-            <button class="btn btn-outline-secondary col" type="button" onclick="lastPage.currentPage=1;doSearch()">查找</button>
-        </div>
+                <button class="btn btn-outline-secondary col" type="button" onclick="lastPage.currentPage=1;doSearch()">查找</button>
+            </div>
         </div>
     </div>
     <div id="map" style="height:100%;-webkit-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;"></div>
@@ -106,14 +105,13 @@
     <table id="hotel_table" class="table">
         <thead>
         <tr>
-
             <th>酒店名</th>
             <th>星级</th>
             <th>退房时间</th>
             <th>评价</th>
         </tr>
         </thead>
-        <tr v-for="point in points" v-on:click="focus({{point.id}})">
+        <tr v-for="point in points">
 
             <th>{{point.hotelTranslatedName}}</th>
             <th>{{point.starRating}}</th>
@@ -290,8 +288,8 @@
                         var title=json.data[i].hotelTranslatedName;
                         markers[i].addEventListener('click',function(){
                             console.log("title=",hotelData[i].title);
-                           var info=new BMap.InfoWindow(hotelData[i].title);
-                           marker.openInfoWindow(info);
+                            var info=new BMap.InfoWindow(hotelData[i].title);
+                            marker.openInfoWindow(info);
                         });
 
                         map.addOverlay(marker);
@@ -373,30 +371,30 @@
         }
     }
     function updateMap(json){
-            console.log(JSON.stringify(json));
-            map.clearOverlays();
-            hotel_table.points=json.data;
-            bPoints=[];
-            for(var i=0;i<json.data.length;i++){
+        console.log(JSON.stringify(json));
+        map.clearOverlays();
+        hotel_table.points=json.data;
+        bPoints=[];
+        for(var i=0;i<json.data.length;i++){
 
-                var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
-                bPoints.push(point);
-                var marker=new BMap.Marker(point,{
-                    title:json.data[i].hotelTranslatedName
-                });
-                markers.push(marker);
-                var title=json.data[i].hotelTranslatedName;
-                markers[i].addEventListener('click',function(){
-                    console.log("title=",hotelData[i].title);
-                    var info=new BMap.InfoWindow(hotelData[i].title);
-                    marker.openInfoWindow(info);
-                });
+            var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+            bPoints.push(point);
+            var marker=new BMap.Marker(point,{
+                title:json.data[i].hotelTranslatedName
+            });
+            markers.push(marker);
+            var title=json.data[i].hotelTranslatedName;
+            markers[i].addEventListener('click',function(){
+                console.log("title=",hotelData[i].title);
+                var info=new BMap.InfoWindow(hotelData[i].title);
+                marker.openInfoWindow(info);
+            });
 
-                map.addOverlay(marker);
-                console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
-                //map.centerAndZoom(json.data[i].city);
-                setZoom(bPoints);
-            }
+            map.addOverlay(marker);
+            console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
+            //map.centerAndZoom(json.data[i].city);
+            setZoom(bPoints);
+        }
 
 
     }
