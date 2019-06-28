@@ -199,7 +199,8 @@
         if(this.getStatus() == BMAP_STATUS_SUCCESS){
             var mk = new BMap.Marker(r.point);
             //map.addOverlay(mk);
-            map.panTo(r.point);
+            //map.panTo(r.point);
+            map.centerAndZoom("成都");
             //map.removeOverlay(mk);
         }
         else {
@@ -392,7 +393,7 @@
 
             map.addOverlay(marker);
             console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
-            //map.centerAndZoom(json.data[i].city);
+
             setZoom(bPoints);
         }
 
