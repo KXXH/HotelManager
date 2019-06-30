@@ -32,7 +32,7 @@ form {
     text-align: center;
 }
 
-input {
+.login {
     width: 270px;
     height: 42px;
     margin-top: 25px;
