@@ -227,6 +227,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
         //User currentUser= GetUserInfo.getInfo(baseMapper);
         User currentUser=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        User LastUser = currentUser;
         if(currentUser == null){
             throw new UserNotFoundException();
         }
@@ -243,13 +244,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             currentUser.setAvatar(user.getAvatar());
         }
         Validator validator= Validation.byDefaultProvider().configure().messageInterpolator(new ResourceBundleMessageInterpolator(new PlatformResourceBundleLocator("error"))).buildValidatorFactory().getValidator();
-        Set<ConstraintViolation<User>> constraintViolations=validator.validate(currentUser);
+        Set<ConstraintViolation<User>> constraintViolations=validator.validate(user);
         if(constraintViolations.size()>0){
             throw new ValidationException(constraintViolations.iterator().next().getMessage());
         }
         try{
-            saveOrUpdate(currentUser);
+            saveOrUpdate(user);
         }catch(DuplicateKeyException e){
+            currentUser = LastUser;
             throw new UserInfoDuplicateException();
         }
         return true;

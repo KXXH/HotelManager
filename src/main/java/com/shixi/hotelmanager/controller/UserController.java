@@ -1,16 +1,14 @@
 package com.shixi.hotelmanager.controller;
 
-import com.shixi.hotelmanager.Utils.GetUserInfo;
-import com.shixi.hotelmanager.Utils.UpdateUserInfo;
-import com.shixi.hotelmanager.domain.*;
+import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ForgetPasswordDTO;
-import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.domain.UserDetail;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.exception.VerificationFailException;
@@ -46,7 +44,7 @@ public class UserController {
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         return user.getUsername();
     }
-    
+
     @RequestMapping("/get")
     public List<User> get(){
         return userMapper.selectList(null);
