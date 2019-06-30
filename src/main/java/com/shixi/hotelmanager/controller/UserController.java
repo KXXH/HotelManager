@@ -6,13 +6,7 @@ import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
-import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
-import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
-import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
-import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ForgetPasswordDTO;
-import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
-import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
@@ -48,9 +42,9 @@ public class UserController {
     @ResponseBody
     public int getUserId() {
         User user = GetUserInfo.getInfo(userMapper);
-        user.setUsername("hsj");
+        user.setPassword("123456");
         userMapper.updateById(user);
-        user.setUsername("hsj");
+        user.setPassword("123456");
         UpdateUserInfo.update(user);
         return user.getId();
     }

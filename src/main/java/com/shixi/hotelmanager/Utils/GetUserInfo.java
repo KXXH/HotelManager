@@ -15,7 +15,7 @@ public class GetUserInfo {
         if (principal instanceof UserDetails) {
             String currentUserName = ((UserDetails) principal).getUsername();
             System.out.println("==================================");
-            System.out.println(currentUserName);
+            System.out.println(principal);
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("username",currentUserName);
             User user = userMapper.selectOne(queryWrapper);
