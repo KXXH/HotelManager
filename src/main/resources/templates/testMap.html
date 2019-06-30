@@ -9,7 +9,6 @@
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <style type="text/css">
         body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
-        #allmap {width: 100%; height:100%; overflow: hidden;}
         #result {width:100%;font-size:12px;}
         dl,dt,dd,ul,li{
             margin:0;
@@ -43,92 +42,103 @@
     <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow.css" />
     <title>酒店搜索工具</title>
 </head>
-<body class="row">
-<div id="allmap" style="overflow:hidden;zoom:1;position:relative" class="col-sm-12 col-md-6">
-    <div class="container m-3" id="search_box" >
-        <div class="input-group mb-3 row">
-            <div class="input-group-prepend">
-                <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
-                    <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
-                    <button class="dropdown-item" onclick="search.label='范围查找';search.target='星级'">范围查找</button>
-                    <div role="separator" class="dropdown-divider"></div>
-                    <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
-                </div>
-            </div>
-            <div class="input-group-prepend">
-                <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{target}}</button>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item" onclick="search.target='酒店名'" v-if="label!='范围查找'">酒店名</button>
-                    <button class="dropdown-item" onclick="search.target='星级'">星级</button>
-                    <button class="dropdown-item" onclick="search.target='退房时间'">退房时间</button>
-                    <div role="separator" class="dropdown-divider"></div>
-                    <button class="dropdown-item" onclick="search.target='评价'">评价</button>
-                    <button class="dropdown-item" onclick="search.target='经纬度'">经纬度</button>
-                </div>
-            </div>
+<body>
+<nav class="navbar  sticky-top navbar-dark bg-dark">
 
-            <div v-if="label=='范围查找'&&target!='经纬度'" class="form-row col">
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="From" v-model="low">
+    <div class="navbar-text">
+       <span class="float-right" href="#">
+        <img th:src="${#authentication.principal.user.avatar}" width="30" height="30" alt="">
+           <span th:text="${#authentication.principal.user.username}">
+    </span>
+    </div>
+</nav>
+<div class="row">
+    <div id="allmap" style="overflow:hidden;zoom:1;position:relative;" class="col-sm-12 col-md-6">
+        <div class="container m-3" id="search_box" >
+            <div class="input-group mb-3 row">
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
+                        <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
+                        <button class="dropdown-item" onclick="search.label='范围查找';search.target='星级'">范围查找</button>
+                        <div role="separator" class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
+                    </div>
                 </div>
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="To" v-model="high">
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{target}}</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="search.target='酒店名'" v-if="label!='范围查找'">酒店名</button>
+                        <button class="dropdown-item" onclick="search.target='星级'">星级</button>
+                        <button class="dropdown-item" onclick="search.target='退房时间'">退房时间</button>
+                        <div role="separator" class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="search.target='评价'">评价</button>
+                        <button class="dropdown-item" onclick="search.target='经纬度'">经纬度</button>
+                    </div>
                 </div>
-            </div>
-            <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
-                <div class="col">
-                    <input type="number" class="form-control" placeholder="经度From" v-model="lng_low">
+
+                <div v-if="label=='范围查找'&&target!='经纬度'" class="form-row col">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="From" v-model="low">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="To" v-model="high">
+                    </div>
                 </div>
-                <div class="col">
-                    <input type="number" class="form-control" placeholder="经度To" v-model="lng_high">
+                <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="经度From" v-model="lng_low">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="经度To" v-model="lng_high">
+                    </div>
                 </div>
-            </div>
-            <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
-                <div class="col">
-                    <input type="number" class="form-control" placeholder="纬度From" v-model="lat_low">
+                <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="纬度From" v-model="lat_low">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="纬度To" v-model="lat_high">
+                    </div>
                 </div>
-                <div class="col">
-                    <input type="number" class="form-control" placeholder="纬度To" v-model="lat_high">
+                <input type="text" class="form-control col" aria-label="Text input with dropdown button" v-if="label!='范围查找'" v-model="text">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary col" type="button" onclick="lastPage.currentPage=1;doSearch()">查找</button>
                 </div>
-            </div>
-            <input type="text" class="form-control col" aria-label="Text input with dropdown button" v-if="label!='范围查找'" v-model="text">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary col" type="button" onclick="lastPage.currentPage=1;doSearch()">查找</button>
             </div>
         </div>
+        <div id="map" style="overflow:hidden;zoom:1;position:relative;height:100%;-webkit-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;"></div>
     </div>
-    <div id="map" style="height:100%;-webkit-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;"></div>
-</div>
-<div id="result" class="col-sm-12 col-md-6" >
-    <table id="hotel_table" class="table">
-        <thead>
-        <tr>
-            <th>酒店名</th>
-            <th>星级</th>
-            <th>退房时间</th>
-            <th>评价</th>
-        </tr>
-        </thead>
-        <tr v-for="point in points" v-on:click="goto(point.id)">
+    <div id="result" class="col-sm-12 col-md-6" >
+        <table id="hotel_table" class="table">
+            <thead>
+            <tr>
+                <th>酒店名</th>
+                <th>星级</th>
+                <th>退房时间</th>
+                <th>评价</th>
+            </tr>
+            </thead>
+            <tr v-for="point in points" v-on:click="goto(point.id)">
 
-            <th>{{point.hotelTranslatedName}}</th>
-            <th>{{point.starRating}}</th>
-            <th>{{point.checkout}}</th>
-            <th>{{point.ratingAverage}}</th>
-        </tr>
-    </table>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" id="last_page_btn" v-if="currentPage>1" onclick="lastPage.currentPage--;doSearch()">
-                <a class="page-link" href="#" tabindex="-1">Previous</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" onclick="lastPage.currentPage++;doSearch()">Next</a>
-            </li>
-        </ul>
-    </nav>
+                <th>{{point.hotelTranslatedName}}</th>
+                <th>{{point.starRating}}</th>
+                <th>{{point.checkout}}</th>
+                <th>{{point.ratingAverage}}</th>
+            </tr>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" id="last_page_btn" v-if="currentPage>1" onclick="lastPage.currentPage--;doSearch()">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" onclick="lastPage.currentPage++;doSearch()">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
 <script type="text/javascript">
     // 百度地图API功能
