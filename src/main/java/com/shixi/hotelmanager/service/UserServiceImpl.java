@@ -117,7 +117,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     @Override
     public boolean addUser(User user) throws UserInfoDuplicateException {
         UserMapper userMapper=baseMapper;
-        return addUser(user.getUsername(),user.getPassword(),user.getGender(),user.getTelephone(),user.getEmail(),user.getIdCard(),user.getAvatar());
+        try{
+            save(user);
+        }catch(DuplicateKeyException e){
+            throw new UserInfoDuplicateException();
+        }
+
+        return true;
     }
 
     @Override
