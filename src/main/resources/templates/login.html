@@ -45,7 +45,9 @@
 <div class="page-container">
     <br><br><br><br><br>
     <h1>欢迎登录</h1>
-    
+    <div th:if="${param.error}" style="color: red;margin-top: 2%">
+        Invalid username and password.
+    </div>
     <form name="registerForm" action="/login" method="post">
         <input th:class="login" type="text" name="username" class="username" placeholder="用户名" required>
         <input th:class="login" type="password" name="password" class="password" placeholder="密码" required>
