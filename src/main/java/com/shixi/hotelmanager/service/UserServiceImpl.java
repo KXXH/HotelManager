@@ -208,7 +208,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public int changePasswd(ChangePasswdDTO changePasswdDTO){
-        User user = GetUserInfo.getInfo(baseMapper);
+        User user=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         String realOldPasswd = user.getPassword();
         logger.info("旧密码:"+realOldPasswd);
         logger.info("输入旧密码:"+changePasswdDTO.getOldPassword());
@@ -244,12 +244,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             currentUser.setAvatar(user.getAvatar());
         }
         Validator validator= Validation.byDefaultProvider().configure().messageInterpolator(new ResourceBundleMessageInterpolator(new PlatformResourceBundleLocator("error"))).buildValidatorFactory().getValidator();
-        Set<ConstraintViolation<User>> constraintViolations=validator.validate(user);
+        Set<ConstraintViolation<User>> constraintViolations=validator.validate(currentUser);
         if(constraintViolations.size()>0){
             throw new ValidationException(constraintViolations.iterator().next().getMessage());
         }
         try{
-            saveOrUpdate(user);
+            saveOrUpdate(currentUser);
         }catch(DuplicateKeyException e){
             currentUser = LastUser;
             throw new UserInfoDuplicateException();
