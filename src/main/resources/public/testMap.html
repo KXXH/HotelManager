@@ -111,7 +111,7 @@
             <th>评价</th>
         </tr>
         </thead>
-        <tr v-for="point in points">
+        <tr v-for="point in points" v-on:click="goto(point.id)">
 
             <th>{{point.hotelTranslatedName}}</th>
             <th>{{point.starRating}}</th>
@@ -155,16 +155,10 @@
             data:{
                 points:[]
             },
-            focus:function(id){
-                var j={
-                    'condition':{
-                        'eq':id,
-                        'target':'id'
-                    },
-                    'currentPage':1,
-                    'size':20
-                };
-
+            methods:{
+                goto:function(id){
+                    window.location.href="/hotel/detail?id="+id;
+                }
             }
         }
     );

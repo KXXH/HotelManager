@@ -116,13 +116,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public boolean addUser(User user) throws UserInfoDuplicateException {
-        UserMapper userMapper=baseMapper;
         try{
             save(user);
         }catch(DuplicateKeyException e){
             throw new UserInfoDuplicateException();
         }
-
         return true;
     }
 
@@ -237,6 +235,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
         if(user.getGender()!=null){
             currentUser.setGender(user.getGender());
+        }
+        if(user.getAvatar()!=null){
+            currentUser.setAvatar(user.getAvatar());
         }
         Validator validator= Validation.byDefaultProvider().configure().messageInterpolator(new ResourceBundleMessageInterpolator(new PlatformResourceBundleLocator("error"))).buildValidatorFactory().getValidator();
         Set<ConstraintViolation<User>> constraintViolations=validator.validate(currentUser);
