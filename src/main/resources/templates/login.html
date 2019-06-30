@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="../public/assets/css/supersized.css">
     <link rel="stylesheet" href="../public/assets/css/style.css">
 
+
 </head>
 
 <body backgroung="/assets/img/backgrounds/1.jpg">
@@ -61,9 +62,8 @@
         <input th:class="login" type="button" onclick="register()" value="注 册">
     </div>
     <div class="forgetPassword">
-        <input th:class="login" type="button" onclick="" value="忘记密码">
+        <input th:class="login" type="button" onclick="forgetPassword()" value="忘记密码">
     </div>
-
 
 </div>
 
@@ -73,12 +73,14 @@
 <script  src="../public/assets/js/supersized.3.2.7.min.js"></script>
 <script  src="../public/assets/js/supersized-init.js"></script>
 <script  src="../public/assets/js/scripts.js"></script>
-
 </body>
 </html>
 
 <script>
     function register() {
         window.location= '/public/register.html'
+    }
+    function forgetPassword() {
+        window.location= '/public/forgetPassword.html'
     }
 </script>
