@@ -35,12 +35,12 @@
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=6Or4Vw15n4xtNVOdnfeY3wl87OCutYRC"></script>
     <!--加载鼠标绘制工具-->
-    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
-    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager.css" />
     <!--加载检索信息窗口-->
-    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow.js"></script>
 
-    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow.css" />
     <title>酒店搜索工具</title>
 </head>
 <body class="row">
@@ -384,12 +384,11 @@
             });
             markers.push(marker);
             var title=json.data[i].hotelTranslatedName;
-            markers[i].addEventListener('click',function(){
-                console.log("title=",hotelData[i].title);
-                var info=new BMap.InfoWindow(hotelData[i].title);
-                marker.openInfoWindow(info);
+            marker.title=hotel_table.points[i];
+            marker.info=hotel_table.points[i];
+            marker.addEventListener('click',function(e){
+                setZoom([this]);
             });
-
             map.addOverlay(marker);
             console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
 
