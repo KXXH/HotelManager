@@ -10,6 +10,7 @@ import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ForgetPasswordDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
@@ -17,6 +18,7 @@ import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.VerificationFailException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
 import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
@@ -206,5 +208,20 @@ public class UserController {
             return new VerificationFailDTO();
             //ttt
         }
+    }
+
+
+    @RequestMapping("/forgetPassword")
+    public DefaultReturnDTO forgetPassword(@Valid ForgetPasswordDTO forgetPasswordDTO, BindingResult bindingResult,HttpSession session) throws UserNotFoundException, UserInfoDuplicateException, VerificationFailException {
+        if(bindingResult.hasErrors()){
+            throw new ValidationException(bindingResult.getAllErrors().iterator().next().toString());
+        }
+        userService.forgetPasssword(
+                forgetPasswordDTO.getTelephone(),
+                forgetPasswordDTO.getNewPassword(),
+                forgetPasswordDTO.getCode(),
+                session.getId()
+        );
+        return new DefaultSuccessDTO();
     }
 }

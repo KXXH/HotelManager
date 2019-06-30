@@ -8,6 +8,7 @@ import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.VerificationFailException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.hibernate.validator.constraints.Length;
@@ -262,6 +263,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             return true;
         }else{
             return false;
+        }
+    }
+
+    @Override
+    public boolean forgetPasssword(String telephone, String newPassword, int code, String sessionId) throws VerificationFailException, UserNotFoundException, UserInfoDuplicateException {
+        if(!verificationCodeService.verificationCode(code,telephone,sessionId)){
+            throw new VerificationFailException();
+        }
+        else{
+            try{
+                QueryWrapper<User> wrapper=new QueryWrapper<>();
+                wrapper.eq("telephone",telephone);
+                User user=getOne(wrapper,true);
+                if(user==null){
+                    throw new UserNotFoundException();
+                }
+                user.setPassword(newPassword);
+                updateById(user);
+                return true;
+            }catch(DuplicateKeyException e){
+                throw new UserInfoDuplicateException();
+            }
         }
     }
 }
