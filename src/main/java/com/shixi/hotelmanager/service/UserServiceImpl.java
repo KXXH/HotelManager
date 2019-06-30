@@ -6,6 +6,7 @@ import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.domain.UserDetail;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.exception.VerificationFailException;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -196,7 +198,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             List<SimpleGrantedAuthority> authorities=new ArrayList<>();
             System.out.println(users.get(0).getRole());
             authorities.add(new SimpleGrantedAuthority(users.get(0).getRole().trim()));
-            return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
+            return new UserDetail(authorities,users.get(0));
+            //return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
         }catch(Exception e){
             e.printStackTrace();
             return null;
@@ -222,11 +225,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             return 3;
     }
     public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
-        User currentUser= GetUserInfo.getInfo(baseMapper);
+        //User currentUser= GetUserInfo.getInfo(baseMapper);
+        User currentUser=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if(currentUser == null){
             throw new UserNotFoundException();
         }
-
         if(user.getUsername()!=null){
             currentUser.setUsername(user.getUsername());
         }

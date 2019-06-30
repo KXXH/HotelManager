@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +20,7 @@ import javax.validation.groups.Default;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("user")
-public class User {
+public class User{
     @NotBlank(groups = {UpdateUserValidation.class})
     @TableId(value="id",type= IdType.AUTO)
     private int id;

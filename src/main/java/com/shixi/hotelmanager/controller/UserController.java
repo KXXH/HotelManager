@@ -2,7 +2,7 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.Utils.UpdateUserInfo;
-import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.*;
 import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
@@ -12,7 +12,6 @@ import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ForgetPasswordDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
-import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
@@ -23,6 +22,7 @@ import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
 import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,13 +46,9 @@ public class UserController {
 
     @RequestMapping(value = "/username", method = RequestMethod.GET)
     @ResponseBody
-    public int getUserId() {
-        User user = GetUserInfo.getInfo(userMapper);
-        user.setUsername("hsj");
-        userMapper.updateById(user);
-        user.setUsername("hsj");
-        UpdateUserInfo.update(user);
-        return user.getId();
+    public String getUserId() {
+        User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return user.getUsername();
     }
     
     @RequestMapping("/get")
