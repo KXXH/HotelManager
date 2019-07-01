@@ -196,8 +196,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 throw new UsernameNotFoundException("用户名不存在");
             }
             List<SimpleGrantedAuthority> authorities=new ArrayList<>();
-            System.out.println(users.get(0).getRole());
-            authorities.add(new SimpleGrantedAuthority(users.get(0).getRole().trim()));
+            //System.out.println(users.get(0).getRole());
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+users.get(0).getRole().trim()));
             return new UserDetail(authorities,users.get(0));
             //return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
         }catch(Exception e){

@@ -15,5 +15,4 @@ public class SearchController {
     public String mapSearch(Model model){
         return "testMap";
     }
-
 }

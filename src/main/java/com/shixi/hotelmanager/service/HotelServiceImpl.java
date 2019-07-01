@@ -113,5 +113,4 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
     public List<Hotel> selectHotelByRemain(String dateStart, String dateEnd, HotelSearchConditionType conditionType) {
         return null;
     }
-
 }
