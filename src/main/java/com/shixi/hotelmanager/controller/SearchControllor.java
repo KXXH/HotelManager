@@ -30,6 +30,8 @@ public class SearchControllor {
     @RequestMapping("/remain")
     public List<Hotel> remain(@RequestParam("startDate") String startDate,@RequestParam("endDate") String endDate){
 
+
+
         return hotelService.selectHotelByRemain(startDate,endDate);
 
     }
