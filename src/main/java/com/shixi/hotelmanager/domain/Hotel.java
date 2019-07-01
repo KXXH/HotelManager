@@ -1,5 +1,6 @@
 package com.shixi.hotelmanager.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -95,6 +96,9 @@ public class Hotel extends Model<Hotel> {
     private double ratingAverage;
 
     private String ratesCurrency;
+
+    @TableField(exist = false)
+    private int remain;
 
     @Override
     protected Serializable pkVal() {
