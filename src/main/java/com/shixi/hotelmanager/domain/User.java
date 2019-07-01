@@ -3,24 +3,30 @@ package com.shixi.hotelmanager.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import com.shixi.hotelmanager.validation.UpdateUserValidation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.annotations.Select;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.groups.Default;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("user")
-public class User{
+public class User extends Model<User> {
     @NotBlank(groups = {UpdateUserValidation.class})
     @TableId(value="id",type= IdType.AUTO)
     private int id;
@@ -48,5 +54,10 @@ public class User{
     private String avatar;
     @NotBlank(message = "角色不能为空")
     private String role;
+
+    @Override
+    protected Serializable pkVal() {
+        return id;
+    }
 
 }

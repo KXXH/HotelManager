@@ -12,6 +12,7 @@ import com.shixi.hotelmanager.mapper.HotelMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service(value="hotelService")
@@ -97,5 +98,9 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
         else{
             return true;
         }
+    }
+
+    public List<Hotel> selectHotelByRemain(String dateStart,String dateEnd){
+        return baseMapper.selectByRemain(dateStart,dateEnd);
     }
 }
