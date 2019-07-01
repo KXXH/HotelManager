@@ -15,6 +15,7 @@ public class UserDetail implements UserDetails {
     @Getter
     private User user;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

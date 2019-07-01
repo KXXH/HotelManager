@@ -1,8 +1,10 @@
 package com.shixi.hotelmanager;
 
+import com.shixi.hotelmanager.domain.DTO.InsufficientPermissionDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserInfoDuplicateDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserNotFoundDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
+import com.shixi.hotelmanager.exception.InsufficientPermissionException;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.exception.VerificationFailException;
@@ -58,5 +60,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public VerificationFailDTO handle(VerificationFailException e){
         return new VerificationFailDTO();
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public InsufficientPermissionDTO handle(InsufficientPermissionException e){
+        return new InsufficientPermissionDTO();
     }
 }

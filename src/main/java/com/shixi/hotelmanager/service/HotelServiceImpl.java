@@ -1,18 +1,18 @@
 package com.shixi.hotelmanager.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchConditionType;
+import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import com.shixi.hotelmanager.mapper.HotelMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service(value="hotelService")
@@ -30,20 +30,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
     @Override
     public List<Hotel> searchHotel(int current, int size, HotelSearchConditionType conditionType) {
         Page<Hotel> page= new Page<>(current,size);
-        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
-        wrapper=setCondition(conditionType,wrapper);
-        HotelMapper hotelMapper=baseMapper;
-        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
-            if(conditionType.getOr()!=null){
-                conditionType = conditionType.getOr();
-                wrapper.or();
-                wrapper=setCondition(conditionType,wrapper);
-            }else{
-                conditionType = conditionType.getAnd();
-                wrapper=setCondition(conditionType,wrapper);
-            }
-        }
-        return hotelMapper.selectPage(page,wrapper).getRecords();
+        return baseMapper.selectPage(page,buildWrapper(conditionType)).getRecords();
     }
 
     @Override
@@ -100,7 +87,26 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
         }
     }
 
-    public List<Hotel> selectHotelByRemain(String dateStart,String dateEnd){
-        return baseMapper.selectByRemain(dateStart,dateEnd);
+    private Wrapper<Hotel> buildWrapper(HotelSearchConditionType conditionType){
+        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
+        if(conditionType==null) return wrapper;
+        wrapper=setCondition(conditionType,wrapper);
+        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
+            if(conditionType.getOr()!=null){
+                conditionType = conditionType.getOr();
+                wrapper.or();
+                wrapper=setCondition(conditionType,wrapper);
+            }else{
+                conditionType = conditionType.getAnd();
+                wrapper=setCondition(conditionType,wrapper);
+            }
+        }
+        return wrapper;
+    }
+
+    @Override
+    public List<Hotel> searchHotel(int current, int size, String dateStart, String dateEnd, HotelSearchConditionType conditionType) {
+        Page<Hotel> page= new Page<>(current,size);
+        return baseMapper.selectByRemain(page,dateStart,dateEnd,buildWrapper(conditionType));
     }
 }

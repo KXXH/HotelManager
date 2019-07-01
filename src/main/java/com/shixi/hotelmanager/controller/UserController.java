@@ -1,16 +1,15 @@
 package com.shixi.hotelmanager.controller;
 
-import com.shixi.hotelmanager.Utils.GetUserInfo;
-import com.shixi.hotelmanager.Utils.UpdateUserInfo;
-import com.shixi.hotelmanager.domain.*;
+import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.DefaultSuccessDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ForgetPasswordDTO;
-import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserDeleteDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.domain.UserDetail;
+import com.shixi.hotelmanager.exception.InsufficientPermissionException;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.exception.VerificationFailException;
@@ -93,33 +92,32 @@ public class UserController {
     }
 
     @RequestMapping("/admin/updateUser")
-    public Map<String,Object> updateUser(@Valid User user,BindingResult result){
+    public DefaultReturnDTO updateUser(@Valid User user,BindingResult result) throws UserNotFoundException, UserInfoDuplicateException, InsufficientPermissionException {
         HashMap<String,Object> m=new HashMap<>();
         if(result.hasErrors()){
-            m.put("status","error");
-            m.put("msg",result.getAllErrors());
-            return m;
+            throw new ValidationException(result.getAllErrors().iterator().next().toString());
         }
         if(user.getId()==0){
-            m.put("status","error");
-            m.put("msg","必须传入id");
-            return m;
+            throw new ValidationException("必须传入ID");
         }
         else {
-            try {
-                userService.updateUser(user);
-            } catch (UserNotFoundException e) {
-                m.put("status","error");
-                m.put("msg","用户未找到!");
-                e.printStackTrace();
-                return m;
-            } catch (UserInfoDuplicateException e) {
-                m.put("status","error");
-                m.put("msg","用户信息重复");
-                e.printStackTrace();
-            }
-            m.put("status","ok");
-            return m;
+            userService.updateUser(user);
+            return new DefaultSuccessDTO();
+        }
+    }
+
+    @RequestMapping("/super_admin/updateUser")
+    public DefaultReturnDTO updateUserWithSA(@Valid User user,BindingResult result) throws UserNotFoundException, UserInfoDuplicateException, InsufficientPermissionException {
+        HashMap<String,Object> m=new HashMap<>();
+        if(result.hasErrors()){
+            throw new ValidationException(result.getAllErrors().iterator().next().toString());
+        }
+        if(user.getId()==0){
+            throw new ValidationException("必须传入ID");
+        }
+        else {
+            userService.updateUserWithSA(user);
+            return new DefaultSuccessDTO();
         }
     }
 
@@ -183,6 +181,7 @@ public class UserController {
         userService.updateUserInfo(user);
         return new DefaultSuccessDTO();
     }
+
 
     @RequestMapping("/updateTelephone")
     public DefaultReturnDTO updateTelephone(
