@@ -1,5 +1,6 @@
 package com.shixi.hotelmanager.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
@@ -116,6 +117,14 @@ public class HotelController {
             return m;
         }
         return null;
+    }
+
+    @RequestMapping("/remain")
+    public List<Hotel> remain(@RequestParam("startDate") String startDate,@RequestParam("endDate") String endDate){
+
+        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
+        return hotelService.selectHotelByRemain(startDate,endDate,wrapper);
+
     }
 
 }

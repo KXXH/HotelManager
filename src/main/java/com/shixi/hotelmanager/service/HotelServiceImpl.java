@@ -1,18 +1,18 @@
 package com.shixi.hotelmanager.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchConditionType;
+import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
 import com.shixi.hotelmanager.mapper.HotelMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service(value="hotelService")
@@ -101,6 +101,17 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
     }
 
     public List<Hotel> selectHotelByRemain(String dateStart,String dateEnd){
-        return baseMapper.selectByRemain(dateStart,dateEnd);
+        return baseMapper.selectByRemain(dateStart,dateEnd,null);
     }
+
+    @Override
+    public List<Hotel> selectHotelByRemain(String dateStart, String dateEnd, Wrapper wrapper) {
+        return baseMapper.selectByRemain(dateStart,dateEnd,wrapper);
+    }
+
+    @Override
+    public List<Hotel> selectHotelByRemain(String dateStart, String dateEnd, HotelSearchConditionType conditionType) {
+        return null;
+    }
+
 }
