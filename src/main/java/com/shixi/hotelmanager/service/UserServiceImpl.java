@@ -3,8 +3,8 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.Utils.GetUserInfo;
-import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.UserDetail;
 import com.shixi.hotelmanager.exception.InsufficientPermissionException;
@@ -34,7 +34,6 @@ import javax.validation.Validator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -212,9 +211,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("正在验证用户信息！");
         try{
-            HashMap<String ,Object> m=new HashMap<>();
-            m.put("username",username);
-            List<User> users=baseMapper.selectByMap(m);
+            QueryWrapper<User> wrapper=new QueryWrapper<>();
+            wrapper.eq("username",username).or().eq("telephone",username);
+            List<User> users=baseMapper.selectList(wrapper);
             if(users.size()<=0){
                 throw new UsernameNotFoundException("用户名不存在");
             }
