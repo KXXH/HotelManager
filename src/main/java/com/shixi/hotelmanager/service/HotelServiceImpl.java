@@ -30,20 +30,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
     @Override
     public List<Hotel> searchHotel(int current, int size, HotelSearchConditionType conditionType) {
         Page<Hotel> page= new Page<>(current,size);
-        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
-        wrapper=setCondition(conditionType,wrapper);
-        HotelMapper hotelMapper=baseMapper;
-        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
-            if(conditionType.getOr()!=null){
-                conditionType = conditionType.getOr();
-                wrapper.or();
-                wrapper=setCondition(conditionType,wrapper);
-            }else{
-                conditionType = conditionType.getAnd();
-                wrapper=setCondition(conditionType,wrapper);
-            }
-        }
-        return hotelMapper.selectPage(page,wrapper).getRecords();
+        return baseMapper.selectPage(page,buildWrapper(conditionType)).getRecords();
     }
 
     @Override
@@ -100,18 +87,26 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper,Hotel> implements 
         }
     }
 
-    public List<Hotel> selectHotelByRemain(String dateStart,String dateEnd){
-        return baseMapper.selectByRemain(dateStart,dateEnd,null);
+    private Wrapper<Hotel> buildWrapper(HotelSearchConditionType conditionType){
+        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
+        if(conditionType==null) return wrapper;
+        wrapper=setCondition(conditionType,wrapper);
+        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
+            if(conditionType.getOr()!=null){
+                conditionType = conditionType.getOr();
+                wrapper.or();
+                wrapper=setCondition(conditionType,wrapper);
+            }else{
+                conditionType = conditionType.getAnd();
+                wrapper=setCondition(conditionType,wrapper);
+            }
+        }
+        return wrapper;
     }
 
     @Override
-    public List<Hotel> selectHotelByRemain(String dateStart, String dateEnd, Wrapper wrapper) {
-        return baseMapper.selectByRemain(dateStart,dateEnd,wrapper);
+    public List<Hotel> searchHotel(int current, int size, String dateStart, String dateEnd, HotelSearchConditionType conditionType) {
+        Page<Hotel> page= new Page<>(current,size);
+        return baseMapper.selectByRemain(page,dateStart,dateEnd,buildWrapper(conditionType));
     }
-
-    @Override
-    public List<Hotel> selectHotelByRemain(String dateStart, String dateEnd, HotelSearchConditionType conditionType) {
-        return null;
-    }
-
 }
