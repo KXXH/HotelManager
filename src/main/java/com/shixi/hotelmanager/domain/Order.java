@@ -22,8 +22,6 @@ public class Order extends Model<Order> {
 
     private String hotelName;
 
-    private int price;
-
     private char breakfast;
 
     private int bedCount;
@@ -48,9 +46,13 @@ public class Order extends Model<Order> {
 
     private Date createTime;
 
-    private String status;
-
     private String buyerAlipay;
 
     private Date orderEndTime;
+    private double price;
+
+    private String status;
+
+    private int orderRoomId;
+
 }
