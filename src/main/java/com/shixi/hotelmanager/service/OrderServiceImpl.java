@@ -1,5 +1,6 @@
 package com.shixi.hotelmanager.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
 import com.shixi.hotelmanager.domain.*;
@@ -46,9 +47,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //TODO:为房间状态和酒店状态数据表加锁
 
-        //写房间数据库
+        HotelStatus hotelStatus=new HotelStatus();
+        RoomStatus roomStatus=new RoomStatus();
 
-
+        int select_count=0;
+        //写房间状态数据库
+        QueryWrapper<RoomStatus> roomQueryWrapper=new QueryWrapper<>();
+        roomQueryWrapper
+                .eq("room_id",order.getOrderRoomId())
+                .ge("record_for_date",order.getDateStart())
+                .le("record_for_date",order.getDateEnd());
+        //找到合适的房间
+        for(int i=0;i<order.getRoomCount();i++){
+            
+        }
         return false;
     }
 
