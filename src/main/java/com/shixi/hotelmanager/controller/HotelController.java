@@ -2,6 +2,8 @@ package com.shixi.hotelmanager.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
+import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
+import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchWithRemainDTO;
 import com.shixi.hotelmanager.domain.Hotel;
 import com.shixi.hotelmanager.exception.HotelInfoDuplicateException;
 import com.shixi.hotelmanager.exception.HotelNotFoundException;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +64,29 @@ public class HotelController {
         }
     }
 
+    @RequestMapping("/searchWithRemain")
+    public Map<String,Object> searchWithRemain(@RequestBody HotelSearchWithRemainDTO searchDTO){
+        HashMap<String,Object> m=new HashMap<>();
+        try{
+            List<Hotel> ans=hotelService.searchHotel(
+                    searchDTO.getCurrentPage(),
+                    searchDTO.getSize(),
+                    searchDTO.getStartDate(),
+                    searchDTO.getEndDate(),
+                    searchDTO.getCondition()
+            );
+            m.put("status","ok");
+            m.put("data",ans);
+            return m;
+        }catch(BadSqlGrammarException e){
+            m.put("status","error");
+            m.put("msg","参数错误");
+            return m;
+        }
+    }
+
+
+
     @RequestMapping("/admin/delHotel")
     public Map<String,Object> delHotel(@RequestBody List<Integer> delIds){
         int count=hotelService.delHotel(delIds);
@@ -96,9 +122,7 @@ public class HotelController {
     public Map<String,Object> updateHotel(@Valid Hotel hotel,BindingResult bindingResult){
         HashMap<String,Object> m = new HashMap<>();
         if(bindingResult.hasErrors()){
-            m.put("msg",bindingResult.getAllErrors());
-            m.put("status","error");
-            return m;
+            throw new ValidationException(bindingResult.getAllErrors().iterator().next().toString());
         }
         try {
             boolean flag = hotelService.updateHotel(hotel);
@@ -117,14 +141,6 @@ public class HotelController {
             return m;
         }
         return null;
-    }
-
-    @RequestMapping("/remain")
-    public List<Hotel> remain(@RequestParam("startDate") String startDate,@RequestParam("endDate") String endDate){
-
-        QueryWrapper<Hotel> wrapper=new QueryWrapper<>();
-        return hotelService.selectHotelByRemain(startDate,endDate,wrapper);
-
     }
 
 }

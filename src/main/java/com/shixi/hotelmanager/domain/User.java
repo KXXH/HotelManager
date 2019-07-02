@@ -9,18 +9,13 @@ import com.shixi.hotelmanager.validation.UpdateUserValidation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.annotations.Select;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.groups.Default;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

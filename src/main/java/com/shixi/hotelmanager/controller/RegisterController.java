@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import java.util.HashMap;
@@ -61,6 +62,29 @@ public class RegisterController {
                     m.put("code",111);
                     return m;
                 }
+                m.put("status","success");
+                return m;
+            }
+        }
+    }
+
+    @RequestMapping("/super_admin/addUser")
+    public Map<String,Object> registerUser(
+            @Valid User user,
+            BindingResult result
+    ) throws UserInfoDuplicateException {
+        HashMap<String,Object> m=new HashMap<>();
+        if(result.hasErrors()){
+            throw new ValidationException(result.getAllErrors().iterator().next().toString());
+        }
+        else{
+            if(!Objects.equals(user.getRole(), "ADMIN")){
+                m.put("status","error");
+                m.put("msg","用户角色不允许创建");
+                return m;
+            }
+            else{
+                userService.addUser(user);
                 m.put("status","success");
                 return m;
             }

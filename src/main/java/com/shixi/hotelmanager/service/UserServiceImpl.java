@@ -3,10 +3,11 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.Utils.GetUserInfo;
-import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.domain.UserDetail;
+import com.shixi.hotelmanager.exception.InsufficientPermissionException;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.exception.VerificationFailException;
@@ -33,7 +34,6 @@ import javax.validation.Validator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -127,9 +127,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     @Override
-    public boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException {
+    public boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException, InsufficientPermissionException {
         int count=0;
         UserMapper userMapper=baseMapper;
+        if(!userMapper.selectById(user.getId()).getRole().equals("USER")){
+            throw new InsufficientPermissionException();
+        }
         try{
             count=userMapper.updateById(user);
         }catch(DuplicateKeyException e){
@@ -142,6 +145,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             return true;
         }
     }
+
+    @Override
+    public boolean updateUserWithSA(User user) throws InsufficientPermissionException, UserInfoDuplicateException, UserNotFoundException {
+        if(baseMapper.selectById(user.getId()).getRole().equals("SUPER_ADMIN")){
+            throw new InsufficientPermissionException();
+        }
+        boolean count=false;
+        try{
+            count=updateById(user);
+        }catch(DuplicateKeyException e){
+            throw new UserInfoDuplicateException();
+        }
+        if(!count){
+            throw new UserNotFoundException();
+        }else{
+            return count;
+        }
+    }
+
     public boolean deleteByid(int id) throws UserNotFoundException {
         /*
         logger.info("获取用户start...");
@@ -189,9 +211,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("正在验证用户信息！");
         try{
-            HashMap<String ,Object> m=new HashMap<>();
-            m.put("username",username);
-            List<User> users=baseMapper.selectByMap(m);
+            QueryWrapper<User> wrapper=new QueryWrapper<>();
+            wrapper.eq("username",username).or().eq("telephone",username);
+            List<User> users=baseMapper.selectList(wrapper);
             if(users.size()<=0){
                 throw new UsernameNotFoundException("用户名不存在");
             }
@@ -299,4 +321,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             }
         }
     }
+
+
 }
