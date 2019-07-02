@@ -20,6 +20,10 @@ public class Order extends Model<Order> {
 
     private String orderId;
 
+    private String hotelName;
+
+    private int price;
+
     private char breakfast;
 
     private int bedCount;
