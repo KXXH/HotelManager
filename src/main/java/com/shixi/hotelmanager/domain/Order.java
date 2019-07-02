@@ -39,4 +39,7 @@ public class Order extends Model<Order> {
     private String personName;
     private int peopleCount;
 
+    private char breakfast;
+    private char windows;
+    private String hotelName;
 }
