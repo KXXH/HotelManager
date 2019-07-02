@@ -17,12 +17,14 @@
 <input type="button" value="点我" id="btn">
 </body>
 <script>
-    var con = document.getElementById('con');
+    var con="<iframe id='standardIframe'  frameborder='0'  src='http://www.baidu.com' style='width: 1000px;height: 1000px;' ></iframe>";
+    //var con = document.getElementById('con');
     $('#btn').on('click', function () {
         $("#con").attr("style","display:block");
         var d = art.dialog({
             title: '消息',
-            width: 500,
+            width: 1000,
+            height:1000
         });
         d.show();
         d.content(con);

@@ -149,27 +149,16 @@
             if(fyID == '') return;
 
             console.log("hhhhh");
-            var _content="<iframe id='standardIframe'  frameborder='0'  src='"+$WEB_ROOT_PATH+"/cms/cmsCrawleCtrl.htm?BLHMI=list' style='width:100%;height:100%;' ></iframe>";
-            $("#editDataTypeDialog").dialog({
-                //href : $WEB_ROOT_PATH+'/cms/cmsCrawleCtrl.htm?BLHMI=list',
-                title : '配置新闻抓取规则',
-                width : 800,
-                height : 480,
-                closed : true,
-                modal : true,
-                content : _content
-            });
+            var con="<iframe id='standardIframe'  frameborder='0'  src='user_edit.html?id='+fyID style='width: 433px;height: 400px;' ></iframe>";
 
-            $("#editDataTypeDialog").dialog('open');
-
-//            if(confirm("您确定要删除吗？")){
-//                console.log("hehehe");
-//                $.get('/admin/user/delete?id='+fyID,function(map){
-//                    confirm(""+map["msg"]);
-//                    //window.location.href = 'house_list.html';//注意链接名和文件名
-//                    location.reload();
-//                })
-//            }
+                $("#con").attr("style","display:block");
+                var d = art.dialog({
+                    title: '消息',
+                    width: 433,
+                    height:400
+                });
+                d.show();
+                d.content(con);
         }
 
         /** 删除 **/
