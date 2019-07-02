@@ -37,8 +37,9 @@ public class PayController {
                 "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
                 "    \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
                 "    \"total_amount\":"+order.getPrice()+"," +
-                "    \"subject\":\"Iphone6 16G\"," +
-                "    \"body\":\"Iphone6 16G\"," +
+                "    \"subject\":\"iMac pro\"," +
+                "    \"body\":\"iMac Pro\"," +
+                "    \"timeout_express\":\"1m\","+
                 "    \"passback_params\":\"merchantBizType%3d3C%26merchantBizNo%3d2016010101111\"," +
                 "    \"extend_params\":{" +
                 "    \"sys_service_provider_id\":\"2088511833207846\"" +
