@@ -38,3 +38,13 @@ logging:
     ROOT: INFO
     com:
       xncoding: DEBUG
+
+#整合rabbitmq
+rabbitmq:
+  host: localhost
+  ##服务器端口
+  port: 5672
+  virtual-host: /
+  username: guest
+  password: guest
+  publisher-confirms: true #如果对异步消息需要回调必须设置为true
