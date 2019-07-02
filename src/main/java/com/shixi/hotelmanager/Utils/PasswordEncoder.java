@@ -8,6 +8,8 @@ public class PasswordEncoder implements org.springframework.security.crypto.pass
 
     @Override
     public boolean matches(CharSequence rawPassword,String encodeedPassword){
+        //System.out.println(encodeedPassword);
+        //System.out.println(rawPassword);
         return encodeedPassword.equals((String)rawPassword);
     }
 }

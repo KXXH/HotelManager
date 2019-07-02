@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/search")
-public class SearchController {
+public class SearchControllor {
+
     @Autowired
     HotelService hotelService;
     @RequestMapping("/index")

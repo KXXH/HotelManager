@@ -218,8 +218,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 throw new UsernameNotFoundException("用户名不存在");
             }
             List<SimpleGrantedAuthority> authorities=new ArrayList<>();
-            System.out.println(users.get(0).getRole());
-            authorities.add(new SimpleGrantedAuthority(users.get(0).getRole().trim()));
+            //System.out.println(users.get(0).getRole());
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+users.get(0).getRole().trim()));
             return new UserDetail(authorities,users.get(0));
             //return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
         }catch(Exception e){
@@ -230,7 +230,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public int changePasswd(ChangePasswdDTO changePasswdDTO){
-        User user = GetUserInfo.getInfo(baseMapper);
+        User user=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         String realOldPasswd = user.getPassword();
         logger.info("旧密码:"+realOldPasswd);
         logger.info("输入旧密码:"+changePasswdDTO.getOldPassword());
@@ -249,6 +249,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
         //User currentUser= GetUserInfo.getInfo(baseMapper);
         User currentUser=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        User LastUser = currentUser;
         if(currentUser == null){
             throw new UserNotFoundException();
         }
@@ -272,6 +273,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         try{
             saveOrUpdate(currentUser);
         }catch(DuplicateKeyException e){
+            currentUser = LastUser;
             throw new UserInfoDuplicateException();
         }
         return true;

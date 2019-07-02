@@ -1,13 +1,12 @@
 package com.shixi.hotelmanager.domain;
 
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 import static com.baomidou.mybatisplus.annotation.IdType.ID_WORKER;
 
@@ -25,9 +24,9 @@ public class Order extends Model<Order> {
 
     private int roomCount;
 
-    private Date dateStart;
+    private String dateStart;
 
-    private Date dateEnd;
+    private String dateEnd;
 
     private double price;
 
@@ -42,4 +41,7 @@ public class Order extends Model<Order> {
     private char breakfast;
     private char windows;
     private String hotelName;
+    private int hotelId;
+
+    private String roomNums;
 }

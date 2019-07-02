@@ -17,6 +17,8 @@ import com.shixi.hotelmanager.mapper.UserMapper;
 import com.shixi.hotelmanager.service.UserService;
 import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -25,10 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequestMapping("/user")
 @RestController
@@ -41,11 +40,13 @@ public class UserController {
 
     @RequestMapping(value = "/username", method = RequestMethod.GET)
     @ResponseBody
-    public String getUserId() {
+    public Authentication getUserId() {
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-        return user.getUsername();
+        Set<String> roles = AuthorityUtils.authorityListToSet(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        System.out.println(roles);
+        return SecurityContextHolder.getContext().getAuthentication();
     }
-    
+
     @RequestMapping("/get")
     public List<User> get(){
         return userMapper.selectList(null);

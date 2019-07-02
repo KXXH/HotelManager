@@ -1,5 +1,7 @@
 package com.shixi.hotelmanager.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchWithRemainDTO;
 import com.shixi.hotelmanager.domain.Hotel;
