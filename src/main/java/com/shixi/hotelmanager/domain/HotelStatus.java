@@ -20,4 +20,5 @@ public class HotelStatus extends Model<HotelStatus> {
     private Date recordForDate;
     @Version
     private int version;
+
 }

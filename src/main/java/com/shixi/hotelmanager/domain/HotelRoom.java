@@ -25,7 +25,7 @@ public class HotelRoom extends Model<HotelRoom> {
 
     private char breakfast;
 
-    private char WIFI;
+    private char wifi;
 
     private int price;
 }
