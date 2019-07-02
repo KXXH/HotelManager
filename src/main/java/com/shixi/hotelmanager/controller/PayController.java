@@ -6,6 +6,7 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeRefundRequest;
+import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.mapper.OrderMapper;
@@ -33,6 +34,7 @@ public class PayController {
         AlipayTradePagePayRequest request=new AlipayTradePagePayRequest();
         request.setReturnUrl("http://localhost:8280/pay/CallBack/return");
         request.setNotifyUrl("http://localhost:8280/pay/CallBack/notify");//在公共参数中设置回跳和通知地址
+
         request.setBizContent("{" +
                 "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
                 "    \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
@@ -47,7 +49,8 @@ public class PayController {
                 "  }");//填充业务参数
         String form="";
         try {
-            form = alipayClient.pageExecute(request).getBody(); //调用SDK生成表单
+            AlipayTradePagePayResponse response=alipayClient.pageExecute(request);
+            form = response.getBody(); //调用SDK生成表单
             orderMapper.insert(order);
         } catch (AlipayApiException e) {
             e.printStackTrace();

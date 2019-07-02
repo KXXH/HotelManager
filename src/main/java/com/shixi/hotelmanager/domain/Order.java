@@ -10,49 +10,34 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+import static com.baomidou.mybatisplus.annotation.IdType.ID_WORKER;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("tbl_order")
 public class Order extends Model<Order> {
-    @TableId("id")
-    private int id;
+    @TableId(type=ID_WORKER)
+    private long id;
+
+    private int orderUserId;
 
     private String orderId;
 
-    private String hotelName;
-
-    private char breakfast;
-
-    private int bedCount;
-
-    private char windows;
+    private int roomCount;
 
     private Date dateStart;
 
     private Date dateEnd;
 
-    private char cancel;
-
-    private int roomCount;
-
-    private int peopleCount;
-
-    private String personName;
-
-    private String telephone;
-
-    private String email;
-
-    private Date createTime;
-
-    private String buyerAlipay;
-
-    private Date orderEndTime;
     private double price;
 
     private String status;
 
     private int orderRoomId;
+
+    private String telephone;
+    private String personName;
+    private int peopleCount;
 
 }
