@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div id="hotel_table">
+    <!--<li  v-for="point in points">-->
+
+        <!--0-->
+    <!--</li>-->
+    <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
+        <div class="destination">
+            <a href="#" class="img img-2 d-flex justify-content-center align-items-center" style="background-image: url(images/hotel-5.jpg);">
+                <div class="icon d-flex justify-content-center align-items-center">
+                    <span class="icon-link"></span>
+                </div>
+            </a>
+            <div class="text p-3">
+                <div class="d-flex">
+                    <div class="one">
+                        <h3><a href="#">房型名</a></h3>
+                        <p class="rate">
+                            <i class="icon-star"></i>
+                            <i class="icon-star"></i>
+                            <i class="icon-star"></i>
+                            <i class="icon-star"></i>
+                            <i class="icon-star-o"></i>
+                            <span>8 Rating</span>
+                        </p>
+                    </div>
+                    <div class="two">
+                        <span class="price per-price">¥价格<br><small>/night</small></span>
+                    </div>
+                </div>
+                <p class="rate">
+                    介绍
+                    <i class="icon-laptop"></i>
+                    <i class="icon-coffee"></i>
+                    <i class="icon-wifi"></i>
+                </p>
+
+                <hr>
+                <p class="bottom-area d-flex">
+                    <span><i class="icon-map-o"></i>剩余房间数</span>
+                    <span class="ml-auto"><a href="#">Book Now</a></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var hotel_table=new Vue(
+        {
+            el:'#hotel_table',
+            data:{
+                points:[]
+            },
+            methods:{
+                goto:function(id){
+                    window.location.href="/hotel/detail?id="+id;
+                }
+            }
+        }
+    );
+    doshow();
+    function doshow(){
+        $.ajax(
+            {
+                url:'/admin/hotel/get',
+                type:'POST',
+                dataType:"json",
+                contentType:"application/json; charset=utf-8",
+                success:function(json){
+                    console.log(JSON.stringify(json));
+                    hotel_table.points=json.data;
+//                    for(var i=0;i<json.data.length;i++){
+//
+//                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+//                        var marker=new BMap.Marker(point,{
+//                            title:json.data[i].hotelTranslatedName
+//                        });
+//                        markers.push(marker);
+//                        var title=json.data[i].hotelTranslatedName;
+//                        markers[i].addEventListener('click',function(){
+//                            console.log("title=",hotelData[i].title);
+//                            var info=new BMap.InfoWindow(hotelData[i].title);
+//                            marker.openInfoWindow(info);
+//                        });
+//
+//                    }
+                }
+            });
+    }
+</script>
+</body>
+</html>
