@@ -81,10 +81,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //设置订单当前状态为未支付
         order.setStatus("UNPAID");
 
-        //保存订单
-        baseMapper.insert(order);
-
-
         //TODO:为房间状态和酒店状态数据表加锁
 
         HotelStatus hotelStatus=new HotelStatus();
@@ -169,12 +165,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             // 设置编码
             messageProperties.setContentEncoding("utf-8");
             // 设置过期时间 30分钟
-            int expiration = 1000 * 60 * 1;
+            int expiration = 1000 * 60 * 30;
             messageProperties.setExpiration(String.valueOf(expiration));
             return message;
         };
         // 向ORDER_DL_EXCHANGE 发送消息  形成死信   在OrderQueueReceiver类处理死信交换机转发给转发队列的信息
-        String orderNo = String.valueOf(order.getId());
+        String orderNo = String.valueOf(order.getUuid());
         rabbitTemplate.convertAndSend("ORDER_DL_EXCHANGE", "DL_KEY", orderNo, messagePostProcessor, correlationData);
         System.out.println(new Date() +  "发送消息，订单号为" + orderNo);
         return true;
@@ -245,12 +241,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = {RefundFailException.class})
-    public boolean refundOrder(Long orderId,String orderStatus) throws RefundFailException {
+    public boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException {
         //根据订单号获取订单
         Order order = new Order();
         QueryWrapper<Order> query = new QueryWrapper<>();
-        query.eq("order_id",orderId);
+        query.eq("id",Id);
         order = order.selectOne(query);
+        if (order == null)
+            throw new OrderNotFoundException();
         if(orderStatus.equals("REFUND")){
             if (!order.getStatus().equals("PAID"))
                 return false;
