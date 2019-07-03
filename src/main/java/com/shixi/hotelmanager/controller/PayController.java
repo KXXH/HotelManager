@@ -11,10 +11,7 @@ import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.PayOrderDTO;
 import com.shixi.hotelmanager.domain.Order;
-import com.shixi.hotelmanager.exception.HotelRoomInsufficientException;
-import com.shixi.hotelmanager.exception.OrderNotFoundException;
-import com.shixi.hotelmanager.exception.RefundFailException;
-import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.*;
 import com.shixi.hotelmanager.mapper.OrderMapper;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +106,7 @@ public class PayController {
     }
 
     @RequestMapping("/payOrder")
-    @ResponseBody String payOrder(PayOrderDTO dto) throws OrderNotFoundException, UserNotFoundException {
+    @ResponseBody String payOrder(PayOrderDTO dto) throws OrderNotFoundException, UserNotFoundException, OrderStatusException {
         return orderService.payOrder(dto.getId());
     }
 
