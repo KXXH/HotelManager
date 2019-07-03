@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 import static com.baomidou.mybatisplus.annotation.IdType.ID_WORKER;
 
 @Data
@@ -43,4 +45,5 @@ public class Order extends Model<Order> {
     private String hotelName;
     private int hotelId;
     private String uuid;
+    private Date createTime;
 }
