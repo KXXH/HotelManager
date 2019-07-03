@@ -36,3 +36,6 @@ mvnw
 .mvn/**
 *.log
 LOG_HOME_IS_UNDEFINED/**
+src/main/java/com/shixi/hotelmanager/config/RabbitMQConfig.java
+src/main/java/com/shixi/hotelmanager/Utils/MessageReceiver.java
+src/main/java/com/shixi/hotelmanager/controller/OrderTestController.java

@@ -2,20 +2,64 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title>Spring Security Example </title>
+
+    <meta charset=http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- CSS -->
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=PT+Sans:400,700'>
+    <link rel="stylesheet" href="/public/assets/css/reset.css">
+    <link rel="stylesheet" href="/public/assets/css/supersized.css">
+    <link rel="stylesheet" href="/public/assets/css/style.css">
+
+
 </head>
-<body>
-<div th:if="${param.error}" style="color: red;">
-    Invalid username and password.
+
+<body backgroung="/public/assets/img/backgrounds/1.jpg">
+<div class="page-container">
+    <br><br><br><br><br>
+    <h1>欢迎登录</h1>
+    <div th:if="${param.error}" style="color: red;margin-top: 2%">
+        Invalid username and password.
+    </div>
+    <form name="registerForm" action="/login" method="post">
+        <input th:class="login" type="text" name="username" class="username" placeholder="用户名" required>
+        <input th:class="login" type="password" name="password" class="password" placeholder="密码" required>
+        <br>
+        <br>
+        <div class="checkbox">
+            <label><input type="checkbox" id="rememberme" name="remember-me"/> Remember Me</label>
+        </div>
+        <input th:class="login" type="submit" name="subbtn" value="登 录">
+        <div class="error"><span>+</span></div>
+    </form>
+
+    <div class="register">
+        <input th:class="login" type="button" onclick="register()" value="注 册">
+    </div>
+    <div class="forgetPassword">
+        <input th:class="login" type="button" onclick="forgetPassword()" value="忘记密码">
+    </div>
+
 </div>
-<div th:if="${param.logout}" style="color: red;">
-    You have been logged out.
-</div>
-<form th:action="@{/login}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="submit"/> <input type="reset" value="reset"/>
-    <input name="remember-me" type="checkbox"> 下次自动登录</div>
-</form>
-<p>Click <a th:href="@{/home}">here</a> go to home page.</p>
+
+
+<!-- Javascript -->
+<script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+<script  src="/public/assets/js/supersized.3.2.7.min.js"></script>
+<script  src="/public/assets/js/supersized-init.js"></script>
+<script  src="/public/assets/js/scripts.js"></script>
 </body>
+</html>
+
+<script>
+    function register() {
+        window.location= '/public/register.html'
+    }
+    function forgetPassword() {
+        window.location= '/public/forgetPassword.html'
+    }
+</script>

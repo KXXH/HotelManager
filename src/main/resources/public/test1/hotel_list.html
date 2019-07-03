@@ -252,7 +252,7 @@
                             var j={'condition':{'like':'Hotel','orderByAsc':'hotel_name','target':'hotel_name','and':{'low':'350','target':'id','or':{'like':'chain','target':'chain_name'}}},'currentPage':2,'size':20}
 
                             $.ajax({
-                                url:'/hotel/search',
+                                url:'/admin/hotel/get',
                                 type:'POST',
                                 data:JSON.stringify(j),
                                 dataType:"json",

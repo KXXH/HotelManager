@@ -1,9 +1,12 @@
 package com.shixi.hotelmanager.service;
 
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.exception.InsufficientPermissionException;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.VerificationFailException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.ArrayList;
@@ -20,8 +23,13 @@ public interface UserService <T extends User> extends UserDetailsService {
             String avatar
     ) throws UserInfoDuplicateException;
     boolean addUser(User user) throws UserInfoDuplicateException;
-    boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException;
+    boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException, InsufficientPermissionException;
     List<User> selectByMap(Condition condition);
     boolean deleteByid(int id) throws UserNotFoundException;
     int deleteByids(ArrayList ids);
+    int changePasswd(ChangePasswdDTO changePasswdDTO);
+    boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException;
+    boolean updateTelephone(User user,int code,String sessionId) throws UserNotFoundException, UserInfoDuplicateException;
+    boolean forgetPasssword(String teltphone,String newPassword,int code,String sessionId) throws VerificationFailException, UserNotFoundException, UserInfoDuplicateException;
+    boolean updateUserWithSA(User user) throws InsufficientPermissionException, UserInfoDuplicateException, UserNotFoundException;
 }

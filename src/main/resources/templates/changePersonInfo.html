@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="/public/assets/css/bootstrap.min.css">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <script src="/public/assets/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePersonInfo" data-whatever="@mdo">修改个人信息</button>
+
+<div class="modal fade" id="changePersonInfo" tabindex="-1" role="dialog" aria-labelledby="changePersonInfoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePersonInfoLabel">修改个人信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="changeInfo_form">
+                    <div class="form-group">
+                        <label for="username" class="col-form-label">用户名:</label>
+                        <input v-model="username" type="text" class="form-control" id="username" th:value=${User.username} required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">邮箱:</label>
+                        <input v-model="email" type="email" class="form-control" id="email" th:value=${User.email} required>
+                    </div>
+
+                    <div class="form-group" >
+                        <label for="Gender" class="col-form-label">性别:</label>
+                        <select v-model="gender" class="form-control" id="Gender" name="gender" th:value=${User.gender}  required>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                            <option value="unknown">保密</option>
+                        </select>
+                    </div>
+                    <label for="avatar_img" class="col-form-label">头像:</label>
+                    <div class="form-group" >
+                        <input v-model="avatar" name="avatar" id="Avatar" style="display:none" th:value=${User.avatar}>
+                        <img th:src=${User.avatar} id="avatar_img" width="30%">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" accept="image/*" class="custom-file-input" id="Smfile" name="smfile" aria-describedby="inputGroupFileAddon01">
+                            <label class="custom-file-label" for="Smfile">Choose file</label>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-info" onclick="upload()">上传</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="changeInfo()">确认修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePassword" data-whatever="@mdo">修改密码</button>
+
+<div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordLabel">修改个人信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="changePassword_form">
+                    <div class="form-group">
+                        <label for="oldPassword" class="col-form-label">原密码:</label>
+                        <input v-model="oldPassword" type="text" class="form-control" id="oldPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword" class="col-form-label">新密码:</label>
+                        <input v-model="newPassword" type="password" class="form-control" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="verification" class="col-form-label">确认密码:</label>
+                        <input v-model="verification" type="password" class="form-control" id="verification" required>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="changePassword()">确认修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script>
+    var userInfo = new Vue({
+        el:"#changeInfo_form",
+        data:{
+            username:$('#username').val(),
+            email:$('#email').val(),
+            gender:$('#Gender').val(),
+            avatar:$('#Avatar').val()
+        }
+    });
+
+    var Passwd = new Vue({
+        el:"#changePassword_form",
+        data:{
+            oldPassword:"",
+            newPassword:"",
+            verification:""
+        }
+    });
+
+    function changePassword() {
+        var url = '/user/changePasswd';
+        var j = {"OldPassword":Passwd.oldPassword,"NewPassword":Passwd.newPassword,"Confirmation":Passwd.verification};
+
+        $.post(url,j,function (json) {
+            alert(json.msg);
+        })
+
+    }
+    function changeInfo() {
+        var j = {"username":userInfo.username,"email":userInfo.email,"gender":userInfo.gender,"avatar":userInfo.avatar};
+        $.post("/user/updateUserinfo",j,function (json) {
+            if (json.status=="ok"){
+                alert("修改信息成功！");
+            }
+            else {
+                alert(json.msg);
+            }
+        })
+    }
+    function upload() {
+        var file=$('#Smfile')[0].files[0];
+        if(file.size>500*1024){
+            alert('您选择的图片太大，不能上传！');
+            return;
+        }
+        var j=new FormData();
+        j.append('smfile',file);
+        var url='https://sm.ms/api/upload';
+        $.ajax(
+            {
+                type:'POST',
+                url:url,
+                data:j,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success:function(json){
+                    $("#Avatar").val(json.data.url);
+                    console.log($("#Avatar").val());
+                    document.getElementById("avatar_img").src=json.data.url;
+                }
+            }
+        );
+    }
+</script>

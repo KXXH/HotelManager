@@ -1,6 +1,7 @@
 package com.shixi.hotelmanager.config;
 
 import com.shixi.hotelmanager.Utils.PasswordEncoder;
+import com.shixi.hotelmanager.authentication.MyAccessDeniedHandler;
 import com.shixi.hotelmanager.domain.User;
 import com.shixi.hotelmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationFailureHandler myAuthenctiationFailureHandler;
 
+    @Autowired
+    private MyAccessDeniedHandler myAccessDeniedHandler;
+
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
@@ -49,10 +53,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 //不需要身份认证
                 .antMatchers("/").permitAll()
-                .antMatchers("/js/**", "/css/**", "/images/**", "/fronts/**", "/doc/**", "/login.html").permitAll()
-                .antMatchers("/user").hasAnyRole("USER")
+                .antMatchers("/public/js/**","/public/assets/**","/public/images/**", "public/css/**",
+                        "/login.html","/public/register.html","/register/**","/verification/**",
+                        "/user/forgetPassword/**","/public/forgetPassword.html").permitAll()
+                .antMatchers("/user").hasAnyRole("ROLE_USER")
                 //.hasIpAddress()//读取配置权限配置
-                .antMatchers("/admin").access("hasRole('ADMIN')")
+                .antMatchers("/admin/**").access("hasRole('ADMIN')")
                 .anyRequest().authenticated()
                 //自定义登录界面
                 .and().formLogin().loginPage("/toLogin").loginProcessingUrl("/login")
@@ -68,7 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().httpBasic()
                 .and().sessionManagement().invalidSessionUrl("/toLogin")
                 .and().headers().frameOptions().sameOrigin()
-                .and().csrf().disable();
+                .and().csrf().disable()
+                .exceptionHandling().accessDeniedHandler(myAccessDeniedHandler);
     }
 
     @Autowired

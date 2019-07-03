@@ -2,28 +2,40 @@ package com.shixi.hotelmanager.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shixi.hotelmanager.Utils.GetUserInfo;
 import com.shixi.hotelmanager.domain.Condition;
+import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.User;
+import com.shixi.hotelmanager.domain.UserDetail;
+import com.shixi.hotelmanager.exception.InsufficientPermissionException;
 import com.shixi.hotelmanager.exception.UserInfoDuplicateException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.VerificationFailException;
 import com.shixi.hotelmanager.mapper.UserMapper;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
+import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService {
@@ -32,6 +44,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+
+    @Resource
+    private VerificationCodeService verificationCodeService;
+
 
     @Override
     public List<User> selectByMap(Condition condition) {
@@ -102,14 +118,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public boolean addUser(User user) throws UserInfoDuplicateException {
-        UserMapper userMapper=baseMapper;
-        return addUser(user.getUsername(),user.getPassword(),user.getGender(),user.getTelephone(),user.getEmail(),user.getIdCard(),user.getAvatar());
+        try{
+            save(user);
+        }catch(DuplicateKeyException e){
+            throw new UserInfoDuplicateException();
+        }
+        return true;
     }
 
     @Override
-    public boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException {
+    public boolean updateUser(User user) throws UserNotFoundException, UserInfoDuplicateException, InsufficientPermissionException {
         int count=0;
         UserMapper userMapper=baseMapper;
+        if(!userMapper.selectById(user.getId()).getRole().equals("USER")){
+            throw new InsufficientPermissionException();
+        }
         try{
             count=userMapper.updateById(user);
         }catch(DuplicateKeyException e){
@@ -122,6 +145,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             return true;
         }
     }
+
+    @Override
+    public boolean updateUserWithSA(User user) throws InsufficientPermissionException, UserInfoDuplicateException, UserNotFoundException {
+        if(baseMapper.selectById(user.getId()).getRole().equals("SUPER_ADMIN")){
+            throw new InsufficientPermissionException();
+        }
+        boolean count=false;
+        try{
+            count=updateById(user);
+        }catch(DuplicateKeyException e){
+            throw new UserInfoDuplicateException();
+        }
+        if(!count){
+            throw new UserNotFoundException();
+        }else{
+            return count;
+        }
+    }
+
     public boolean deleteByid(int id) throws UserNotFoundException {
         /*
         logger.info("获取用户start...");
@@ -167,20 +209,118 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info("正在验证用户信息！");
         try{
-            HashMap<String ,Object> m=new HashMap<>();
-            m.put("username",username);
-            List<User> users=baseMapper.selectByMap(m);
+            QueryWrapper<User> wrapper=new QueryWrapper<>();
+            wrapper.eq("username",username).or().eq("telephone",username);
+            List<User> users=baseMapper.selectList(wrapper);
             if(users.size()<=0){
                 throw new UsernameNotFoundException("用户名不存在");
             }
             List<SimpleGrantedAuthority> authorities=new ArrayList<>();
-            System.out.println(users.get(0).getRole());
-            authorities.add(new SimpleGrantedAuthority(users.get(0).getRole().trim()));
-            return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
+            //System.out.println(users.get(0).getRole());
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+users.get(0).getRole().trim()));
+            return new UserDetail(authorities,users.get(0));
+            //return new org.springframework.security.core.userdetails.User(users.get(0).getUsername(),users.get(0).getPassword(),authorities);
         }catch(Exception e){
             e.printStackTrace();
             return null;
         }
     }
+
+    @Override
+    public int changePasswd(ChangePasswdDTO changePasswdDTO){
+        User user=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        String realOldPasswd = user.getPassword();
+        logger.info("旧密码:"+realOldPasswd);
+        logger.info("输入旧密码:"+changePasswdDTO.getOldPassword());
+        if (changePasswdDTO.getOldPassword().equals(realOldPasswd)){
+            if(changePasswdDTO.getNewPassword().equals(changePasswdDTO.getConfirmation())){
+                user.setPassword(changePasswdDTO.getNewPassword());
+                baseMapper.updateById(user);
+                return 1;
+            }
+            else
+                return 2;
+        }
+        else
+            return 3;
+    }
+    public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
+        //User currentUser= GetUserInfo.getInfo(baseMapper);
+        User currentUser=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        User LastUser = currentUser;
+        if(currentUser == null){
+            throw new UserNotFoundException();
+        }
+        if(user.getUsername()!=null){
+            currentUser.setUsername(user.getUsername());
+        }
+        if(user.getEmail()!=null){
+            currentUser.setEmail(user.getEmail());
+        }
+        if(user.getGender()!=null){
+            currentUser.setGender(user.getGender());
+        }
+        if(user.getAvatar()!=null){
+            currentUser.setAvatar(user.getAvatar());
+        }
+        Validator validator= Validation.byDefaultProvider().configure().messageInterpolator(new ResourceBundleMessageInterpolator(new PlatformResourceBundleLocator("error"))).buildValidatorFactory().getValidator();
+        Set<ConstraintViolation<User>> constraintViolations=validator.validate(currentUser);
+        if(constraintViolations.size()>0){
+            throw new ValidationException(constraintViolations.iterator().next().getMessage());
+        }
+        try{
+            saveOrUpdate(currentUser);
+        }catch(DuplicateKeyException e){
+            currentUser = LastUser;
+            throw new UserInfoDuplicateException();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean updateTelephone(User user,int code,String sessionId) throws UserNotFoundException, UserInfoDuplicateException {
+        User currentUser= GetUserInfo.getInfo(baseMapper);
+        if(currentUser==null){
+            throw new UserNotFoundException();
+        }
+        String phone=user.getTelephone();
+        assert phone != null;
+        if(verificationCodeService.verificationCode(code,phone,sessionId)){
+            currentUser.setTelephone(phone);
+            try{
+                saveOrUpdate(currentUser);
+            }catch(DuplicateKeyException e){
+                throw new UserInfoDuplicateException();
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public boolean forgetPasssword(String telephone, String newPassword, int code, String sessionId) throws VerificationFailException, UserNotFoundException, UserInfoDuplicateException {
+        if(!verificationCodeService.verificationCode(code,telephone,sessionId)){
+            throw new VerificationFailException();
+        }
+        else{
+            try{
+                QueryWrapper<User> wrapper=new QueryWrapper<>();
+                wrapper.eq("telephone",telephone);
+                User user=getOne(wrapper,true);
+                if(user==null){
+                    throw new UserNotFoundException();
+                }
+                user.setPassword(newPassword);
+                updateById(user);
+                return true;
+            }catch(DuplicateKeyException e){
+                throw new UserInfoDuplicateException();
+            }
+        }
+    }
+
+
 }
