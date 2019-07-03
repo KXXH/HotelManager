@@ -156,7 +156,7 @@ public class PayController {
 
     @RequestMapping("/CallBack/return")
     @ResponseBody
-    public String returnPage(HttpServletRequest request) throws AlipayApiException, OrderNotFoundException {
+    public String returnPage(HttpServletRequest request) throws AlipayApiException, OrderNotFoundException, OrderStatusException {
         Map<String,String[]> map1 = request.getParameterMap();
         Enumeration<String> names=request.getParameterNames();
         Map<String,String> map=new HashMap<>();
