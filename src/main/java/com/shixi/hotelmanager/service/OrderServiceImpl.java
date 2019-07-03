@@ -266,12 +266,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //得到房间ID
         int theRoomId = order.getOrderRoomId();
         RoomStatus roomStatus = new RoomStatus();
-        String[] nums = order.getRoomNums().split(",");
-        for(int i = 0; i < nums.length; i++){
-            QueryWrapper<RoomStatus> queryWrapper1 = new QueryWrapper<>();
-            queryWrapper1.eq("room_id",theRoomId).eq("record_for_date",useDate).eq("room_num",nums[i]);
-            roomStatus.delete(queryWrapper1);
-        }
+
     }
 
     protected  LocalDate DateToLocaleDate(Date date) {
