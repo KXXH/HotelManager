@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
 @SpringBootApplication
+@EnableTransactionManagement
 @MapperScan("com.shixi.hotelmanager.mapper")
 public class HotelmanagerApplication {
     public static void main(String[] args) {
