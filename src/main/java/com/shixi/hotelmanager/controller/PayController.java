@@ -70,7 +70,7 @@ public class PayController {
         AlipayTradeRefundResponse response = alipayClient.execute(request);
         if(response.isSuccess()){
             try {
-                if(orderService.refundOrder(Long.valueOf(order.getOrderId())))
+                if(orderService.refundOrder(Long.valueOf(order.getOrderId()),"REFUND"))
                     return "success";
                 else
                     return "fail";

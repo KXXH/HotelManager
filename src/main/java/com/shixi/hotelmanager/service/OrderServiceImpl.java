@@ -16,6 +16,11 @@ import com.shixi.hotelmanager.exception.RefundFailException;
 import com.shixi.hotelmanager.mapper.HotelRoomMapper;
 import com.shixi.hotelmanager.mapper.HotelStatusMapper;
 import com.shixi.hotelmanager.mapper.OrderMapper;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +47,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Resource
     private HotelRoomMapper hotelRoomMapper;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
@@ -79,7 +87,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setStatus("UNPAID");
 
         //保存订单
-        save(order);
+        baseMapper.insert(order);
 
         //TODO:为房间状态和酒店状态数据表加锁
 
@@ -153,6 +161,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         for(HotelStatus status:editedHotelStatusList){
             status.insertOrUpdate();
         }
+
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());// 生成一个消息的唯一id，可不选
+        // 声明消息处理器  设置消息的编码以及消息的过期时间  时间毫秒值 为字符串
+        MessagePostProcessor messagePostProcessor = message -> {
+            MessageProperties messageProperties = message.getMessageProperties();
+            // 设置编码
+            messageProperties.setContentEncoding("utf-8");
+            // 设置过期时间 30分钟
+            int expiration = 1000 * 60 * 1;
+            messageProperties.setExpiration(String.valueOf(expiration));
+            return message;
+        };
+        // 向ORDER_DL_EXCHANGE 发送消息  形成死信   在OrderQueueReceiver类处理死信交换机转发给转发队列的信息
+        String orderNo = String.valueOf(order.getId());
+        rabbitTemplate.convertAndSend("ORDER_DL_EXCHANGE", "DL_KEY", orderNo, messagePostProcessor, correlationData);
+        System.out.println(new Date() +  "发送消息，订单号为" + orderNo);
         return true;
     }
 
@@ -208,15 +232,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = {RefundFailException.class})
-    public boolean refundOrder(Long orderId) throws RefundFailException {
-        System.out.println("==============================");
+    public boolean refundOrder(Long orderId,String orderStatus) throws RefundFailException {
         //根据订单号获取订单
         Order order = new Order();
         QueryWrapper<Order> query = new QueryWrapper<>();
         query.eq("order_id",orderId);
         order = order.selectOne(query);
-        if(!order.getStatus().equals("PAID"))
-            return false;
+        if(orderStatus.equals("REFUND")){
+            if (!order.getStatus().equals("PAID"))
+                return false;
+        }
+        if(orderStatus.equals("CANCEL")){
+            if (!order.getStatus().equals("UNPAID"))
+                return false;
+        }
+
         //得到开始时间和结束时间
         String dateStart = order.getDateStart();
         String dateEnd = order.getDateEnd();
@@ -241,7 +271,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
             updateDB(order,dateEnd);
         }
-        order.setStatus("REFUND");
+        order.setStatus(orderStatus);
         order.updateById();
         return true;
     }
