@@ -22,20 +22,7 @@
                 'hideOnOverlayClick' : false,
                 'showCloseButton' : false,
                 'onClosed' : function() {
-                    window.location.reload();
-                }
-            });
-
-            /** 编辑   **/
-            $("#editBtn").fancybox({
-                'href'  : 'user_edit.html',
-                'width' : 433,
-                'height' : 400,
-                'type' : 'iframe',
-                'hideOnOverlayClick' : false,
-                'showCloseButton' : false,
-                'onClosed' : function() {
-                    window.location.reload();
+                    window.location.href = 'house_list.html';
                 }
             });
 
@@ -52,7 +39,17 @@
                 }
             });
 
-
+            /**编辑   **/
+            $("a.edit").fancybox({
+                'width' : 433,
+                'height' : 400,
+                'type' : 'iframe',
+                'hideOnOverlayClick' : false,
+                'showCloseButton' : false,
+                'onClosed' : function() {
+                    window.location.href = 'house_list.html';
+                }
+            });
         });
         /** 用户角色   **/
         var userRole = '';
@@ -70,7 +67,7 @@
             if(username!="" || IdCard!="" || gender!="" || telephone!=""|| email!="")
             {
                 var data={"username":username, "IdCard":IdCard, "gender":gender, "telephone":telephone, "email":email};
-                $.post("/admin/user/simple_select",data,function(json){
+                $.post("/user/admin/simple_select",data,function(json){
                     if(json["status"]=="-1"){
                         art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:'查询出错', ok:true,});
                     }
@@ -143,26 +140,6 @@
             }
         }
 
-        /** 编辑 **/
-        function edit(fyID){
-            // 非空判断
-            if(fyID == '') return;
-            console.log(fyID);
-            console.log("hhhhh");
-            var src='user_edit.html?id='+fyID;
-            console.log(src);
-            var con="<iframe id='standardIframe'  frameborder='0'  src="+src+" style='width: 433px;height: 400px;' ></iframe>";
-
-                $("#con").attr("style","display:block");
-                var d = art.dialog({
-                    title: '消息',
-                    width: 433,
-                    height:400
-                });
-                d.show();
-                d.content(con);
-        }
-
         /** 删除 **/
         function del(fyID){
             // 非空判断
@@ -170,7 +147,7 @@
             console.log("hhhhh");
             if(confirm("您确定要删除吗？")){
                 console.log("hehehe");
-                $.get('/admin/user/delete?id='+fyID,function(map){
+                $.get('/user/admin/delete?id='+fyID,function(map){
                     confirm(""+map["msg"]);
                     //window.location.href = 'house_list.html';//注意链接名和文件名
                     location.reload();
@@ -255,7 +232,7 @@
                         <select name="fangyuanEntity.fyHxCode" id="gender" class="ui_select01">
                             <option value="">--请选择--</option>
                             <option value="male">男</option>
-                            <option value="female">女</option>
+                            <option value="famele">女</option>
                             <
                         </select>
                         电话号码&nbsp;&nbsp;<input type="text" id="telephone" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
@@ -289,7 +266,7 @@
                         <th>密码</th>
                         <th>操作</th>
                         <script>
-                        $.get('/admin/user/get',function(json){
+                        $.get('/user/get',function(json){
 
                         console.log(JSON.stringify(json));
                         var table=document.getElementById("table_list1");
@@ -316,8 +293,8 @@
                         var cell9=row.insertCell(8);
                         cell9.innerHTML=json[i].password;//cell9.innerHTML="0";
                         var cell10=row.insertCell(9);
-                        cell10.innerHTML="<a href=\"javascript:edit('" +json[i].idCard+"');\">编辑</a>\n" +
-                            "\t\t\t\t\t\t\t\t<a href=\"javascript:del('"+json[i].id+"');\">删除</a>";
+                        cell10.innerHTML="<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
+                        "\t\t\t\t\t\t\t\t<a href=\"javascript:del('"+json[i].id+"');\">删除</a>";
                         }
                         })
                         </script>
@@ -326,15 +303,15 @@
 
             </div>
             <div class="ui_tb_h30">
-                <!--<div class="ui_flt" style="height: 30px; line-height: 30px;">-->
-                    <!--共有-->
-                    <!--<span class="ui_txt_bold04">90</span>-->
-                    <!--条记录，当前第-->
-                    <!--<span class="ui_txt_bold04">1-->
-						<!--/-->
-						<!--9</span>-->
-                    <!--页-->
-                <!--</div>-->
+                <div class="ui_flt" style="height: 30px; line-height: 30px;">
+                    共有
+                    <span class="ui_txt_bold04">90</span>
+                    条记录，当前第
+                    <span class="ui_txt_bold04">1
+						/
+						9</span>
+                    页
+                </div>
                 <div class="ui_frt">
                     <!--    如果是第一页，则只显示下一页、尾页 -->
 
