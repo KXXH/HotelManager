@@ -4,9 +4,9 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +21,11 @@ import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.HotelRoomMapper;
 import com.shixi.hotelmanager.mapper.HotelStatusMapper;
 import com.shixi.hotelmanager.mapper.OrderMapper;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +53,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Resource
     private HotelRoomMapper hotelRoomMapper;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
@@ -165,6 +173,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         for(HotelStatus status:editedHotelStatusList){
             status.insertOrUpdate();
         }
+
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());// 生成一个消息的唯一id，可不选
+        // 声明消息处理器  设置消息的编码以及消息的过期时间  时间毫秒值 为字符串
+        MessagePostProcessor messagePostProcessor = message -> {
+            MessageProperties messageProperties = message.getMessageProperties();
+            // 设置编码
+            messageProperties.setContentEncoding("utf-8");
+            // 设置过期时间 30分钟
+            int expiration = 1000 * 60 * 30;
+            messageProperties.setExpiration(String.valueOf(expiration));
+            return message;
+        };
+        // 向ORDER_DL_EXCHANGE 发送消息  形成死信   在OrderQueueReceiver类处理死信交换机转发给转发队列的信息
+        String orderNo = String.valueOf(order.getUuid());
+        rabbitTemplate.convertAndSend("ORDER_DL_EXCHANGE", "DL_KEY", orderNo, messagePostProcessor, correlationData);
+        System.out.println(new Date() +  "发送消息，订单号为" + orderNo);
         return true;
     }
 
@@ -231,15 +255,61 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    @Transactional
-    public boolean refundOrder(Long orderId) {
+    public boolean makeFundOrder(Order order) throws AlipayApiException {
+        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
+        AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
+        request.setBizContent("{" +
+                "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
+                "    \"refund_amount\":"+order.getPrice()+"," +
+                "    \"refund_reason\":\"正常退款\"," +
+                "    \"out_request_no\":\"HZ01RF001\"," +
+                "    \"operator_id\":\"OP001\"," +
+                "    \"store_id\":\"NJ_S_001\"," +
+                "    \"terminal_id\":\"NJ_T_001\"" +
+                "  }");
+        AlipayTradeRefundResponse response = alipayClient.execute(request);
+        if(response.isSuccess()) {
+            try {
+                Order order1 = new Order();
+                QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("order_id",order.getOrderId());
+                order1 = order1.selectOne(queryWrapper);
 
-        System.out.println("==============================");
+                if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
+                    return true;
+                else
+                    return false;
+            } catch (RefundFailException e) {
+                e.printStackTrace();
+                return false;
+            } catch (OrderNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RefundFailException.class})
+    public boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException {
         //根据订单号获取订单
         Order order = new Order();
         QueryWrapper<Order> query = new QueryWrapper<>();
-        query.eq("order_id",orderId);
+        query.eq("id",Id);
         order = order.selectOne(query);
+        if (order == null)
+            throw new OrderNotFoundException();
+        if(orderStatus.equals("REFUND")){
+            if (!order.getStatus().equals("PAID"))
+                return false;
+        }
+        if(orderStatus.equals("CANCEL")){
+            if (!order.getStatus().equals("UNPAID"))
+                return false;
+        }
+
         //得到开始时间和结束时间
         String dateStart = order.getDateStart();
         String dateEnd = order.getDateEnd();
@@ -265,7 +335,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
             }
         }
-
+        order.setStatus(orderStatus);
+        order.updateById();
         return true;
     }
 
