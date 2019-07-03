@@ -16,7 +16,7 @@ public interface OrderService {
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
     boolean createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException;
     String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException;
-    boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException;
+    boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException;
     @Transactional(rollbackFor = {RefundFailException.class})
     boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException;
     boolean makeFundOrder(Order order) throws AlipayApiException;

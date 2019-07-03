@@ -5,14 +5,14 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
-import com.alipay.api.response.AlipayTradeRefundResponse;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.PayOrderDTO;
 import com.shixi.hotelmanager.domain.Order;
-import com.shixi.hotelmanager.exception.*;
+import com.shixi.hotelmanager.exception.HotelRoomInsufficientException;
+import com.shixi.hotelmanager.exception.OrderNotFoundException;
+import com.shixi.hotelmanager.exception.OrderStatusException;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.OrderMapper;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,39 +115,10 @@ public class PayController {
     @ResponseBody
     @RequestMapping("/admin/refund")
     public String refund(Order order) throws AlipayApiException {
-        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
-        AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
-        request.setBizContent("{" +
-                "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
-                "    \"refund_amount\":"+order.getPrice()+"," +
-                "    \"refund_reason\":\"正常退款\"," +
-                "    \"out_request_no\":\"HZ01RF001\"," +
-                "    \"operator_id\":\"OP001\"," +
-                "    \"store_id\":\"NJ_S_001\"," +
-                "    \"terminal_id\":\"NJ_T_001\"" +
-                "  }");
-        AlipayTradeRefundResponse response = alipayClient.execute(request);
-        if(response.isSuccess()){
-            try {
-                Order order1 = new Order();
-                QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("order_id",order.getOrderId());
-                order1 = order1.selectOne(queryWrapper);
-
-                if(orderService.refundOrder(Long.valueOf(order1.getId()),"REFUND"))
-                    return "success";
-                else
-                    return "fail";
-            } catch (RefundFailException e) {
-                e.printStackTrace();
-                return "fail";
-            } catch (OrderNotFoundException e) {
-                e.printStackTrace();
-                return "fail";
-            }
-        }else{
+        if(orderService.makeFundOrder(order))
+            return "success";
+        else
             return "fail";
-        }
 
     }
 
