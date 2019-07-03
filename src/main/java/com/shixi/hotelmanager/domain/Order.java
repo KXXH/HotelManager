@@ -42,5 +42,4 @@ public class Order extends Model<Order> {
     private char windows;
     private String hotelName;
     private int hotelId;
-
 }
