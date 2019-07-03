@@ -10,74 +10,70 @@
     <title>Document</title>
 </head>
 <body>
-<div>
-    <div class="col-lg-9">
-        <div id="hotel_table" class="row" v-for="point in points">
+<div id="hotel_table">
+    <!--<li  v-for="point in points">-->
 
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="destination">
-                    <a href="#" class="img img-2 d-flex justify-content-center align-items-center" style="background-image: url(images/hotel-5.jpg);">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-link"></span>
-                        </div>
-                    </a>
-                    <div class="text p-3">
-                        <div class="d-flex">
-                            <div class="one">
-                                <h3><a href="#">{{point.hotelTranslatedName}}</a></h3>
-                                <p class="rate">
-                                    <i class="icon-star"></i>
-                                    <i class="icon-star"></i>
-                                    <i class="icon-star"></i>
-                                    <i class="icon-star"></i>
-                                    <i class="icon-star-o"></i>
-                                    <span>{{point.starRating}}</span>
-                                </p>
-                            </div>
-                            <div class="two">
-                                <span class="price per-price">¥价格<br><small>/night</small></span>
-                            </div>
-                        </div>
+    <!--0-->
+    <!--</li>-->
+    <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
+        <div class="destination">
+            <a href="#" class="img img-2 d-flex justify-content-center align-items-center" style="background-image: url(images/hotel-5.jpg);">
+                <div class="icon d-flex justify-content-center align-items-center">
+                    <span class="icon-link"></span>
+                </div>
+            </a>
+            <div class="text p-3">
+                <div class="d-flex">
+                    <div class="one">
+                        <h3><a href="#">房型名</a></h3>
                         <p class="rate">
-                            介绍
-                            <i class="icon-laptop"></i>
-                            <i class="icon-coffee"></i>
-                            <i class="icon-wifi"></i>
-                        </p>
-
-                        <hr>
-                        <p class="bottom-area d-flex">
-                            <span><i class="icon-map-o"></i>剩余房间数</span>
-                            <span class="ml-auto"><a href="#">Book Now</a></span>
+                            <i class="icon-star"></i>
+                            <i class="icon-star"></i>
+                            <i class="icon-star"></i>
+                            <i class="icon-star"></i>
+                            <i class="icon-star-o"></i>
+                            <span>8 Rating</span>
                         </p>
                     </div>
+                    <div class="two">
+                        <span class="price per-price">¥价格<br><small>/night</small></span>
+                    </div>
                 </div>
+                <p class="rate">
+                    介绍
+                    <i class="icon-laptop"></i>
+                    <i class="icon-coffee"></i>
+                    <i class="icon-wifi"></i>
+                </p>
+
+                <hr>
+                <p class="bottom-area d-flex">
+                    <span><i class="icon-map-o"></i>剩余房间数</span>
+                    <span class="ml-auto"><a href="#">Book Now</a></span>
+                </p>
             </div>
-
         </div>
-
-
-    </div> <!-- .col-md-8 -->
+    </div>
 </div>
 <script>
-    var hotel_table=new Vue(
-        {
-            el:'#hotel_table',
-            data:{
-                points:[]
-            },
-            methods:{
-                goto:function(id){
-                    window.location.href="/hotel/detail?id="+id;
-                }
-            }
-        }
-    );
+//    var hotel_table=new Vue(
+//        {
+//            el:'#hotel_table',
+//            data:{
+//                points:[]
+//            },
+//            methods:{
+//                goto:function(id){
+//                    window.location.href="/hotel/detail?id="+id;
+//                }
+//            }
+//        }
+//    );
     doshow();
     function doshow(){
         $.ajax(
             {
-                url:'/admin/hotel/get',
+                url:'/hotel/get',
                 type:'POST',
                 dataType:"json",
                 contentType:"application/json; charset=utf-8",

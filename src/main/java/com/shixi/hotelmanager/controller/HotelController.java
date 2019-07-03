@@ -1,7 +1,5 @@
 package com.shixi.hotelmanager.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchDTO;
 import com.shixi.hotelmanager.domain.DTO.HotelDTO.HotelSearchWithRemainDTO;
 import com.shixi.hotelmanager.domain.Hotel;
@@ -23,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin/hotel")
+@RequestMapping("/hotel")
 public class HotelController {
 
     @Autowired
@@ -95,7 +93,7 @@ public class HotelController {
         m.put("count",count);
         return m;
     }
-    @RequestMapping(value = "addHotel")
+    @RequestMapping(value = "admin/addHotel")
     public Map<String,Object> addHotel(@Valid Hotel hotel, BindingResult bindingResult){
         HashMap<String,Object> m = new HashMap<>();
         if(bindingResult.hasErrors()){
@@ -118,7 +116,7 @@ public class HotelController {
         return null;
     }
 
-    @RequestMapping(value = "updateHotel")
+    @RequestMapping(value = "admin/updateHotel")
     public Map<String,Object> updateHotel(@Valid Hotel hotel,BindingResult bindingResult){
         HashMap<String,Object> m = new HashMap<>();
         if(bindingResult.hasErrors()){

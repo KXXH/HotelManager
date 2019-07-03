@@ -11,6 +11,8 @@ import java.util.List;
 public class HotelRoomServiceImpl extends ServiceImpl<HotelRoomMapper, HotelRoom> implements HotelRoomService {
     @Override
     public List<HotelRoom> selectHotelRoomByRemain(String dateStart, String dateEnd, int hotel_id, String bed_type,int room_wanted) {
+
         return baseMapper.selectHotelRoomByRemain(dateStart,dateEnd,hotel_id,bed_type,room_wanted);
     }
+
 }
