@@ -113,16 +113,13 @@ public class PayController {
     }
 
     @ResponseBody
-    @RequestMapping("/admin/refund")
+    @RequestMapping("/refund")
     public String refund(Order order) throws AlipayApiException {
         if(orderService.makeFundOrder(order))
             return "success";
         else
             return "fail";
-
     }
-
-    
 
 
     @RequestMapping("/CallBack/return")

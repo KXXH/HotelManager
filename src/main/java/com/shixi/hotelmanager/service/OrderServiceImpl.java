@@ -348,7 +348,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return date;
     }
 
-    public void updateDB(Order order,String useDate){
+    public void updateDB(Order order,String useDate) throws RefundFailException {
         //得到酒店ID
         int hotelId = order.getHotelId();
         //根据酒店Id得到实例
@@ -356,12 +356,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         QueryWrapper<HotelStatus> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("hotel_id",hotelId).eq("record_for_date",useDate);
         hotelStatus = hotelStatus.selectOne(queryWrapper);
-        hotelStatus.setHotelRoomOrdered(hotelStatus.getHotelRoomOrdered()-order.getRoomCount());
+        int hotelNum = hotelStatus.getHotelRoomOrdered()-order.getRoomCount();
+        if(hotelNum < 0)
+            throw new RefundFailException();
+        hotelStatus.setHotelRoomOrdered(hotelNum);
         hotelStatus.updateById();
 
         //得到房间ID
         int theRoomId = order.getOrderRoomId();
         RoomStatus roomStatus = new RoomStatus();
+        QueryWrapper<RoomStatus> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("room_id",theRoomId).eq("record_for_date",useDate);
+        roomStatus = roomStatus.selectOne(queryWrapper1);
+        int roomNum = roomStatus.getRoomNum()-order.getRoomCount();
+        if(roomNum < 0)
+            throw new RefundFailException();
+        roomStatus.setRoomNum(roomNum);
+        roomStatus.updateById();
 
     }
 
