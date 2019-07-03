@@ -1,6 +1,8 @@
 package com.shixi.hotelmanager.service;
 
+import com.alipay.api.AlipayApiException;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
+import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.*;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,4 +15,5 @@ public interface OrderService {
     boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException;
     @Transactional(rollbackFor = {RefundFailException.class})
     boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException;
+    boolean makeFundOrder(Order order) throws AlipayApiException;
 }

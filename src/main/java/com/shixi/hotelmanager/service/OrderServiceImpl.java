@@ -4,7 +4,9 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -237,6 +239,43 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setStatus("PAID");
         saveOrUpdate(order);
         return false;
+    }
+
+    @Override
+    public boolean makeFundOrder(Order order) throws AlipayApiException {
+        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
+        AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
+        request.setBizContent("{" +
+                "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
+                "    \"refund_amount\":"+order.getPrice()+"," +
+                "    \"refund_reason\":\"正常退款\"," +
+                "    \"out_request_no\":\"HZ01RF001\"," +
+                "    \"operator_id\":\"OP001\"," +
+                "    \"store_id\":\"NJ_S_001\"," +
+                "    \"terminal_id\":\"NJ_T_001\"" +
+                "  }");
+        AlipayTradeRefundResponse response = alipayClient.execute(request);
+        if(response.isSuccess()) {
+            try {
+                Order order1 = new Order();
+                QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("order_id",order.getOrderId());
+                order1 = order1.selectOne(queryWrapper);
+
+                if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
+                    return true;
+                else
+                    return false;
+            } catch (RefundFailException e) {
+                e.printStackTrace();
+                return false;
+            } catch (OrderNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     @Override
