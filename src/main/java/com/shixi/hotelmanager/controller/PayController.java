@@ -94,19 +94,7 @@ public class PayController {
         }
     }
 
-
-    @RequestMapping("/Callback")
-    @ResponseBody
-    public String test1(){
-        return "test1";
-    }
-
-    @RequestMapping("/Callback/test2")
-    @ResponseBody
-    public String test2(){
-        return "test2";
-    }
-
+    
     @RequestMapping("/CallBack/return")
     @ResponseBody
     public String returnPage(HttpServletRequest request) throws AlipayApiException {
