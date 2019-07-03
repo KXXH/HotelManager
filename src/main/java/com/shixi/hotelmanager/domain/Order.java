@@ -43,5 +43,4 @@ public class Order extends Model<Order> {
     private String hotelName;
     private int hotelId;
 
-    private String roomNums;
 }

@@ -9,6 +9,7 @@ import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.shixi.hotelmanager.domain.Order;
+import com.shixi.hotelmanager.exception.RefundFailException;
 import com.shixi.hotelmanager.mapper.OrderMapper;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,17 +80,18 @@ public class PayController {
                 "  }");
         AlipayTradeRefundResponse response = alipayClient.execute(request);
         if(response.isSuccess()){
-            Map<String,Object> map2=new HashMap<>();
-            map2.put("order_id",Integer.parseInt(order.getOrderId()));
-            Order order2=orderMapper.selectByMap(map2).get(0);
-            order2.setStatus("REFUND");
-            orderMapper.updateById(order2);
-            orderService.refundOrder(Long.valueOf(order.getOrderId()));
-            return "success";
+            try {
+                if(orderService.refundOrder(Long.valueOf(order.getOrderId())))
+                    return "success";
+                else
+                    return "fail";
+            } catch (RefundFailException e) {
+                e.printStackTrace();
+                return "fail";
+            }
         }else{
             return "fail";
         }
-
     }
 
 

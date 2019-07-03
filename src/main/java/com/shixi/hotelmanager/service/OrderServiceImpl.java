@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
 import com.shixi.hotelmanager.domain.*;
+import com.shixi.hotelmanager.exception.RefundFailException;
 import com.shixi.hotelmanager.mapper.HotelRoomMapper;
 import com.shixi.hotelmanager.mapper.HotelStatusMapper;
 import com.shixi.hotelmanager.mapper.OrderMapper;
@@ -74,15 +75,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    @Transactional
-    public boolean refundOrder(Long orderId) {
-
+    @Transactional(rollbackFor = {RefundFailException.class})
+    public boolean refundOrder(Long orderId) throws RefundFailException {
         System.out.println("==============================");
         //根据订单号获取订单
         Order order = new Order();
         QueryWrapper<Order> query = new QueryWrapper<>();
         query.eq("order_id",orderId);
         order = order.selectOne(query);
+        if(!order.getStatus().equals("PAID"))
+            return false;
         //得到开始时间和结束时间
         String dateStart = order.getDateStart();
         String dateEnd = order.getDateEnd();
@@ -103,12 +105,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             for(Date date = start; date.getTime() != end.getTime(); date = dateAdd(date)){
                 String useDate = sdf.format(date);
                 System.out.println("date:"+useDate);
-
                 updateDB(order,useDate);
-
             }
+            updateDB(order,dateEnd);
         }
-
+        order.setStatus("REFUND");
+        order.updateById();
         return true;
     }
 
@@ -120,7 +122,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return date;
     }
 
-    public void updateDB(Order order,String useDate){
+    public void updateDB(Order order,String useDate) throws RefundFailException {
         //得到酒店ID
         int hotelId = order.getHotelId();
         //根据酒店Id得到实例
@@ -128,17 +130,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         QueryWrapper<HotelStatus> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("hotel_id",hotelId).eq("record_for_date",useDate);
         hotelStatus = hotelStatus.selectOne(queryWrapper);
-        hotelStatus.setHotelRoomOrdered(hotelStatus.getHotelRoomOrdered()-order.getRoomCount());
+        System.out.println(order.getRoomCount());
+        int hotelNum = hotelStatus.getHotelRoomOrdered()-order.getRoomCount();
+        if (hotelNum<0){
+            throw new RefundFailException();
+        }
+        hotelStatus.setHotelRoomOrdered(hotelNum);
         hotelStatus.updateById();
 
         //得到房间ID
         int theRoomId = order.getOrderRoomId();
         RoomStatus roomStatus = new RoomStatus();
-        String[] nums = order.getRoomNums().split(",");
-        for(int i = 0; i < nums.length; i++){
-            QueryWrapper<RoomStatus> queryWrapper1 = new QueryWrapper<>();
-            queryWrapper1.eq("room_id",theRoomId).eq("record_for_date",useDate).eq("room_num",nums[i]);
-            roomStatus.delete(queryWrapper1);
+        QueryWrapper<RoomStatus> queryRoomWrapper = new QueryWrapper<>();
+        queryRoomWrapper.eq("room_id",theRoomId).eq("record_for_date",useDate);
+        roomStatus = roomStatus.selectOne(queryRoomWrapper);
+        int roomNum = roomStatus.getRoomNum()-order.getRoomCount();
+        if (roomNum<0){
+            throw new RefundFailException();
         }
+        roomStatus.setRoomNum(roomNum);
+        roomStatus.updateById();
     }
 }
