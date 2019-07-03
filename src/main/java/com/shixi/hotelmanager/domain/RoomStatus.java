@@ -1,7 +1,6 @@
 package com.shixi.hotelmanager.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +18,4 @@ public class RoomStatus extends Model<RoomStatus> {
     private int roomId;
     private Date recordForDate;
     private int roomNum;//房间编号
-    @Version
-    private int version;
 }

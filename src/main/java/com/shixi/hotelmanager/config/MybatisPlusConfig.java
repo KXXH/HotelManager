@@ -2,6 +2,7 @@ package com.shixi.hotelmanager.config;
 
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
+import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -30,6 +31,11 @@ public class MybatisPlusConfig {
         sqlParserList.add(new BlockAttackSqlParser());
         paginationInterceptor.setSqlParserList(sqlParserList);
         return new PaginationInterceptor();
+    }
+
+    @Bean
+    public OptimisticLockerInterceptor optimisticLockerInterceptor() {
+        return new OptimisticLockerInterceptor();
     }
 
     @Bean
