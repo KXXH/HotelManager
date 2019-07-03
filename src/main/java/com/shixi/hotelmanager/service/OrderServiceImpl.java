@@ -4,13 +4,20 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchConditionType;
 import com.shixi.hotelmanager.domain.*;
-import com.shixi.hotelmanager.exception.*;
+import com.shixi.hotelmanager.exception.HotelRoomInsufficientException;
+import com.shixi.hotelmanager.exception.OrderNotFoundException;
+import com.shixi.hotelmanager.exception.OrderStatusException;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.mapper.HotelRoomMapper;
 import com.shixi.hotelmanager.mapper.HotelStatusMapper;
 import com.shixi.hotelmanager.mapper.OrderMapper;
@@ -263,8 +270,45 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public String checkPaymentStatus(Long orderId) {
-        return null;
+    public String checkPaymentStatus(Long orderId) throws OrderNotFoundException, AlipayApiException {
+        User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        QueryWrapper<Order> wrapper=new QueryWrapper<>();
+        wrapper.eq("id",orderId).eq("order_user_id",user.getId());
+        Order order=getOne(wrapper);
+        //order不能为空
+        if(order==null) throw new OrderNotFoundException();
+        //如果order状态是已经完成则不必查询
+        switch(order.getStatus()){
+            case "PAID": case "REFUND": case "CANCEL": return order.getStatus();
+        }
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+
+        request.setBizContent("{" +
+                "    \"out_trade_no\":\""+order.getId()+"\"" +
+                "  }");
+
+        AlipayTradeQueryResponse response = alipayClient.execute(request);
+        if(response.isSuccess()){
+            order.setOrderId(response.getTradeNo());
+            response.getBuyerLogonId();
+            String status=response.getTradeStatus();
+            switch (status){
+                case "WAIT_BUYER_PAY":
+                    order.setStatus("UNPAID");
+                    break;
+                case "TRADE_SUCCESS": case "TRADE_FINISHED":
+                    try{
+                        payOrderComplete(orderId,order.getOrderId());
+                        order.setStatus("PAID");
+                        order.setBuyerAlipay(response.getBuyerLogonId());
+                        order.insertOrUpdate();
+                    } catch (OrderStatusException ignored) {
+                        ;
+                    }
+                    break;
+            }
+        }
+        return order.getStatus();
     }
 
     public Date dateAdd(Date date){
@@ -300,5 +344,43 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return instant.atZone(zoneId).toLocalDate();
 
+    }
+
+    @Override
+    public List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) {
+        Page<Order> p=new Page<>(currentPage,size);
+        return page(p,buildWrapper(condition)).getRecords();
+    }
+
+    private QueryWrapper<Order> setCondition(OrderSearchConditionType conditionType, QueryWrapper<Order> wrapper){
+        if(conditionType==null) return wrapper;
+        wrapper.le(conditionType.getHigh()!=null,conditionType.getTarget(),conditionType.getHigh());
+        wrapper.ge(conditionType.getLow()!=null,conditionType.getTarget(),conditionType.getLow());
+        wrapper.like(conditionType.getLike()!=null,conditionType.getTarget(),conditionType.getLike());
+        wrapper.eq(conditionType.getEq()!=null,conditionType.getTarget(),conditionType.getEq());
+        wrapper.in(conditionType.getIn()!=null,conditionType.getTarget(),conditionType.getIn());
+
+        wrapper.orderByAsc(conditionType.getOrderByAsc()!=null,conditionType.getOrderByAsc());
+        wrapper.orderByDesc(conditionType.getOrderByDesc()!=null,conditionType.getOrderByDesc());
+
+        return wrapper;
+    }
+
+
+    private Wrapper<Order> buildWrapper(OrderSearchConditionType conditionType){
+        QueryWrapper<Order> wrapper=new QueryWrapper<>();
+        if(conditionType==null) return wrapper;
+        wrapper=setCondition(conditionType,wrapper);
+        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
+            if(conditionType.getOr()!=null){
+                conditionType = conditionType.getOr();
+                wrapper.or();
+                wrapper=setCondition(conditionType,wrapper);
+            }else{
+                conditionType = conditionType.getAnd();
+                wrapper=setCondition(conditionType,wrapper);
+            }
+        }
+        return wrapper;
     }
 }
