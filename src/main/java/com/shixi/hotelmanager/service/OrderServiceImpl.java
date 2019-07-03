@@ -4,8 +4,10 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,10 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchConditionType;
 import com.shixi.hotelmanager.domain.*;
-import com.shixi.hotelmanager.exception.HotelRoomInsufficientException;
-import com.shixi.hotelmanager.exception.OrderNotFoundException;
-import com.shixi.hotelmanager.exception.OrderStatusException;
-import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.*;
 import com.shixi.hotelmanager.mapper.HotelRoomMapper;
 import com.shixi.hotelmanager.mapper.HotelStatusMapper;
 import com.shixi.hotelmanager.mapper.OrderMapper;
@@ -418,9 +417,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) {
+    public List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) throws UserNotFoundException {
         Page<Order> p=new Page<>(currentPage,size);
-        return page(p,buildWrapper(condition)).getRecords();
+        User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        if(user==null) throw new UserNotFoundException();
+        return page(p,buildWrapper(condition).eq("order_user_id",user.getId())).getRecords();
     }
 
     private QueryWrapper<Order> setCondition(OrderSearchConditionType conditionType, QueryWrapper<Order> wrapper){
@@ -438,7 +439,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
 
-    private Wrapper<Order> buildWrapper(OrderSearchConditionType conditionType){
+    private QueryWrapper<Order> buildWrapper(OrderSearchConditionType conditionType){
         QueryWrapper<Order> wrapper=new QueryWrapper<>();
         if(conditionType==null) return wrapper;
         wrapper=setCondition(conditionType,wrapper);

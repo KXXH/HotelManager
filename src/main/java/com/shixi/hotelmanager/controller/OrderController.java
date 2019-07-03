@@ -2,6 +2,7 @@ package com.shixi.hotelmanager.controller;
 
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchResultDTO;
+import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,7 @@ public class OrderController {
     OrderService orderService;
 
     @RequestMapping("/search")
-    public OrderSearchResultDTO searchOrder(@RequestBody OrderSearchDTO dto){
+    public OrderSearchResultDTO searchOrder(@RequestBody OrderSearchDTO dto) throws UserNotFoundException {
         return new OrderSearchResultDTO(orderService.searchOrder(dto.getCurrentPage(),dto.getSize(),dto.getCondition()));
     }
 
