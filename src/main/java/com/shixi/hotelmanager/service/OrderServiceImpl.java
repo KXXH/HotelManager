@@ -50,7 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTelephone(dto.getTelephone());
         order.setPersonName(dto.getPersonName());
         order.setPeopleCount(dto.getPeopleCount());
-
+        order.setUuid(UUID.randomUUID().toString());
         //找到操作用户并将用户和订单关联
         User opUser= ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         order.setOrderUserId(opUser.getId());
