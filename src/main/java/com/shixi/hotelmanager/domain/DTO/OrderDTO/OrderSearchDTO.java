@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderSearchDTO extends OrderDTO{
-private int currentPage;
-private int size;
+private int currentPage=1;
+private int size=20;
 private OrderSearchConditionType condition;
 }
