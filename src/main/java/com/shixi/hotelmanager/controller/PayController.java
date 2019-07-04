@@ -5,8 +5,8 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderEvaluateDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.PayOrderDTO;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.*;
@@ -59,37 +59,6 @@ public class PayController {
     @Autowired
     private OrderService orderService;
 
-
-    @RequestMapping("/test")
-    @ResponseBody
-    public String test(){
-        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761", PRIVATE_KEY,"json","UTF-8", ALIPAY_PUBLIC_KEY,"RSA2");
-        AlipayTradePagePayRequest request=new AlipayTradePagePayRequest();
-        request.setReturnUrl("http://localhost:8280/pay/CallBack/return");
-        request.setNotifyUrl("http://localhost:8280/pay/CallBack/notify");//在公共参数中设置回跳和通知地址
-
-        request.setBizContent("{" +
-                "    \"out_trade_no\":\""+"99999"+"\"," +
-                "    \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
-                "    \"total_amount\":"+100+"," +
-                "    \"subject\":\""+"订单\"," +
-                "    \"body\":\""+"间"+"\"," +
-                "    \"timeout_express\":\"1m\","+
-                "    \"passback_params\":\"merchantBizType%3d3C%26merchantBizNo%3d2016010101111\"," +
-                "    \"extend_params\":{" +
-                "    \"sys_service_provider_id\":\"2088511833207846\"" +
-                "    }"+
-                "  }");//填充业务参数
-        String form="";
-        try {
-            AlipayTradePagePayResponse response=alipayClient.pageExecute(request);
-            form = response.getBody(); //调用SDK生成表单
-            //orderMapper.insert(order);
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
-        }
-        return form;
-    }
 
     @RequestMapping("/createOrder")
     @ResponseBody String createOrder(CreateOrderDTO dto){
@@ -149,6 +118,21 @@ public class PayController {
             System.out.println("通知校验失败！！");
             return "failure";
             // TODO 验签失败则记录异常日志，并在response中返回failure.
+        }
+    }
+
+    @RequestMapping("/evaluate")
+    @ResponseBody
+    public String makeEvaluate(OrderEvaluateDTO orderEvaluateDTO){
+        System.out.println(orderEvaluateDTO.getOrderId()+","+orderEvaluateDTO.getEvaluate());
+        try {
+            if(orderService.makeEvaluate(orderEvaluateDTO.getEvaluate(), orderEvaluateDTO.getOrderId()))
+                return "success";
+            else
+                return "fail";
+        } catch (OrderNotFoundException e) {
+            e.printStackTrace();
+            return "fail";
         }
     }
 }

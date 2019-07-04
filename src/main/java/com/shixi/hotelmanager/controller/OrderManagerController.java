@@ -3,6 +3,8 @@ package com.shixi.hotelmanager.controller;
 import com.alipay.api.AlipayApiException;
 import com.shixi.hotelmanager.domain.DTO.SearchDTO;
 import com.shixi.hotelmanager.domain.Order;
+import com.shixi.hotelmanager.exception.OrderNotFoundException;
+import com.shixi.hotelmanager.exception.RefundFailException;
 import com.shixi.hotelmanager.service.OrderManagerService;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,14 @@ public class OrderManagerController {
 
     @RequestMapping("/refund")
     public boolean helpUserRefund(Order order) throws AlipayApiException {
-        return orderService.makeFundOrder(order);
+        try {
+            return orderService.makeFundOrder(order);
+        } catch (OrderNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (RefundFailException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

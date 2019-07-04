@@ -337,6 +337,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return null;
     }
 
+    @Override
+    public boolean makeEvaluate(String evaluate,String OrderId) throws OrderNotFoundException {
+        System.out.println(OrderId);
+        Order order = new Order();
+        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
+        orderQueryWrapper.eq("order_id",OrderId);
+        order = order.selectOne(orderQueryWrapper);
+        System.out.println(OrderId);
+        if (order==null)
+            throw new OrderNotFoundException();
+        if (!order.getStatus().equals("PAID"))
+            return false;
+        order.setEvaluate(evaluate);
+        order.updateById();
+        return true;
+    }
+
     public Date dateAdd(Date date){
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);

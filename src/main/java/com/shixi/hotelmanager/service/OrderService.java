@@ -20,5 +20,6 @@ public interface OrderService {
     @Transactional(rollbackFor = {RefundFailException.class})
     boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException;
     boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException;
-    public String checkPaymentStatus(Long orderId);
+    String checkPaymentStatus(Long orderId);
+    boolean makeEvaluate(String evaluate,String OrderId) throws OrderNotFoundException;
 }
