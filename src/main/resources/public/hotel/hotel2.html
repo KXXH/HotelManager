@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
   </head>
-  <body>
+  <body onload="getHotelInfo()">
   <script>
       /*获取到Url里面的参数*/
       (function ($) {
@@ -161,13 +161,53 @@
 							  <div class="d-flex">
 								  <div class="one">
 									  <h3><a href="#">{{point.bedType}}</a></h3>
-									  <p class="rate">
+									  <p class="rate" v-if="ratingAverage>=8">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>=6">
 										  <i class="icon-star"></i>
 										  <i class="icon-star"></i>
 										  <i class="icon-star"></i>
 										  <i class="icon-star"></i>
 										  <i class="icon-star-o"></i>
-										  <span>8 Rating</span>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>=4">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>=2">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>0">
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
 									  </p>
 								  </div>
 								  <div class="two">
@@ -290,24 +330,30 @@
       var title=new Vue({
           el:"#container",
           data:{
-              hotel_name:""
+              hotel_name:"",
+			  hotel_english_name:"",
           }
       });
       var j={'condition':{'eq': ''+parseInt(urlid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)
       console.log(j);
-      $.ajax({
-          url:'/hotel/search',
-          type:'POST',
-          data:JSON.stringify(j),
-          dataType:"json",
-          contentType:"application/json; charset=utf-8",
-          success:function(json) {
-              console.log(json);
-              //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
-              title.hotel_name=json.data[0]["hotelTranslatedName"];
-			  title.hotel_english_name=json.data[0]["hotelName"];
-          }
-      });
+
+      function getHotelInfo() {
+		  $.ajax({
+			  url:'/hotel/search',
+			  type:'POST',
+			  data:JSON.stringify(j),
+			  dataType:"json",
+			  contentType:"application/json; charset=utf-8",
+			  success:function(json) {
+				  console.log(json);
+				  //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
+				  title.hotel_name=json.data[0]["hotelTranslatedName"];
+				  title.hotel_english_name=json.data[0]["hotelName"];
+				  hotel_table.ratingAverage=json.data[0]["ratingAverage"];
+				  hotel_table.ratesFrom=json.data[0]["ratesFrom"];
+			  }
+		  });
+	  }
 
   </script>
   <script>
@@ -315,7 +361,9 @@
           {
               el:'#hotel_table',
               data:{
-                  points:[]
+                  points:[],
+				  ratingAverage:0,
+				  ratesFrom:0
               },
               methods:{
                   See :function (e)  {
