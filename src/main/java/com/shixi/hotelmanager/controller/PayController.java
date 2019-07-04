@@ -2,7 +2,9 @@ package com.shixi.hotelmanager.controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderEvaluateDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderStatusDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.PayOrderDTO;
 import com.shixi.hotelmanager.domain.Order;
@@ -10,6 +12,8 @@ import com.shixi.hotelmanager.exception.HotelRoomInsufficientException;
 import com.shixi.hotelmanager.exception.OrderNotFoundException;
 import com.shixi.hotelmanager.exception.OrderStatusException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
+import com.shixi.hotelmanager.exception.*;
+import com.shixi.hotelmanager.mapper.OrderMapper;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +38,7 @@ public class PayController {
     @Autowired
     private OrderService orderService;
 
+    
 
     @RequestMapping("/createOrder")
     @ResponseBody String createOrder(@Valid CreateOrderDTO dto,BindingResult result){
@@ -56,16 +61,21 @@ public class PayController {
     }
 
     @ResponseBody
-    @RequestMapping("/admin/refund")
+    @RequestMapping("/refund")
     public String refund(Order order) throws AlipayApiException {
-        if(orderService.makeFundOrder(order))
-            return "success";
-        else
+        try {
+            if(orderService.makeFundOrder(order))
+                return "success";
+            else
+                return "fail";
+        } catch (OrderNotFoundException e) {
+            e.printStackTrace();
             return "fail";
-
+        } catch (RefundFailException e) {
+            e.printStackTrace();
+            return "fail";
+        }
     }
-
-    
 
 
     @RequestMapping("/CallBack/return")
@@ -91,6 +101,21 @@ public class PayController {
             System.out.println("通知校验失败！！");
             return "failure";
             // TODO 验签失败则记录异常日志，并在response中返回failure.
+        }
+    }
+
+    @RequestMapping("/evaluate")
+    @ResponseBody
+    public String makeEvaluate(OrderEvaluateDTO orderEvaluateDTO){
+        System.out.println(orderEvaluateDTO.getOrderId()+","+orderEvaluateDTO.getEvaluate());
+        try {
+            if(orderService.makeEvaluate(orderEvaluateDTO.getEvaluate(), orderEvaluateDTO.getOrderId()))
+                return "success";
+            else
+                return "fail";
+        } catch (OrderNotFoundException e) {
+            e.printStackTrace();
+            return "fail";
         }
     }
 

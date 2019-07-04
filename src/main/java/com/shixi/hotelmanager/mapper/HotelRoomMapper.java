@@ -10,26 +10,15 @@ import java.util.List;
 
 @Component
 public interface HotelRoomMapper extends BaseMapper<HotelRoom> {
-    @Select("SELECT * FROM tbl_roominfo WHERE bed_type='${bed_type}'&&the_room_hotel_id=${hotel_id}&&id NOT IN(" +
-            "SELECT tbl_roominfo.id AS id FROM(" +
-            "SELECT id,COUNT(*) AS used FROM(" +
-            "SELECT " +
-            "DISTINCT room_num," +
-            "b.room_id AS id " +
-            "FROM tbl_roominfo a " +
-            "LEFT JOIN tbl_room_status b " +
-            "ON a.id=b.room_id " +
-            "WHERE a.the_room_hotel_id=${hotel_id}" +
-            "&&a.bed_type='${bed_type}'" +
-            "&&b.record_for_date>=DATE(\"${dateStart}\")" +
-            "&&b.record_for_date<=DATE(\"${dateEnd}\")" +
-            ") d " +
-            "GROUP BY id" +
-            ") e LEFT JOIN tbl_roominfo ON e.id=tbl_roominfo.id " +
-            "WHERE used > count-${room_wanted}" +
-            ")")
+    @Select("SELECT tbl_roominfo.* FROM tbl_roominfo,\n" +
+            "(SELECT MAX(room_num) AS count FROM\n" +
+            "(SELECT id FROM tbl_roominfo WHERE the_room_hotel_id=${hotel_id} AND bed_type='${bed_type}') d \n" +
+            "LEFT JOIN tbl_room_status ON d.id=tbl_room_status.room_id\n" +
+            "WHERE record_for_date>='${dateStart}' AND record_for_date<='${dateEnd}') e \n" +
+            "WHERE tbl_roominfo.count>=e.count+${room_wanted} AND tbl_roominfo.the_room_hotel_id=${hotel_id} AND bed_type='${bed_type}'")
     List<HotelRoom> selectHotelRoomByRemain(@Param("dateStart")String dateStart, @Param("dateEnd") String dateEnd,
                                    @Param("hotel_id")int hotel_id,@Param("bed_type")String bed_type,
                                    @Param("room_wanted")int room_wanted);
 
 }
+
