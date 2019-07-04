@@ -3,10 +3,12 @@ package com.shixi.hotelmanager.controller;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shixi.hotelmanager.domain.DTO.HotelRoomDTO.HotelRoomGetReturnDTO;
+import com.shixi.hotelmanager.domain.DTO.HotelRoomDTO.HotelRoomReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.HotelRoomDTO.HotelRoomSearchDTO;
 import com.shixi.hotelmanager.domain.HotelRoom;
 import com.shixi.hotelmanager.service.HotelRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +21,8 @@ public class HotelRoomController {
     HotelRoomService hotelRoomService;
 
     @RequestMapping("/remain")
-    public List<HotelRoom> remain(HotelRoomSearchDTO hotelRoomSearchDTO){
-
+    public List<HotelRoomReturnDTO> remain(@RequestBody HotelRoomSearchDTO hotelRoomSearchDTO){
+        System.out.println(hotelRoomSearchDTO.getBedType());
         return hotelRoomService.selectHotelRoomByRemain(hotelRoomSearchDTO.getStartDate()
                 ,hotelRoomSearchDTO.getEndDate(),hotelRoomSearchDTO.getHotelId(),
                 hotelRoomSearchDTO.getBedType(),hotelRoomSearchDTO.getRoomWanted());

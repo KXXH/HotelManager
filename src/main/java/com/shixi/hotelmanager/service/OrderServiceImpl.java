@@ -250,7 +250,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public boolean makeFundOrder(Order order) throws AlipayApiException {
+    public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException {
+
+        User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        if (order.getOrderUserId() != user.getId())
+            throw new OrderNotFoundException();
+
         AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
         AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
         request.setBizContent("{" +
@@ -264,23 +269,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 "  }");
         AlipayTradeRefundResponse response = alipayClient.execute(request);
         if(response.isSuccess()) {
-            try {
-                Order order1 = new Order();
-                QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("order_id",order.getOrderId());
-                order1 = order1.selectOne(queryWrapper);
+            Order order1 = new Order();
+            QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("order_id",order.getOrderId());
+            order1 = order1.selectOne(queryWrapper);
 
-                if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
-                    return true;
-                else
-                    return false;
-            } catch (RefundFailException e) {
-                e.printStackTrace();
+            if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
+                return true;
+            else
                 return false;
-            } catch (OrderNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
         }else{
             return false;
         }
