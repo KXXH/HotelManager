@@ -137,7 +137,7 @@ public class PayController {
             return "fail";
         }
     }
-}
+
     @RequestMapping("/checkStatus")
     @ResponseBody
     public OrderStatusDTO checkStatus(PayOrderDTO dto) throws OrderNotFoundException, AlipayApiException {
