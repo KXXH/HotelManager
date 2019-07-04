@@ -152,7 +152,7 @@
 				  <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
 					  <div class="destination">
 
-						  <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{'background-image':'url('+computedURL+')'}" >
+						  <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{'background-image': 'url('+computedURL()+')'}">
 							  <div class="icon d-flex justify-content-center align-items-center">
 								  <span class="icon-link"></span>
 							  </div>
@@ -184,7 +184,9 @@
 							  <hr>
 							  <p class="bottom-area d-flex">
 								  <span><i class="icon-map-o"></i>总房间数   {{point.count}}</span>
-								  <span class="ml-auto"><a href="#">Book Now</a></span>
+								  <!--<span class="ml-auto"><a href="#">Book Now</a></span>-->
+								  <!--v-on:click="goto(point.id)"-->
+								  <span class="ml-auto" v-on:click="goto(point.id)"><a>Book Now</a></span>
 							  </p>
 						  </div>
 					  </div>
@@ -336,25 +338,19 @@
               data:{
                   points:[]
               },
-              computed: {
-                  computedURL: function () {
-                      // `this` 指向 vm 实例
-					  var tem=Math.floor((Math.random()*10)%6+1);
-					  console.log("随机数"+tem);
-                      return 'images/about.jpg';
-//                      return 'url '+'(images/holel'+tem+'.jpg)';
-                  }
-              },
               methods:{
-                  goto:function(id){
-                      window.location.href="/hotel/detail?id="+id;
+                  See :function (e)  {
+                      window.location.href = window.location.href+"?roomid="+e;
                   },
-                  computedURL1: function () {
+                  goto:function(id){
+                      window.location.href="/public/hotel/room.html?hotelid="+urlid+"&roomid="+id;//跳转
+                  },
+                  computedURL: function () {
                       // `this` 指向 vm 实例
                       var tem=Math.floor((Math.random()*10)%6+1);
                       console.log("随机数"+tem);
-                      return 'url (images/about.jpg)';
-//                      return 'url '+'(images/holel'+tem+'.jpg)';
+//                      return 'url (images/about.jpg)';
+                      return 'images/hotel'+tem+'.jpg';
                   }
               }
           }
@@ -406,7 +402,7 @@
   <script src="js/bootstrap-datepicker.js"></script>
   <!--<script src="js/jquery.timepicker.min.js"></script>-->
   <script src="js/scrollax.min.js"></script>
-  
+
   <script src="js/main.js"></script>
     
   </body>
