@@ -8,6 +8,8 @@ import com.shixi.hotelmanager.domain.Order;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
+
 @Data
 @NoArgsConstructor
 public class OrderReturnDTO extends OrderDTO {
@@ -18,9 +20,12 @@ public class OrderReturnDTO extends OrderDTO {
     private String dateStart;
     private String dateEnd;
     private String status;
+    private String roomName;
+    private String createTime;
     public OrderReturnDTO(Order order){
         Hotel hotel=new Hotel();
         HotelRoom room=new HotelRoom();
+        room=room.selectById(order.getOrderRoomId());
         QueryWrapper<Hotel> hotelQueryWrapper=new QueryWrapper<>();
         hotelQueryWrapper.eq("hotel_id",order.getHotelId());
         hotel=hotel.selectOne((Wrapper)hotelQueryWrapper);
@@ -30,6 +35,10 @@ public class OrderReturnDTO extends OrderDTO {
         setPrice(order.getPrice());
         setDateStart(order.getDateStart());
         setDateEnd(order.getDateEnd());
+        if(order.getCreateTime()!=null)
+            setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
+        else
+            setCreateTime("未知");
         switch(order.getStatus()){
             case "UNPAID":
                 setStatus("未支付");
@@ -44,5 +53,6 @@ public class OrderReturnDTO extends OrderDTO {
                 setStatus("已取消");
                 break;
         }
+        setRoomName(room.getBedType());
     }
 }
