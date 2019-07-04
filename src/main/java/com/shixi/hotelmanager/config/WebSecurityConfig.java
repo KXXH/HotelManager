@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/public/js/**","/public/assets/**","/public/images/**", "public/css/**",
                         "/login.html","/public/register.html","/register/**","/verification/**",
                         "/user/forgetPassword/**","/public/forgetPassword.html").permitAll()
-                .antMatchers("/user/**").access("hasRole('USER')")
+                .antMatchers("/user/**").hasAnyRole("ROLE_USER")
                 //.hasIpAddress()//读取配置权限配置
                 .antMatchers("/admin/**").access("hasRole('ADMIN')")
                 .anyRequest().authenticated()
