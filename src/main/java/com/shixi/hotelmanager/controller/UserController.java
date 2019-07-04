@@ -49,7 +49,11 @@ public class UserController {
 
     @RequestMapping("/get")
     public List<User> get(){
-        return userMapper.selectList(null);
+        List<User> userList=userMapper.selectList(null);
+        for(User user:userList){
+            user.setPassword("******");
+        }
+        return userList;
     }
 
     @RequestMapping("/admin/addUser")
