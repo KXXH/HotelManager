@@ -254,7 +254,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public boolean makeFundOrder(Order order) throws AlipayApiException {
+    public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException {
+
+        User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        if (order.getOrderUserId() != user.getId())
+            throw new OrderNotFoundException();
+
         AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
         AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
         request.setBizContent("{" +
@@ -268,23 +273,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 "  }");
         AlipayTradeRefundResponse response = alipayClient.execute(request);
         if(response.isSuccess()) {
-            try {
-                Order order1 = new Order();
-                QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("order_id",order.getOrderId());
-                order1 = order1.selectOne(queryWrapper);
+            Order order1 = new Order();
+            QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("order_id",order.getOrderId());
+            order1 = order1.selectOne(queryWrapper);
 
-                if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
-                    return true;
-                else
-                    return false;
-            } catch (RefundFailException e) {
-                e.printStackTrace();
+            if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
+                return true;
+            else
                 return false;
-            } catch (OrderNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
         }else{
             return false;
         }
@@ -381,6 +378,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return order.getStatus();
     }
 
+    @Override
+    public boolean makeEvaluate(String evaluate,String OrderId) throws OrderNotFoundException {
+        System.out.println(OrderId);
+        Order order = new Order();
+        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
+        orderQueryWrapper.eq("order_id",OrderId);
+        order = order.selectOne(orderQueryWrapper);
+        System.out.println(OrderId);
+        if (order==null)
+            throw new OrderNotFoundException();
+        if (!order.getStatus().equals("PAID"))
+            return false;
+        order.setEvaluate(evaluate);
+        order.updateById();
+        return true;
+    }
+
     public Date dateAdd(Date date){
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
@@ -389,7 +403,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return date;
     }
 
-    public void updateDB(Order order,String useDate){
+    public void updateDB(Order order,String useDate) throws RefundFailException {
         //得到酒店ID
         int hotelId = order.getHotelId();
         //根据酒店Id得到实例
@@ -397,12 +411,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         QueryWrapper<HotelStatus> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("hotel_id",hotelId).eq("record_for_date",useDate);
         hotelStatus = hotelStatus.selectOne(queryWrapper);
-        hotelStatus.setHotelRoomOrdered(hotelStatus.getHotelRoomOrdered()-order.getRoomCount());
+        int hotelNum = hotelStatus.getHotelRoomOrdered()-order.getRoomCount();
+        if(hotelNum < 0)
+            throw new RefundFailException();
+        hotelStatus.setHotelRoomOrdered(hotelNum);
         hotelStatus.updateById();
 
         //得到房间ID
         int theRoomId = order.getOrderRoomId();
         RoomStatus roomStatus = new RoomStatus();
+        QueryWrapper<RoomStatus> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("room_id",theRoomId).eq("record_for_date",useDate);
+        roomStatus = roomStatus.selectOne(queryWrapper1);
+        int roomNum = roomStatus.getRoomNum()-order.getRoomCount();
+        if(roomNum < 0)
+            throw new RefundFailException();
+        roomStatus.setRoomNum(roomNum);
+        roomStatus.updateById();
 
     }
 
