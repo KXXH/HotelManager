@@ -48,4 +48,5 @@ public class Order extends Model<Order> {
     private Date createTime;
 
     private String evaluate;
+    private String buyerAlipay;
 }

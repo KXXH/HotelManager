@@ -121,7 +121,7 @@
                 <th>评价</th>
             </tr>
             </thead>
-            <tr v-for="point in points" v-on:click="goto(point.id)">
+            <tr v-for="point in points" v-on:click="goto(point.hotelId)">
 
                 <th>{{point.hotelTranslatedName}}</th>
                 <th>{{point.starRating}}</th>

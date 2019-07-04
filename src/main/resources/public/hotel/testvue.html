@@ -56,19 +56,19 @@
     </div>
 </div>
 <script>
-//    var hotel_table=new Vue(
-//        {
-//            el:'#hotel_table',
-//            data:{
-//                points:[]
-//            },
-//            methods:{
-//                goto:function(id){
-//                    window.location.href="/hotel/detail?id="+id;
-//                }
-//            }
-//        }
-//    );
+    var hotel_table=new Vue(
+        {
+            el:'#hotel_table',
+            data:{
+                points:[]
+            },
+            methods:{
+                goto:function(id){
+                    window.location.href="/hotel/detail?id="+id;
+                }
+            }
+        }
+    );
     doshow();
     function doshow(){
         $.ajax(

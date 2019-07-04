@@ -7,6 +7,7 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderEvaluateDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderStatusDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.PayOrderDTO;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.*;
@@ -112,7 +113,8 @@ public class PayController {
             System.out.println("通知校验成功！！");
             System.out.println("map:"+map.toString());
             // TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
-            orderService.payOrderComplete(Long.parseLong(map.get("out_trade_no")),map.get("trade_no"));
+            //orderService.payOrderComplete(Long.parseLong(map.get("out_trade_no")),map.get("trade_no"));
+            orderService.checkPaymentStatus(Long.parseLong(map.get("out_trade_no")));
             return "success";
         }else{
             System.out.println("通知校验失败！！");
@@ -134,5 +136,14 @@ public class PayController {
             e.printStackTrace();
             return "fail";
         }
+    }
+}
+    @RequestMapping("/checkStatus")
+    @ResponseBody
+    public OrderStatusDTO checkStatus(PayOrderDTO dto) throws OrderNotFoundException, AlipayApiException {
+        String status=orderService.checkPaymentStatus(dto.getId());
+        OrderStatusDTO returnDTO=new OrderStatusDTO();
+        returnDTO.setStatus(status);
+        return returnDTO;
     }
 }
