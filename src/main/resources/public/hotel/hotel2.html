@@ -2,11 +2,13 @@
 <html lang="en">
   <head>
     <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
+	  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	  <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">
+    <!--<link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">-->
+    <!--<link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">-->
 
     <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
     <link rel="stylesheet" href="css/animate.css">
@@ -20,17 +22,27 @@
     <link rel="stylesheet" href="css/ionicons.min.css">
 
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
-    <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <!--<link rel="stylesheet" href="css/jquery.timepicker.css">-->
 
     
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
-
-	  <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
-	  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   </head>
   <body>
+  <script>
+      /*获取到Url里面的参数*/
+      (function ($) {
+          $.getUrlParam = function (name) {
+              var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+              var r = window.location.search.substr(1).match(reg);
+              if (r != null) return unescape(r[2]); return null;
+          }
+      })(jQuery);
+      var urlid = $.getUrlParam('id');
+	  console.clear();
+      console.log(urlid);
+  </script>
     
 	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
@@ -51,6 +63,20 @@
 	      </div>
 	    </div>
 	  </nav>
+    <!-- END nav -->
+    
+    <div class="hero-wrap js-fullheight" style="background-image: url('images/bg_1.jpg');">
+      <div class="overlay"></div>
+      <div class="container" id="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
+          <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+            <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="index.html">Home</a></span> <span>Hotel</span></p>
+			  <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
+
+          </div>
+        </div>
+      </div>
+    </div>
 		
 		<section class="ftco-section">
       <div class="container">
@@ -61,6 +87,7 @@
         			<form action="#">
         				<div class="fields">
 
+
 		              <div class="form-group">
 		                <input type="text" id="checkin_date" class="form-control checkin_date" placeholder="Date from">
 		              </div>
@@ -69,13 +96,13 @@
 		              </div>
 		              <div class="form-group">
 		              	<div class="range-slider">
-		              		<span>
-										    <input type="number" value="25000" min="0" max="120000"/>	-
-										    <input type="number" value="50000" min="0" max="120000"/>
-										  </span>
-										  <input value="1000" min="0" max="120000" step="500" type="range"/>
-										  <input value="50000" min="0" max="120000" step="500" type="range"/>
-										  </svg>
+		              		<!--<span>-->
+										    <!--<input type="number" value="25000" min="0" max="120000"/>	- -->
+										    <!--<input type="number" value="50000" min="0" max="120000"/>-->
+										  <!--</span>-->
+										  <!--<input value="1000" min="0" max="120000" step="500" type="range"/>-->
+										  <!--<input value="50000" min="0" max="120000" step="500" type="range"/>-->
+										  <!--</svg>-->
 										</div>
 		              </div>
 		              <div class="form-group">
@@ -121,94 +148,66 @@
         		</div>
           </div><!-- END-->
           <div class="col-lg-9">
-          	<div class="row" id="hotel_table">
-					<div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
-						<div class="destination">
-							<a href="#" class="img img-2 d-flex justify-content-center align-items-center" style="background-image: url(images/hotel-5.jpg);">
-								<div class="icon d-flex justify-content-center align-items-center">
-									<span class="icon-link"></span>
-								</div>
-							</a>
-							<div class="text p-3">
-								<div class="d-flex">
-									<div class="one">
-										<h3><a href="#">房型名</a></h3>
-										<p class="rate">
-											<i class="icon-star"></i>
-											<i class="icon-star"></i>
-											<i class="icon-star"></i>
-											<i class="icon-star"></i>
-											<i class="icon-star-o"></i>
-											<span>8 Rating</span>
-										</p>
-									</div>
-									<div class="two">
-										<span class="price per-price">¥价格<br><small>/night</small></span>
-									</div>
-								</div>
-								<p class="rate">
-									介绍
-									<i class="icon-laptop"></i>
-									<i class="icon-coffee"></i>
-									<i class="icon-wifi"></i>
-								</p>
+			  <div class="row" id="hotel_table">
+				  <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
+					  <div class="destination">
 
-								<hr>
-								<p class="bottom-area d-flex">
-									<span><i class="icon-map-o"></i>剩余房间数</span>
-									<span class="ml-auto"><a href="#">Book Now</a></span>
-								</p>
-							</div>
-						</div>
-					</div>
-				<!--</div>-->
-				<script>
-                    var hotel_table=new Vue(
-                        {
-                            el:'#hotel_table',
-                            data:{
-                                points:[]
-                            },
-                            methods:{
-                                goto:function(id){
-                                    window.location.href="/hotel/detail?id="+id;
-                                }
-                            }
-                        }
-                    );
-                    doshow();
-                    function doshow(){
-                        $.ajax(
-                            {
-                                url:'/hotel/get',
-                                type:'POST',
-                                dataType:"json",
-                                contentType:"application/json; charset=utf-8",
-                                success:function(json){
-                                    console.log(JSON.stringify(json));
-                                    hotel_table.points=json.data;
-//                    for(var i=0;i<json.data.length;i++){
-//
-//                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
-//                        var marker=new BMap.Marker(point,{
-//                            title:json.data[i].hotelTranslatedName
-//                        });
-//                        markers.push(marker);
-//                        var title=json.data[i].hotelTranslatedName;
-//                        markers[i].addEventListener('click',function(){
-//                            console.log("title=",hotelData[i].title);
-//                            var info=new BMap.InfoWindow(hotelData[i].title);
-//                            marker.openInfoWindow(info);
-//                        });
-//
-//                    }
-                                }
-                            });
-                    }
-				</script>
-			 </div>
+						  <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{ 'background-image': computedURL1()}" >
+							  <div class="icon d-flex justify-content-center align-items-center">
+								  <span class="icon-link"></span>
+							  </div>
+						  </a>
+						  <div class="text p-3">
+							  <div class="d-flex">
+								  <div class="one">
+									  <h3><a href="#">{{point.bedType}}</a></h3>
+									  <p class="rate">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <span>8 Rating</span>
+									  </p>
+								  </div>
+								  <div class="two">
+									  <span class="price per-price">¥{{point.price}}<br><small>/night</small></span>
+								  </div>
+							  </div>
+							  <p class="rate">
+								  设施
+								  <i class="icon-laptop" v-if="point.windows === '1'"></i>
+								  <i class="icon-coffee" v-if="point.breakfast === '1'"></i>
+								  <i class="icon-wifi" v-if="point.wifi === '1'"></i>
+							  </p>
 
+							  <hr>
+							  <p class="bottom-area d-flex">
+								  <span><i class="icon-map-o"></i>总房间数   {{point.count}}</span>
+								  <span class="ml-auto"><a href="#">Book Now</a></span>
+							  </p>
+						  </div>
+					  </div>
+				  </div>
+				  <!--</div>-->
 
+			  </div>
+
+          	<div class="row mt-5">
+		          <div class="col text-center">
+		            <div class="block-27">
+		              <ul>
+		                <li><a href="#">&lt;</a></li>
+		                <li class="active"><span>1</span></li>
+		                <li><a href="#">2</a></li>
+		                <li><a href="#">3</a></li>
+		                <li><a href="#">4</a></li>
+		                <li><a href="#">5</a></li>
+		                <li><a href="#">&gt;</a></li>
+		              </ul>
+		            </div>
+		          </div>
+		        </div>
           </div> <!-- .col-md-8 -->
         </div>
       </div>
@@ -307,7 +306,92 @@
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
+  <script>
+      var title=new Vue({
+          el:"#container",
+          data:{
+              hotel_name:""
+          }
+      });
+      var j={'condition':{'eq': ''+parseInt(urlid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)
+      console.log(j);
+      $.ajax({
+          url:'/hotel/search',
+          type:'POST',
+          data:JSON.stringify(j),
+          dataType:"json",
+          contentType:"application/json; charset=utf-8",
+          success:function(json) {
+              console.log(json);
+              //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
+              title.hotel_name=json.data[0]["hotelTranslatedName"];
+          }
+      });
 
+  </script>
+  <script>
+      var hotel_table=new Vue(//hotel_table.computedURL
+          {
+              el:'#hotel_table',
+              data:{
+                  points:[]
+              },
+              computed: {
+                  computedURL: function () {
+                      // `this` 指向 vm 实例
+					  var tem=Math.floor((Math.random()*10)%6+1);
+					  console.log("随机数"+tem);
+                      return 'url (images/about.jpg)';
+//                      return 'url '+'(images/holel'+tem+'.jpg)';
+                  }
+              },
+              methods:{
+                  goto:function(id){
+                      window.location.href="/hotel/detail?id="+id;
+                  },
+                  computedURL1: function () {
+                      // `this` 指向 vm 实例
+                      var tem=Math.floor((Math.random()*10)%6+1);
+                      console.log("随机数"+tem);
+                      return 'url (images/about.jpg)';
+//                      return 'url '+'(images/holel'+tem+'.jpg)';
+                  }
+              }
+          }
+      );
+      doshow();
+      //var urldata={"hotelId":urlid};
+      //console.log(urldata);
+      function doshow(){
+          $.ajax(
+              {
+                  url:'/hotelRoom/getRooms?hotelId='+urlid,
+                  type:'POST',
+                  dataType:"json",
+                  contentType:"application/json; charset=utf-8",
+                  success:function(json){
+                      console.log(JSON.stringify(json));
+                      console.log(json["rooms"].length);
+                      hotel_table.points=json["rooms"];
+//                    for(var i=0;i<json.data.length;i++){
+//
+//                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+//                        var marker=new BMap.Marker(point,{
+//                            title:json.data[i].hotelTranslatedName
+//                        });
+//                        markers.push(marker);
+//                        var title=json.data[i].hotelTranslatedName;
+//                        markers[i].addEventListener('click',function(){
+//                            console.log("title=",hotelData[i].title);
+//                            var info=new BMap.InfoWindow(hotelData[i].title);
+//                            marker.openInfoWindow(info);
+//                        });
+//
+//                    }
+                  }
+              });
+      }
+  </script>
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
   <script src="js/popper.min.js"></script>
@@ -320,10 +404,9 @@
   <script src="js/aos.js"></script>
   <script src="js/jquery.animateNumber.min.js"></script>
   <script src="js/bootstrap-datepicker.js"></script>
-  <script src="js/jquery.timepicker.min.js"></script>
+  <!--<script src="js/jquery.timepicker.min.js"></script>-->
   <script src="js/scrollax.min.js"></script>
-
-  <script src="js/google-map.js"></script>
+  
   <script src="js/main.js"></script>
     
   </body>
