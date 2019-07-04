@@ -121,25 +121,25 @@
 									</label>
 							  </div>
 							  <div class="form-check">
-						      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+						      <input type="checkbox" class="form-check-input" id="exampleCheck2">
 						      <label class="form-check-label" for="exampleCheck1">
 						    	   <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i></span></p>
 						      </label>
 							  </div>
 							  <div class="form-check">
-						      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+						      <input type="checkbox" class="form-check-input" id="exampleCheck3">
 						      <label class="form-check-label" for="exampleCheck1">
 						      	<p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
 						     </label>
 							  </div>
 							  <div class="form-check">
-							    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+							    <input type="checkbox" class="form-check-input" id="exampleCheck4">
 						      <label class="form-check-label" for="exampleCheck1">
 						      	<p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
 						      </label>
 							  </div>
 							  <div class="form-check">
-						      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+						      <input type="checkbox" class="form-check-input" id="exampleCheck5">
 						      <label class="form-check-label" for="exampleCheck1">
 						      	<p class="rate"><span><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
 							    </label>
@@ -152,7 +152,7 @@
 				  <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
 					  <div class="destination">
 
-						  <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{ 'background-image': computedURL1()}" >
+						  <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{'background-image':'url('+computedURL+')'}" >
 							  <div class="icon d-flex justify-content-center align-items-center">
 								  <span class="icon-link"></span>
 							  </div>
@@ -341,7 +341,7 @@
                       // `this` 指向 vm 实例
 					  var tem=Math.floor((Math.random()*10)%6+1);
 					  console.log("随机数"+tem);
-                      return 'url (images/about.jpg)';
+                      return 'images/about.jpg';
 //                      return 'url '+'(images/holel'+tem+'.jpg)';
                   }
               },

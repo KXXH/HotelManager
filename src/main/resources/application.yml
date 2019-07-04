@@ -27,7 +27,7 @@ spring:
         min-idle: 2
         max-wait: -1ms
 graphiql:
-  enabled: true
+  enabled: false
 
 mybatis-plus:
   configuration:
