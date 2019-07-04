@@ -27,7 +27,7 @@ spring:
         min-idle: 2
         max-wait: -1ms
 graphiql:
-  enabled: true
+  enabled: false
 
 mybatis-plus:
   configuration:
@@ -39,3 +39,10 @@ logging:
     com:
       xncoding: DEBUG
 
+rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  username: guest
+  password: guest
+  virtual-host: /
+  publisher-confirms: true

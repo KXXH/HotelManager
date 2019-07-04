@@ -4,16 +4,27 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchConditionType;
 import com.shixi.hotelmanager.domain.*;
 import com.shixi.hotelmanager.exception.*;
 import com.shixi.hotelmanager.mapper.HotelRoomMapper;
 import com.shixi.hotelmanager.mapper.HotelStatusMapper;
 import com.shixi.hotelmanager.mapper.OrderMapper;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +43,18 @@ import java.util.*;
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
 
+    private String PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCl4aRDCJQkS9611Txk0DyNndjgyNOQhhW40je4UUp149WdPz4q1l8u45vzNCbHjLCUWD5QwqEQi5H56ChBGU3/+obt1aStF0WZF5kJAU4RyAX4S4oFQRCRZvg4Jy2ilib3FjrTF+0XX1OC02NafpIccv/WzoWV7zmCo4H3WdJ5cwbod6VukGR3x/shX9JyBaKoO/8NwRp3Yoo44yjNaPvxpimudcSlnAhMrq52ZmzwPM+r5ZSsGeJ+4LmUMUb2qqKdd9wgI/OhDXCKO+rzrdVx4BMva1Tbr4jadirsCQ5Q+meGmwxC4askzsEIfIjgDjhaghSSDQE38biWN7q1sq+tAgMBAAECggEBAIvdNzz2DMKV3hB+3M877PKTNvxBGHFxPPt69FRK5neEROazHl3MJrFIZIOpY1E5xOEvjktV76wdolWOc/J/vY6p0/7Q9mqjhqFQjk5TdVn0x2PVfWh0td2DbqMaFZZS+EO50JuQPu5ICAf06H6y3ctzA1hBBc2nyVvnNXwzlg2jmULnyZp2Doi3zmgjkqRu/u2qARfdJsgePSDUxq14CKxbLDg8Eju3oqfd5tvcRK2S6At2mAuHuNp4VXKCC//WiBToG++iSwCojaPl1XEqiE1WBhkJWiwiuV9FwE1aEgAX2LyEv1oxW5HZzaF0r/txb76f82TH/tSJ0603MHDIooECgYEA8Vgc0bdu8GzfWqMna2Pv8ENkgm3ez7TMx7BKG0X1YYOVU7VpKS1O9xm3N24dPGhFyj+DmbrfZXeEli2xEviJQfhWimzYzuho2vnAZFn3eOM4aAZ97hrR/wea7nIccql9e9uuvvGhXLSPSl+J3T5sg+67R2DhT37/3X/a++CEgHECgYEAr/RmcZm5IIJn6bN18PSPQ8vcp015bhDF3HtNWH8EPTAprv6/CuY6otkIKuN35SWOf1a525PcHb/aAMCXw2NYewbhsou/LIccZYw9xgAgHNQxJTOo1IQwncNnx3u9FA9wky3ixK6eHNo9hSeip7O/p7CTRBqOXZ2p6D+9Eo6bwP0CgYEArug0uqg99nBwzrc/ckzTL0UoKn6F4/IcFvxkOK/SzgEWz7vBot37RImWhs1+0rCfI5w0O8166YZcyJoEosMMdosL7PZFim5Uz54BGLk66JmD36AU0+MMHc/dMMHybAb5sjHbyvZDA3S4BCaJO5Zp/pOdlnVX1M0tkdF/Wtu0K4ECgYAWf63JwNpHKeWXoHboRJ09Egg47FMmm8ZxFuMg+bzVBh+OXMyY3C+LOy0sLsHZ7x91cOV7CkEPHMUHa5j8Ruu9b3fUmMHtM6mR4ojTlJiGlythkmV4Jx8ATUgr3cqjkgXXC/r/I0Tcc5uCNzs5LmbHTnDGOI8TsWFUbTID+XA5EQKBgCAukf992DiMLQbm5liGDQnbiN38TpTfyCHl14omHAE+uX6Vf7TW4YYfghznWu00moTRZ3GYywFP0+q7ss+v2fsVOz0lH/3wosJGxm5YHrRfH2CrHafwQnAKOnp4vgNIkPZ+2N8NCYTIbdoeqSNRpOLaLUectbRAxzc/9IReEkDn";
+    private String ALIPAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi4rMalBhqMu6aslBjznhU4D/TfEbyVVEUoPCFclJSC5Ndamb4LMEE88yCr7kjlbRGQhsBhgot8FxprlV6IilHNSQ+vvHQImWGT9L8TE8uHVQljT16y2L7kaPw5DDUoRwdV8Z2NUtz55NoJPYDMCBvVremuk26/pGeexpzKpLAAxubL2tinB/VzrDrawNQiIrJHnRghUsCT+NrlsAZWedcdLRO/PSqR0BGbcpc4sigfreW9w8dPAPqqjQN2Z3pZ/Ho9i7CLgss1W47xnE1kqVFEyL/fMNs4T73xFyeIpSYjLMkEqwnWH+1NIjzyVrI3yBFMW6xMJM/06PqoDWbay8VQIDAQAB";
+    private AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761", PRIVATE_KEY,"json","UTF-8", ALIPAY_PUBLIC_KEY,"RSA2");
+
     @Resource
     private HotelStatusMapper hotelStatusMapper;
 
     @Resource
     private HotelRoomMapper hotelRoomMapper;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
@@ -50,10 +68,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTelephone(dto.getTelephone());
         order.setPersonName(dto.getPersonName());
         order.setPeopleCount(dto.getPeopleCount());
-
+        order.setUuid(UUID.randomUUID().toString());
         //找到操作用户并将用户和订单关联
         User opUser= ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         order.setOrderUserId(opUser.getId());
+
 
         //找到对应酒店房间并关联
         HotelRoom room=new HotelRoom();
@@ -73,6 +92,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //设置订单当前状态为未支付
         order.setStatus("UNPAID");
 
+        //生成订单其他信息
+        order.setCreateTime(new Date());
 
 
         //TODO:为房间状态和酒店状态数据表加锁
@@ -151,6 +172,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         for(HotelStatus status:editedHotelStatusList){
             status.insertOrUpdate();
         }
+
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());// 生成一个消息的唯一id，可不选
+        // 声明消息处理器  设置消息的编码以及消息的过期时间  时间毫秒值 为字符串
+        MessagePostProcessor messagePostProcessor = message -> {
+            MessageProperties messageProperties = message.getMessageProperties();
+            // 设置编码
+            messageProperties.setContentEncoding("utf-8");
+            // 设置过期时间 30分钟
+            int expiration = 1000 * 60 * 30;
+            messageProperties.setExpiration(String.valueOf(expiration));
+            return message;
+        };
+        // 向ORDER_DL_EXCHANGE 发送消息  形成死信   在OrderQueueReceiver类处理死信交换机转发给转发队列的信息
+        String orderNo = String.valueOf(order.getUuid());
+        rabbitTemplate.convertAndSend("ORDER_DL_EXCHANGE", "DL_KEY", orderNo, messagePostProcessor, correlationData);
+        System.out.println(new Date() +  "发送消息，订单号为" + orderNo);
         return true;
     }
 
@@ -175,9 +212,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         hotel=hotel.selectOne((Wrapper)wrapper);
 
 
-        String PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCl4aRDCJQkS9611Txk0DyNndjgyNOQhhW40je4UUp149WdPz4q1l8u45vzNCbHjLCUWD5QwqEQi5H56ChBGU3/+obt1aStF0WZF5kJAU4RyAX4S4oFQRCRZvg4Jy2ilib3FjrTF+0XX1OC02NafpIccv/WzoWV7zmCo4H3WdJ5cwbod6VukGR3x/shX9JyBaKoO/8NwRp3Yoo44yjNaPvxpimudcSlnAhMrq52ZmzwPM+r5ZSsGeJ+4LmUMUb2qqKdd9wgI/OhDXCKO+rzrdVx4BMva1Tbr4jadirsCQ5Q+meGmwxC4askzsEIfIjgDjhaghSSDQE38biWN7q1sq+tAgMBAAECggEBAIvdNzz2DMKV3hB+3M877PKTNvxBGHFxPPt69FRK5neEROazHl3MJrFIZIOpY1E5xOEvjktV76wdolWOc/J/vY6p0/7Q9mqjhqFQjk5TdVn0x2PVfWh0td2DbqMaFZZS+EO50JuQPu5ICAf06H6y3ctzA1hBBc2nyVvnNXwzlg2jmULnyZp2Doi3zmgjkqRu/u2qARfdJsgePSDUxq14CKxbLDg8Eju3oqfd5tvcRK2S6At2mAuHuNp4VXKCC//WiBToG++iSwCojaPl1XEqiE1WBhkJWiwiuV9FwE1aEgAX2LyEv1oxW5HZzaF0r/txb76f82TH/tSJ0603MHDIooECgYEA8Vgc0bdu8GzfWqMna2Pv8ENkgm3ez7TMx7BKG0X1YYOVU7VpKS1O9xm3N24dPGhFyj+DmbrfZXeEli2xEviJQfhWimzYzuho2vnAZFn3eOM4aAZ97hrR/wea7nIccql9e9uuvvGhXLSPSl+J3T5sg+67R2DhT37/3X/a++CEgHECgYEAr/RmcZm5IIJn6bN18PSPQ8vcp015bhDF3HtNWH8EPTAprv6/CuY6otkIKuN35SWOf1a525PcHb/aAMCXw2NYewbhsou/LIccZYw9xgAgHNQxJTOo1IQwncNnx3u9FA9wky3ixK6eHNo9hSeip7O/p7CTRBqOXZ2p6D+9Eo6bwP0CgYEArug0uqg99nBwzrc/ckzTL0UoKn6F4/IcFvxkOK/SzgEWz7vBot37RImWhs1+0rCfI5w0O8166YZcyJoEosMMdosL7PZFim5Uz54BGLk66JmD36AU0+MMHc/dMMHybAb5sjHbyvZDA3S4BCaJO5Zp/pOdlnVX1M0tkdF/Wtu0K4ECgYAWf63JwNpHKeWXoHboRJ09Egg47FMmm8ZxFuMg+bzVBh+OXMyY3C+LOy0sLsHZ7x91cOV7CkEPHMUHa5j8Ruu9b3fUmMHtM6mR4ojTlJiGlythkmV4Jx8ATUgr3cqjkgXXC/r/I0Tcc5uCNzs5LmbHTnDGOI8TsWFUbTID+XA5EQKBgCAukf992DiMLQbm5liGDQnbiN38TpTfyCHl14omHAE+uX6Vf7TW4YYfghznWu00moTRZ3GYywFP0+q7ss+v2fsVOz0lH/3wosJGxm5YHrRfH2CrHafwQnAKOnp4vgNIkPZ+2N8NCYTIbdoeqSNRpOLaLUectbRAxzc/9IReEkDn";
-        String ALIPAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi4rMalBhqMu6aslBjznhU4D/TfEbyVVEUoPCFclJSC5Ndamb4LMEE88yCr7kjlbRGQhsBhgot8FxprlV6IilHNSQ+vvHQImWGT9L8TE8uHVQljT16y2L7kaPw5DDUoRwdV8Z2NUtz55NoJPYDMCBvVremuk26/pGeexpzKpLAAxubL2tinB/VzrDrawNQiIrJHnRghUsCT+NrlsAZWedcdLRO/PSqR0BGbcpc4sigfreW9w8dPAPqqjQN2Z3pZ/Ho9i7CLgss1W47xnE1kqVFEyL/fMNs4T73xFyeIpSYjLMkEqwnWH+1NIjzyVrI3yBFMW6xMJM/06PqoDWbay8VQIDAQAB";
-        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761", PRIVATE_KEY,"json","UTF-8", ALIPAY_PUBLIC_KEY,"RSA2");
+
         AlipayTradePagePayRequest request=new AlipayTradePagePayRequest();
         request.setReturnUrl("http://localhost:8280/pay/CallBack/return");
         request.setNotifyUrl("http://localhost:8280/pay/CallBack/notify");//在公共参数中设置回跳和通知地址
@@ -188,7 +223,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 "    \"total_amount\":"+order.getPrice()+"," +
                 "    \"subject\":\""+hotel.getHotelName()+" Order\"," +
                 "    \"body\":\""+"HotelManager.Inc"+"\"," +
-                "    \"timeout_express\":\"1m\","+
+                "    \"timeout_express\":\"5m\","+
                 "    \"passback_params\":\"merchantBizType%3d3C%26merchantBizNo%3d2016010101111\"," +
                 "    \"extend_params\":{" +
                 "    \"sys_service_provider_id\":\"2088511833207846\"" +
@@ -206,11 +241,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException {
+    public boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException {
         Order order=getById(orderId);
         if(order==null){
             throw new OrderNotFoundException();
         }
+        if(!order.getStatus().equals("UNPAID")) throw new OrderStatusException();
         order.setOrderId(tradeNo);
         order.setStatus("PAID");
         saveOrUpdate(order);
@@ -218,15 +254,61 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    @Transactional
-    public boolean refundOrder(Long orderId) {
+    public boolean makeFundOrder(Order order) throws AlipayApiException {
+        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
+        AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
+        request.setBizContent("{" +
+                "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
+                "    \"refund_amount\":"+order.getPrice()+"," +
+                "    \"refund_reason\":\"正常退款\"," +
+                "    \"out_request_no\":\"HZ01RF001\"," +
+                "    \"operator_id\":\"OP001\"," +
+                "    \"store_id\":\"NJ_S_001\"," +
+                "    \"terminal_id\":\"NJ_T_001\"" +
+                "  }");
+        AlipayTradeRefundResponse response = alipayClient.execute(request);
+        if(response.isSuccess()) {
+            try {
+                Order order1 = new Order();
+                QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("order_id",order.getOrderId());
+                order1 = order1.selectOne(queryWrapper);
 
-        System.out.println("==============================");
+                if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
+                    return true;
+                else
+                    return false;
+            } catch (RefundFailException e) {
+                e.printStackTrace();
+                return false;
+            } catch (OrderNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RefundFailException.class})
+    public boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException {
         //根据订单号获取订单
         Order order = new Order();
         QueryWrapper<Order> query = new QueryWrapper<>();
-        query.eq("order_id",orderId);
+        query.eq("id",Id);
         order = order.selectOne(query);
+        if (order == null)
+            throw new OrderNotFoundException();
+        if(orderStatus.equals("REFUND")){
+            if (!order.getStatus().equals("PAID"))
+                return false;
+        }
+        if(orderStatus.equals("CANCEL")){
+            if (!order.getStatus().equals("UNPAID"))
+                return false;
+        }
+
         //得到开始时间和结束时间
         String dateStart = order.getDateStart();
         String dateEnd = order.getDateEnd();
@@ -252,8 +334,51 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
             }
         }
-
+        order.setStatus(orderStatus);
+        order.updateById();
         return true;
+    }
+
+    @Override
+    public String checkPaymentStatus(Long orderId) throws OrderNotFoundException, AlipayApiException {
+        User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        QueryWrapper<Order> wrapper=new QueryWrapper<>();
+        wrapper.eq("id",orderId).eq("order_user_id",user.getId());
+        Order order=getOne(wrapper);
+        //order不能为空
+        if(order==null) throw new OrderNotFoundException();
+        //如果order状态是已经完成则不必查询
+        switch(order.getStatus()){
+            case "PAID": case "REFUND": case "CANCEL": return order.getStatus();
+        }
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+
+        request.setBizContent("{" +
+                "    \"out_trade_no\":\""+order.getId()+"\"" +
+                "  }");
+
+        AlipayTradeQueryResponse response = alipayClient.execute(request);
+        if(response.isSuccess()){
+            order.setOrderId(response.getTradeNo());
+            response.getBuyerLogonId();
+            String status=response.getTradeStatus();
+            switch (status){
+                case "WAIT_BUYER_PAY":
+                    order.setStatus("UNPAID");
+                    break;
+                case "TRADE_SUCCESS": case "TRADE_FINISHED":
+                    try{
+                        payOrderComplete(orderId,order.getOrderId());
+                        order.setStatus("PAID");
+                        order.setBuyerAlipay(response.getBuyerLogonId());
+                        order.insertOrUpdate();
+                    } catch (OrderStatusException ignored) {
+                        ;
+                    }
+                    break;
+            }
+        }
+        return order.getStatus();
     }
 
     public Date dateAdd(Date date){
@@ -289,5 +414,45 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return instant.atZone(zoneId).toLocalDate();
 
+    }
+
+    @Override
+    public List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) throws UserNotFoundException {
+        Page<Order> p=new Page<>(currentPage,size);
+        User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        if(user==null) throw new UserNotFoundException();
+        return page(p,buildWrapper(condition).eq("order_user_id",user.getId())).getRecords();
+    }
+
+    private QueryWrapper<Order> setCondition(OrderSearchConditionType conditionType, QueryWrapper<Order> wrapper){
+        if(conditionType==null) return wrapper;
+        wrapper.le(conditionType.getHigh()!=null,conditionType.getTarget(),conditionType.getHigh());
+        wrapper.ge(conditionType.getLow()!=null,conditionType.getTarget(),conditionType.getLow());
+        wrapper.like(conditionType.getLike()!=null,conditionType.getTarget(),conditionType.getLike());
+        wrapper.eq(conditionType.getEq()!=null,conditionType.getTarget(),conditionType.getEq());
+        wrapper.in(conditionType.getIn()!=null,conditionType.getTarget(),conditionType.getIn());
+
+        wrapper.orderByAsc(conditionType.getOrderByAsc()!=null,conditionType.getOrderByAsc());
+        wrapper.orderByDesc(conditionType.getOrderByDesc()!=null,conditionType.getOrderByDesc());
+
+        return wrapper;
+    }
+
+
+    private QueryWrapper<Order> buildWrapper(OrderSearchConditionType conditionType){
+        QueryWrapper<Order> wrapper=new QueryWrapper<>();
+        if(conditionType==null) return wrapper;
+        wrapper=setCondition(conditionType,wrapper);
+        while(conditionType.getAnd()!=null||conditionType.getOr()!=null){
+            if(conditionType.getOr()!=null){
+                conditionType = conditionType.getOr();
+                wrapper.or();
+                wrapper=setCondition(conditionType,wrapper);
+            }else{
+                conditionType = conditionType.getAnd();
+                wrapper=setCondition(conditionType,wrapper);
+            }
+        }
+        return wrapper;
     }
 }
