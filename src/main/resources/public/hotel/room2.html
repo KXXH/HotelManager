@@ -28,7 +28,6 @@
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
-
 </head>
 <body>
 <script>
@@ -45,68 +44,6 @@
     console.clear();
     console.log(hotelid);
     console.log(roomid);
-
-    function checkFyFhSubmit(){
-        // 分别获取用户各属性
-        console.log("11111");
-        var orderRoomId = roomid;
-        var roomCount = $("#check_room_count").val();
-
-
-        var temdate = $("#checkin_date").val();
-        var tem=new Date(temdate);
-        var year=tem.getFullYear();
-        var month=tem.getMonth()+1;
-        var day=tem.getDate();
-        var dateStart =year+"-";
-        if(month<10)
-            dateStart =dateStart+"0";
-        dateStart =dateStart+""+month+"-";
-        if(day<10)
-            dateStart =dateStart+"0";
-        dateStart =dateStart+""+day;
-
-        temdate = $("#checkout_date").val();
-        tem=new Date(temdate);//-24*60*60*1000
-        tem=new Date(tem-24*60*60*1000);
-        year=tem.getFullYear();
-        month=tem.getMonth()+1;
-        day=tem.getDate();
-        var dateEnd =year+"-";
-        if(month<10)
-            dateEnd =dateEnd+"0";
-        dateEnd =dateEnd+""+month+"-";
-        if(day<10)
-            dateEnd =dateEnd+"0";
-        dateEnd =dateEnd+""+day;
-
-        var telephone = $("#check_telephone").val();
-        var personName = $("#check_personname").val();
-        var peopleCount = $("#check_people_count").val();
-
-        //if(username!="" && IdCard!="" && gender!="" && password!="")
-        {
-            // 给房屋坐落地址赋值
-            //$("#fyZldz").val($('#fyDh option:selected').text()  + fyCh + "-" + fyFh);
-            // 异步判断该房室是否存在，如果已存在，给用户已提示哦
-            var data={"orderRoomId":parseInt(orderRoomId),"roomCount":parseInt(roomCount), "dateStart":dateStart, "dateEnd":dateEnd, "telephone":telephone, "personName":personName, "peopleCount":parseInt(peopleCount)};
-
-            console.log(data);
-            $.post("/pay/createOrder",data,function(anser){
-                console.log(anser);
-                console.log(anser.status);
-                console.log(anser.id);
-                var nexthref='/pay/payOrder?id='+anser.id;
-                console.log(nexthref);
-                window.location.href='/public/checkout/MyOrder.html';
-                window.open(nexthref);
-
-                window.event.returnValue=false;
-            });
-
-        }
-        return true;
-    }
 </script>
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
@@ -148,52 +85,65 @@
         <div class="row">
             <div class="col-lg-3 sidebar order-md-last ftco-animate">
                 <div class="sidebar-wrap ftco-animate">
-                    <h3 class="heading mb-4">Book Room</h3>
+                    <h3 class="heading mb-4">Find Room</h3>
                     <form action="#">
                         <div class="fields">
-                            <div class="form-group">
-                                选定房型总房间数<input type="number" id="check_room_count" class="form-control" placeholder="" >
-                            </div>
+
 
                             <div class="form-group">
-                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center ">
+                                <input type="text" id="checkin_date" class="form-control checkin_date" placeholder="Date from">
                             </div>
                             <div class="form-group">
-                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center ">
-                            </div>
-
-                            <div class="form-group">
-                                联系人电话<input type="number" id="check_telephone" class="form-control" placeholder="">
+                                <input type="text" id="checkout_date" class="form-control checkout_date" placeholder="Date to">
                             </div>
                             <div class="form-group">
-                                联系人姓名<input type="text" id="check_personname" class="form-control" placeholder="" style="text-align:center ">
+                                <div class="range-slider">
+                                </div>
                             </div>
                             <div class="form-group">
-                                入住总人数<input type="number" id="check_people_count" class="form-control" placeholder="">
-                            </div>
-
-                            <!--<div class="form-group">-->
-                                <!--<div class="range-slider">-->
-
-                                <!--</div>-->
-                            <!--</div>-->
-                            <div class="form-group">
-                                <input type="button" value="BOOK" class="btn btn-primary py-3 px-5" onclick="checkFyFhSubmit()">
+                                <input type="submit" value="Search" class="btn btn-primary py-3 px-5">
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="sidebar-wrap ftco-animate">
-
+                    <h3 class="heading mb-4">Star Rating</h3>
+                    <form method="post" class="star-rating">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                    </form>
                 </div>
             </div><!-- END-->
             <div class="col-lg-9">
                 <div class="row" id="hotel_table">
-                    <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-
-                    </div>
-
-
                     <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
                         <div class="destination" >
 
@@ -229,14 +179,12 @@
                                 <hr>
                                 <p class="bottom-area d-flex">
                                     <span><i class="icon-map-o"></i>总房间数   {{point.count}}</span>
-                                    <span class="ml-auto" >Booking...</span>
+                                    <span class="ml-auto" >Booked</span>
                                 </p>
                             </div>
                         </div>
                     </div>
                     <!--</div>-->
-
-
 
                 </div>
 
