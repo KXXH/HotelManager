@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body onload="getHotelInfo()">
 <script>
     /*获取到Url里面的参数*/
     (function ($) {
@@ -44,71 +44,23 @@
     console.clear();
     console.log(hotelid);
     console.log(roomid);
-
-    function checkFyFhSubmit(){
-        // 分别获取用户各属性
-        console.log("11111");
-        var orderRoomId = roomid;
-        var roomCount = $("#check_room_count").val();
-        var tems = $("#checkin_date").val();
-        var tem=tems.split('/');
-        var dateStart =tem[2];
-        dateStart=dateStart+'-';
-        if(tem[0].length==1)
-            dateStart=dateStart+'0';
-        dateStart=dateStart+tem[0];
-        dateStart=dateStart+'-';
-        if(tem[1].length==1)
-            dateStart=dateStart+'0';
-        dateStart=dateStart+tem[1];
-
-        tems = $("#checkout_date").val();
-        tem=tems.split('/');
-        var dateEnd =tem[2];
-        dateEnd=dateEnd+'-';
-        if(tem[0].length==1)
-            dateEnd=dateEnd+'0';
-        dateEnd=dateEnd+tem[0];
-        dateEnd=dateEnd+'-';
-        if(tem[1].length==1)
-            dateEnd=dateEnd+'0';
-        dateEnd=dateEnd+tem[1];
-        var telephone = $("#check_telephone").val();
-        var personName = $("#check_personname").val();
-        var peopleCount = $("#check_people_count").val();
-
-        //if(username!="" && IdCard!="" && gender!="" && password!="")
-        {
-            // 给房屋坐落地址赋值
-            //$("#fyZldz").val($('#fyDh option:selected').text()  + fyCh + "-" + fyFh);
-            // 异步判断该房室是否存在，如果已存在，给用户已提示哦
-            var data={"orderRoomId":parseInt(orderRoomId),"roomCount":parseInt(roomCount), "dateStart":dateStart, "dateEnd":dateEnd, "telephone":telephone, "personName":personName, "peopleCount":parseInt(peopleCount)};
-
-            console.log(data);
-            $.post("/pay/createOrder",data,function(anser){
-                console.log(anser);
-            });
-
-        }
-        return true;
-    }
 </script>
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
-        <a class="navbar-brand" href="index.html">Adventure</a>
+        <a class="navbar-brand" href="index.html">Hotel Master</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="oi oi-menu"></span> Menu
         </button>
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="places.html" class="nav-link">Places</a></li>
-                <li class="nav-item active"><a href="hotel.html" class="nav-link">Hotels</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
+                <li class="nav-item active"><a href="hotel.html" class="nav-link">酒店</a></li>
+                <li class="nav-item"><a href="places.html" class="nav-link">订单</a></li>
+                <li class="nav-item"><a href="blog.html" class="nav-link">个人信息</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">关于</a></li>
             </ul>
         </div>
     </div>
@@ -120,7 +72,7 @@
     <div class="container" id="container">
         <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
             <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="index.html">Home</a></span> <span>Hotel</span></p>
+                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>{{hotel_english_name}}</a></span></p>
                 <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
 
             </div>
@@ -133,56 +85,76 @@
         <div class="row">
             <div class="col-lg-3 sidebar order-md-last ftco-animate">
                 <div class="sidebar-wrap ftco-animate">
-                    <h3 class="heading mb-4">Book Room</h3>
+                    <h3 class="heading mb-4">Find Room</h3>
                     <form action="#">
                         <div class="fields">
-                            <div class="form-group">
-                                选定房型总房间数<input type="number" id="check_room_count" class="form-control" placeholder="">
-                            </div>
+
 
                             <div class="form-group">
-                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="">
+                                <input type="text" id="checkin_date" class="form-control checkin_date" placeholder="Date from">
                             </div>
                             <div class="form-group">
-                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="">
-                            </div>
-
-                            <div class="form-group">
-                                联系人电话<input type="number" id="check_telephone" class="form-control" placeholder="">
+                                <input type="text" id="checkout_date" class="form-control checkout_date" placeholder="Date to">
                             </div>
                             <div class="form-group">
-                                联系人姓名<input type="text" id="check_personname" class="form-control" placeholder="">
+                                <div class="range-slider">
+                                    <!--<span>-->
+                                    <!--<input type="number" value="25000" min="0" max="120000"/>	- -->
+                                    <!--<input type="number" value="50000" min="0" max="120000"/>-->
+                                    <!--</span>-->
+                                    <!--<input value="1000" min="0" max="120000" step="500" type="range"/>-->
+                                    <!--<input value="50000" min="0" max="120000" step="500" type="range"/>-->
+                                    <!--</svg>-->
+                                </div>
                             </div>
                             <div class="form-group">
-                                入住总人数<input type="number" id="check_people_count" class="form-control" placeholder="">
-                            </div>
-
-                            <!--<div class="form-group">-->
-                                <!--<div class="range-slider">-->
-
-                                <!--</div>-->
-                            <!--</div>-->
-                            <div class="form-group">
-                                <input type="button" value="BOOK" class="btn btn-primary py-3 px-5" onclick="checkFyFhSubmit()">
+                                <input type="submit" value="Search" class="btn btn-primary py-3 px-5">
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="sidebar-wrap ftco-animate">
-
+                    <h3 class="heading mb-4">Star Rating</h3>
+                    <form method="post" class="star-rating">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck2">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck3">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck4">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck5">
+                            <label class="form-check-label" for="exampleCheck1">
+                                <p class="rate"><span><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+                            </label>
+                        </div>
+                    </form>
                 </div>
             </div><!-- END-->
             <div class="col-lg-9">
                 <div class="row" id="hotel_table">
-                    <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-
-                    </div>
-
-
                     <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
-                        <div class="destination" >
+                        <div class="destination">
 
-                            <a href="#" class="img img-2 d-flex justify-content-center align-items-center" style="background-image: url(images/hotel-3.jpg);">
+                            <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{'background-image': 'url('+computedURL()+')'}">
                                 <div class="icon d-flex justify-content-center align-items-center">
                                     <span class="icon-link"></span>
                                 </div>
@@ -191,13 +163,53 @@
                                 <div class="d-flex">
                                     <div class="one">
                                         <h3><a href="#">{{point.bedType}}</a></h3>
-                                        <p class="rate">
+                                        <p class="rate" v-if="ratingAverage>=8">
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <span>{{ratesFrom}} Rating</span>
+                                        </p>
+                                        <p class="rate" v-else-if="ratingAverage>=6">
                                             <i class="icon-star"></i>
                                             <i class="icon-star"></i>
                                             <i class="icon-star"></i>
                                             <i class="icon-star"></i>
                                             <i class="icon-star-o"></i>
-                                            <span>8 Rating</span>
+                                            <span>{{ratesFrom}} Rating</span>
+                                        </p>
+                                        <p class="rate" v-else-if="ratingAverage>=4">
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <span>{{ratesFrom}} Rating</span>
+                                        </p>
+                                        <p class="rate" v-else-if="ratingAverage>=2">
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <span>{{ratesFrom}} Rating</span>
+                                        </p>
+                                        <p class="rate" v-else-if="ratingAverage>0">
+                                            <i class="icon-star"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <span>{{ratesFrom}} Rating</span>
+                                        </p>
+                                        <p class="rate" v-else>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <i class="icon-star-o"></i>
+                                            <span>{{ratesFrom}} Rating</span>
                                         </p>
                                     </div>
                                     <div class="two">
@@ -214,18 +226,17 @@
                                 <hr>
                                 <p class="bottom-area d-flex">
                                     <span><i class="icon-map-o"></i>总房间数   {{point.count}}</span>
-                                    <span class="ml-auto" >Booking...</span>
+                                    <!--<span class="ml-auto"><a href="#">Book Now</a></span>-->
+                                    <!--v-on:click="goto(point.id)"-->
+                                    <span class="ml-auto" v-on:click="goto(point.id)"><a>Book Now</a></span>
                                 </p>
                             </div>
                         </div>
+
                     </div>
                     <!--</div>-->
 
-
-
                 </div>
-
-
             </div> <!-- .col-md-8 -->
         </div>
     </div>
@@ -236,14 +247,14 @@
         <div class="container">
             <div class="row d-flex justify-content-center">
                 <div class="col-md-7 text-center heading-section heading-section-white ftco-animate">
-                    <h2>Subcribe to our Newsletter</h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in</p>
+                    <h2>Share with your friends</h2>
+                    <p>You can relax in the hotel and find the pleasure of life. The world is so big. Let's go and see it together.</p>
                     <div class="row d-flex justify-content-center mt-5">
                         <div class="col-md-8">
                             <form action="#" class="subscribe-form">
                                 <div class="form-group d-flex">
                                     <input type="text" class="form-control" placeholder="Enter email address">
-                                    <input type="submit" value="Subscribe" class="submit px-3">
+                                    <input type="submit" value="Share" class="submit px-3">
                                 </div>
                             </form>
                         </div>
@@ -259,8 +270,8 @@
         <div class="row mb-5">
             <div class="col-md">
                 <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Adventure</h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                    <h2 class="ftco-heading-2">Hotel</h2>
+                    <p>You can relax in the hotel and find the pleasure of life. The world is so big. Let's go and see it together.</p>
                     <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
                         <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
                         <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
@@ -300,22 +311,15 @@
                     <h2 class="ftco-heading-2">Have a Questions?</h2>
                     <div class="block-23 mb-3">
                         <ul>
-                            <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                            <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                            <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                            <li><span class="icon icon-map-marker"></span><span class="text">Shuangliu District, Chengdu City, Sichuan Province, China Jiang'an Campus, Sichuan University</span></li>
+                            <li><a href="#"><span class="icon icon-phone"></span><span class="text">+86 15520791478</span></a></li>
+                            <li><a href="#"><span class="icon icon-envelope"></span><span class="text">1191315155@gmail.com</span></a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
 
-                <p>
-                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> Colorlib  All rights reserved | More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a>
-                </p>
-            </div>
-        </div>
     </div>
 </footer>
 
@@ -328,23 +332,30 @@
     var title=new Vue({
         el:"#container",
         data:{
-            hotel_name:""
+            hotel_name:"",
+            hotel_english_name:"",
         }
     });
     var j={'condition':{'eq': ''+parseInt(hotelid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)
     console.log(j);
-    $.ajax({
-        url:'/hotel/search',
-        type:'POST',
-        data:JSON.stringify(j),
-        dataType:"json",
-        contentType:"application/json; charset=utf-8",
-        success:function(json) {
-            console.log(json);
-            //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
-            title.hotel_name=json.data[0]["hotelTranslatedName"];
-        }
-    });
+
+    function getHotelInfo() {
+        $.ajax({
+            url:'/hotel/search',
+            type:'POST',
+            data:JSON.stringify(j),
+            dataType:"json",
+            contentType:"application/json; charset=utf-8",
+            success:function(json) {
+                console.log(json);
+                //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
+                title.hotel_name=json.data[0]["hotelTranslatedName"];
+                title.hotel_english_name=json.data[0]["hotelName"];
+                hotel_table.ratingAverage=json.data[0]["ratingAverage"];
+                hotel_table.ratesFrom=json.data[0]["ratesFrom"];
+            }
+        });
+    }
 
 </script>
 <script>

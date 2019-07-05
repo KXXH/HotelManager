@@ -12,9 +12,9 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateOrderDTO extends OrderDTO {
-    @Pattern(regexp = "\\d+")
+    @Min(value = 1)
     private int orderRoomId;
-    @Pattern(regexp = "\\d+")
+    @Min(value=1)
     private int roomCount;
     @Pattern(regexp = "\\d{4}-\\d\\d-\\d\\d")
     private String dateStart;
