@@ -64,48 +64,63 @@
 
             if(hotelTranslatedName!="" || starRating!="" || addressline1!="" )
             {
-                var data={"hotelTranslatedName":hotelTranslatedName, "starRating":starRating, "addressline1":addressline1};
-                $.post("/admin/user/simple_select",data,function(json){
-                    if(json["status"]=="-1"){
-                        art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:'查询出错', ok:true,});
-                    }
-                    else if(json["status"]=="1"||json["status"]=="0") {
-                        art.dialog({
-                            icon: 'success',
-                            title: '友情提示',
-                            drag: false,
-                            resize: false,
-                            content: '' + json["msg"],
-                            ok: true,
-                        });
-                        var table = document.getElementById("table_list1");
-                        table.className="table";
-                        var rowCount = table.rows.length;
-                        for (var i = rowCount - 1; i >= 1; i--) {
-                            table.deleteRow(i);
+                var data2={'condition':{'like':hotelTranslatedName,'target':'hotel_translated_name','and':{'like':starRating,'target':'star_rating','and':{'like':addressline1,'target':'addressline1'}}},'currentPage':1,'size':20};
+                console.log(data2);
+                $.ajax(
+                    {
+                        url: '/hotel/search',
+                        type: 'POST',
+                        data:JSON.stringify(data2),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (json) {
+                            if(json["status"]=="error"){
+                                art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:'查询出错', ok:true,});
+                            }
+                            else if(json["status"]=="ok") {
+                                art.dialog({
+                                    icon: 'success',
+                                    title: '友情提示',
+                                    drag: false,
+                                    resize: false,
+                                    content: '查询正确' ,
+                                    ok: true,
+                                });
+                                var table = document.getElementById("table_list1");
+                                table.className="table";
+                                var rowCount = table.rows.length;
+                                for (var i = rowCount - 1; i >= 1; i--) {
+                                    table.deleteRow(i);
+                                }
+                                for (var i = 0; i < json.data.length; i++) {
+                                    var row = table.insertRow(i + 1);
+                                    var cell1 = row.insertCell(0);
+                                    cell1.innerHTML = "<td><input type=\"checkbox\" name=\"IDCheck\" value=\"14458579642011\" class=\"acb\" /></td>";
+                                    var cell2 = row.insertCell(1);
+                                    cell2.innerHTML = json.data[i]["hotelTranslatedName"];
+                                    var cell3 = row.insertCell(2);
+                                    cell3.innerHTML = json.data[i]["starRating"];//cell2.innerHTML=json[i].userId;
+                                    var cell4 = row.insertCell(3);
+                                    cell4.innerHTML = json.data[i]["checkin"];
+                                    var cell5 = row.insertCell(4);
+                                    cell5.innerHTML = json.data[i]["checkout"];//cell2.innerHTML=json[i].idCard;
+                                    var cell6 = row.insertCell(5);
+                                    cell6.innerHTML = json.data[i]["addressline1"];//json.data[i]["photo1"];
+                                    var cell7 = row.insertCell(6);
+
+                                    var str = json.data[i]["photo1"];
+//                                        var index1 = str.indexOf("?");
+//                                        str = str.substr(0,index1);
+                                    cell7.innerHTML = "<a href="+ str +">酒店图片</a>\n"
+
+                                    var cell8 = row.insertCell(7);
+                                    cell8.innerHTML = "<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
+                                        "\t\t\t\t\t\t\t\t<a href=\"javascript:del('" + json.data[i]["id"] + "');\">删除</a>";
+                                }
+                            }
                         }
-                        for (var i = 0; i < json["users"].length; i++) {
-                            var row = table.insertRow(i + 1);
-                            var cell1 = row.insertCell(0);
-                            cell1.innerHTML = "<td><input type=\"checkbox\" name=\"IDCheck\" value=\"14458579642011\" class=\"acb\" /></td>";
-                            var cell2 = row.insertCell(1);
-                            cell2.innerHTML = json["users"][i].hotelTranslatedName;
-                            var cell4 = row.insertCell(2);
-                            cell4.innerHTML = json["users"][i].starRating;
-                            var cell6 = row.insertCell(3);
-                            cell6.innerHTML = json["users"][i].checkin;
-                            var cell7 = row.insertCell(4);
-                            cell7.innerHTML = json["users"][i].checkout;
-                            var cell8 = row.insertCell(5);
-                            cell8.innerHTML = json["users"][i].addressline1;
-                            var cell9 = row.insertCell(6);
-                            cell9.innerHTML = json["users"][i].photo1;
-                            var cell10 = row.insertCell(7);
-                            cell10.innerHTML = "<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
-                                "\t\t\t\t\t\t\t\t<a href=\"javascript:del('" + json["users"][i].id + "');\">删除</a>";
-                        }
-                    }
-                });
+                    });
+
             }
             else{
                 art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:'空查询，显示原查询结果', ok:true,});
@@ -249,12 +264,12 @@
                         <th>图片</th>
                         <th>操作</th>
                         <script>
-                            var j={'condition':{'like':'Hotel','orderByAsc':'hotel_name','target':'hotel_name','and':{'low':'350','target':'id','or':{'like':'chain','target':'chain_name'}}},'currentPage':2,'size':20}
+//                            var j={'condition':{'like':'Hotel','orderByAsc':'hotel_name','target':'hotel_name','and':{'low':'350','target':'id','or':{'like':'chain','target':'chain_name'}}},'currentPage':2,'size':20}
 
                             $.ajax({
-                                url:'/admin/hotel/get',
+                                url:'/hotel/get',
                                 type:'POST',
-                                data:JSON.stringify(j),
+//                                data:JSON.stringify(j),
                                 dataType:"json",
                                 contentType:"application/json; charset=utf-8",
                                 success:function(json) {//json.data[i]["chainName"]
