@@ -149,7 +149,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     DateToLocaleDate(status.getRecordForDate())
             );
             status.setHotelRoomOrdered(status.getHotelRoomOrdered()+order.getRoomCount());
-            if(status.getHotelRoomOrdered()>hotel.){
+            if(status.getHotelRoomOrdered()>hotel.getTotalRoomCapacity()){
                 throw new HotelRoomInsufficientException();
             }
             editedHotelStatusList.set(period.getDays(),status);
