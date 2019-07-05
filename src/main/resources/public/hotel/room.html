@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 <body>
 <script>
@@ -50,30 +51,34 @@
         console.log("11111");
         var orderRoomId = roomid;
         var roomCount = $("#check_room_count").val();
-        var tems = $("#checkin_date").val();
-        var tem=tems.split('/');
-        var dateStart =tem[2];
-        dateStart=dateStart+'-';
-        if(tem[0].length==1)
-            dateStart=dateStart+'0';
-        dateStart=dateStart+tem[0];
-        dateStart=dateStart+'-';
-        if(tem[1].length==1)
-            dateStart=dateStart+'0';
-        dateStart=dateStart+tem[1];
 
-        tems = $("#checkout_date").val();
-        tem=tems.split('/');
-        var dateEnd =tem[2];
-        dateEnd=dateEnd+'-';
-        if(tem[0].length==1)
-            dateEnd=dateEnd+'0';
-        dateEnd=dateEnd+tem[0];
-        dateEnd=dateEnd+'-';
-        if(tem[1].length==1)
-            dateEnd=dateEnd+'0';
-        dateEnd=dateEnd+tem[1];
+        
+        var temdate = $("#checkin_date").val();
+        var tem=new Date(temdate);
+        var year=tem.getFullYear();
+        var month=tem.getMonth()+1;
+        var day=tem.getDate();
+        var dateStart =year+"-";
+        if(month<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+month+"-";
+        if(day<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+day;
 
+        temdate = $("#checkout_date").val();
+        tem=new Date(temdate);//-24*60*60*1000
+        tem=new Date(tem-24*60*60*1000);
+        year=tem.getFullYear();
+        month=tem.getMonth()+1;
+        day=tem.getDate();
+        var dateEnd =year+"-";
+        if(month<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+month+"-";
+        if(day<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+day;
 
         var telephone = $("#check_telephone").val();
         var personName = $("#check_personname").val();
@@ -89,6 +94,14 @@
             console.log(data);
             $.post("/pay/createOrder",data,function(anser){
                 console.log(anser);
+                console.log(anser.status);
+                console.log(anser.id);
+                var nexthref='/pay/payOrder?id='+anser.id;
+                console.log(nexthref);
+                window.location.reload();
+                window.open(nexthref);
+
+                window.event.returnValue=false;
             });
 
         }
