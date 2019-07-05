@@ -192,7 +192,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException {
+    public String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException {
         User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if(user==null) throw new UserNotFoundException();
         //用户只能支付自己创建的订单
@@ -203,6 +203,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //只有未付款订单可以付款
         if(!order.getStatus().equals("UNPAID")) throw new OrderStatusException();
+
+        //和支付宝检查订单是否已经付款
+        if(!checkPaymentStatus(orderId).equals("UNPAID")){
+            throw new OrderPaymentAlreadySuccessException();
+        }
 
         HotelRoom room=new HotelRoom();
         room=room.selectById(order.getOrderRoomId());

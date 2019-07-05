@@ -57,10 +57,16 @@ public class PayController {
     }
 
     @RequestMapping("/payOrder")
-    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException {
+    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException {
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
-        return orderService.payOrder(dto.getId());
+        try {
+            return orderService.payOrder(dto.getId());
+        }  catch (OrderPaymentAlreadySuccessException e) {
+            return "您已经付过款了哦，不需要重复付款";
+        }
+
     }
+
 
     @ResponseBody
     @RequestMapping("/refund")

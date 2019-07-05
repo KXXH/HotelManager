@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=6Or4Vw15n4xtNVOdnfeY3wl87OCutYRC"></script>
+    <!--加载鼠标绘制工具-->
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager.css" />
+    <!--加载检索信息窗口-->
+    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--<link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">-->
+    <!--<link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">-->
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <!--<link rel="stylesheet" href="css/jquery.timepicker.css">-->
+
+
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Hotel Master</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="oi oi-menu"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
+                <li class="nav-item active"><a href="hotel.html" class="nav-link">酒店</a></li>
+                <li class="nav-item"><a href="places.html" class="nav-link">订单</a></li>
+                <li class="nav-item"><a href="blog.html" class="nav-link">个人信息</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">关于</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- END nav -->
+
+<div class="hero-wrap js-fullheight" style="background-image: url('images/bg_1.jpg');">
+    <div class="overlay"></div>
+    <div class="container" id="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
+            <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>Search</a></span></p>
+                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">酒店搜索</h1>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="allmap" style="overflow:hidden;zoom:1;position:relative;" class="col-sm-12 col-md-6">
+        <div class="container m-3" id="search_box" >
+            <div class="input-group mb-3 row">
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{label}}</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="search.label='模糊查找'">模糊查找</button>
+                        <button class="dropdown-item" onclick="search.label='精确查找'">精确查找</button>
+                        <button class="dropdown-item" onclick="search.label='范围查找';search.target='星级'">范围查找</button>
+                        <div role="separator" class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="search.label='包含查找'">包含查找</button>
+                    </div>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary dropdown-toggle col" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{target}}</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="search.target='酒店名'" v-if="label!='范围查找'">酒店名</button>
+                        <button class="dropdown-item" onclick="search.target='星级'">星级</button>
+                        <button class="dropdown-item" onclick="search.target='退房时间'">退房时间</button>
+                        <div role="separator" class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="search.target='评价'">评价</button>
+                        <button class="dropdown-item" onclick="search.target='经纬度'">经纬度</button>
+                    </div>
+                </div>
+
+                <div v-if="label=='范围查找'&&target!='经纬度'" class="form-row col">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="From" v-model="low">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="To" v-model="high">
+                    </div>
+                </div>
+                <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="经度From" v-model="lng_low">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="经度To" v-model="lng_high">
+                    </div>
+                </div>
+                <div v-if="target=='经纬度'&&label=='范围查找'" class="form-row col">
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="纬度From" v-model="lat_low">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="纬度To" v-model="lat_high">
+                    </div>
+                </div>
+                <input type="text" class="form-control col" aria-label="Text input with dropdown button" v-if="label!='范围查找'" v-model="text">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary col" type="button" onclick="lastPage.currentPage=1;doSearch()">查找</button>
+                </div>
+            </div>
+        </div>
+        <div id="map" style="overflow:hidden;zoom:1;position:relative;height:100%;-webkit-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;"></div>
+    </div>
+    <div id="result" class="col-sm-12 col-md-6" >
+        <table id="hotel_table" class="table">
+            <thead>
+            <tr>
+                <th>酒店名</th>
+                <th>星级</th>
+                <th>退房时间</th>
+                <th>评价</th>
+            </tr>
+            </thead>
+            <tr v-for="point in points" v-on:click="goto(point.hotelId)">
+
+                <th>{{point.hotelTranslatedName}}</th>
+                <th>{{point.starRating}}</th>
+                <th>{{point.checkout}}</th>
+                <th>{{point.ratingAverage}}</th>
+            </tr>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" id="last_page_btn" >
+                    <a class="page-link" tabindex="-1" v-if="currentPage>1" onclick="lastPage.currentPage--;doSearch()">上一页</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" onclick="lastPage.currentPage++;doSearch()">下一页</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map('map');
+    var poi = new BMap.Point(116.307852,40.057031);
+    var currenPage=1;
+    map.centerAndZoom(poi, 16);
+    var hotelData=[];
+    var markers=[];
+    map.enableScrollWheelZoom();
+    map.setMapStyleV2({
+        styleId: '3bc368f4dae92c9e837c087634ead563'
+    });
+    var overlays = [];
+    var bPoints=[];
+    var geolocation = new BMap.Geolocation();
+    var minLng=0;
+    var maxLng=0;
+    var minLat=0;
+    var maxLat=0;
+    var hotel_table=new Vue(
+        {
+            el:'#hotel_table',
+            data:{
+                points:[]
+            },
+            methods:{
+                goto:function(id){
+                    window.location.href="/hotel/detail?id="+id;
+                }
+            }
+        }
+    );
+    var lastPage=new Vue({
+        el:'#last_page_btn',
+        data:{
+            currentPage:1
+        }
+    });
+    var search=new Vue({
+        el:'#search_box',
+        data:{
+            label:"模糊查找",
+            text:"",
+            high:"",
+            low:"",
+            lng_high:"",
+            lng_low:"",
+            lat_high:"",
+            lat_low:"",
+            target:"酒店名"
+        }
+    });
+    var targetToCol={
+        "酒店名":'hotel_translated_name',
+        "星级":"star_rating",
+        "退房时间":"checkout",
+        "评价":"rating_average"
+    };
+    geolocation.getCurrentPosition(function(r){
+        if(this.getStatus() == BMAP_STATUS_SUCCESS){
+            var mk = new BMap.Marker(r.point);
+            //map.addOverlay(mk);
+            //map.panTo(r.point);
+            map.centerAndZoom("成都");
+            //map.removeOverlay(mk);
+        }
+        else {
+            alert('failed'+this.getStatus());
+        }
+    },{enableHighAccuracy: true});
+    var overlaycomplete = function(e){
+        //overlays.push(e.overlay);
+        drawingManager.close();
+        search.target="经纬度";
+        search.label="范围查找";
+        search.lng_low=minLng=e.overlay.getPath()[0].lng;
+        search.lng_high=maxLng=e.overlay.getPath()[2].lng;
+        search.lat_low=minLat=e.overlay.getPath()[2].lat;
+        search.lat_high=maxLat=e.overlay.getPath()[0].lat;
+        //fetchData();
+        doSearch();
+        map.removeOverlay(e.overlay);
+    };
+    var styleOptions = {
+        strokeColor:"red",    //边线颜色。
+        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+        strokeWeight: 3,       //边线的宽度，以像素为单位。
+        strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+        strokeStyle: 'solid' //边线的样式，solid或dashed。
+    }
+    //实例化鼠标绘制工具
+    var drawingManager = new BMapLib.DrawingManager(map, {
+        isOpen: false, //是否开启绘制模式
+        enableDrawingTool: true, //是否显示工具栏
+        drawingToolOptions: {
+            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+            offset: new BMap.Size(5, 5), //偏离值
+            drawingModes : [
+                BMAP_DRAWING_RECTANGLE,
+            ]
+        },
+        rectangleOptions: styleOptions //矩形的样式
+
+    });
+    //添加鼠标绘制工具监听事件，用于获取绘制结果
+    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+
+    doSearch();
+    function clearAll() {
+        for(var i = 0; i < overlays.length; i++){
+            map.removeOverlay(overlays[i]);
+        }
+        overlays.length = 0
+    }
+
+    function fetchData(){
+        var j={
+            'currentPage':lastPage.currentPage,
+            'size':10,
+            'condition':{
+                'high':maxLng,
+                'low':minLng,
+                'target':'longitude',
+                'and':{
+                    'high':maxLat,
+                    'low':minLat,
+                    'target':'latitude'
+                }
+            }
+        };
+        $.ajax(
+            {
+                url:'/hotel/search',
+                type:'POST',
+                data:JSON.stringify(j),
+                dataType:"json",
+                contentType:"application/json; charset=utf-8",
+                success:function(json){
+                    console.log(JSON.stringify(json));
+                    map.clearOverlays();
+                    hotel_table.points=json.data;
+                    for(var i=0;i<json.data.length;i++){
+
+                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+                        var marker=new BMap.Marker(point,{
+                            title:json.data[i].hotelTranslatedName
+                        });
+                        markers.push(marker);
+                        var title=json.data[i].hotelTranslatedName;
+                        markers[i].addEventListener('click',function(){
+                            console.log("title=",hotelData[i].title);
+                            var info=new BMap.InfoWindow(hotelData[i].title);
+                            marker.openInfoWindow(info);
+                        });
+
+                        map.addOverlay(marker);
+                        console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
+                        map.centerAndZoom(json.data[i].city);
+
+                    }
+                }
+            });
+    }
+
+
+
+    function doSearch(){
+        if(search.target!="经纬度"){
+
+            var j={
+                'target':targetToCol[search.target]
+            };
+            var postData={
+                "currentPage":lastPage.currentPage,
+                "size":10
+            };
+            switch (search.label){
+                case "范围查找":
+                    j["low"]=search.low;
+                    j["high"]=search.high;
+                    break;
+                case "精确查找":
+                    j["eq"]=search.text;
+                    break;
+                case "模糊查找":
+                    j["like"]=search.text;
+                    break;
+                case "包含查找":
+                    j['in']=search.text.split(",");
+                    break;
+            }
+            postData["condition"]=j;
+            $.ajax(
+                {
+                    url:'/hotel/search',
+                    type:'POST',
+                    data:JSON.stringify(postData),
+                    dataType:"json",
+                    contentType:"application/json; charset=utf-8",
+                    success:function (json) {
+                        updateMap(json);
+                    }
+                });
+
+        }
+        else{
+            var j={
+                'currentPage':lastPage.currentPage,
+                'size':10,
+                'condition':{
+                    'high':search.lng_high,
+                    'low':search.lng_low,
+                    'target':'longitude',
+                    'and':{
+                        'high':search.lat_high,
+                        'low':search.lat_low,
+                        'target':'latitude'
+                    }
+                }
+            };
+            $.ajax(
+                {
+                    url:'/hotel/search',
+                    type:'POST',
+                    data:JSON.stringify(j),
+                    dataType:"json",
+                    contentType:"application/json; charset=utf-8",
+                    success:function (json) {
+                        updateMap(json);
+                    }
+                });
+        }
+    }
+    function updateMap(json){
+        console.log(JSON.stringify(json));
+        map.clearOverlays();
+        hotel_table.points=json.data;
+        bPoints=[];
+        for(var i=0;i<json.data.length;i++){
+
+            var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+            bPoints.push(point);
+            var marker=new BMap.Marker(point,{
+                title:json.data[i].hotelTranslatedName
+            });
+            markers.push(marker);
+            var title=json.data[i].hotelTranslatedName;
+            marker.title=hotel_table.points[i];
+            marker.info=hotel_table.points[i];
+            marker.addEventListener('click',function(e){
+                setZoom([this]);
+            });
+            map.addOverlay(marker);
+            console.log("longitude=",json.data[i].longitude,"latitude=",json.data[i].latitude);
+
+            setZoom(bPoints);
+        }
+
+
+    }
+
+    function setZoom(bPoints) {
+        var view = map.getViewport(eval(bPoints));
+        var mapZoom = view.zoom;
+        var centerPoint = view.center;
+        map.centerAndZoom(centerPoint, mapZoom);
+    }
+
+</script>
+
+<footer class="ftco-footer ftco-bg-dark ftco-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2">Hotel</h2>
+                    <p>You can relax in the hotel and find the pleasure of life. The world is so big. Let's go and see it together.</p>
+                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
+                        <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4 ml-md-4">
+                    <h2 class="ftco-heading-2">Information</h2>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="py-2 d-block">About Us</a></li>
+                        <li><a href="#" class="py-2 d-block">Online enquiry</a></li>
+                        <li><a href="#" class="py-2 d-block">Call Us</a></li>
+                        <li><a href="#" class="py-2 d-block">General enquiries</a></li>
+                        <li><a href="#" class="py-2 d-block">Booking Conditions</a></li>
+                        <li><a href="#" class="py-2 d-block">Privacy and Policy</a></li>
+                        <li><a href="#" class="py-2 d-block">Refund policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2">Experience</h2>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="py-2 d-block">Beach</a></li>
+                        <li><a href="#" class="py-2 d-block">Adventure</a></li>
+                        <li><a href="#" class="py-2 d-block">Wildlife</a></li>
+                        <li><a href="#" class="py-2 d-block">Honeymoon</a></li>
+                        <li><a href="#" class="py-2 d-block">Nature</a></li>
+                        <li><a href="#" class="py-2 d-block">Party</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2">Have a Questions?</h2>
+                    <div class="block-23 mb-3">
+                        <ul>
+                            <li><span class="icon icon-map-marker"></span><span class="text">Shuangliu District, Chengdu City, Sichuan Province, China Jiang'an Campus, Sichuan University</span></li>
+                            <li><a href="#"><span class="icon icon-phone"></span><span class="text">+86 15520791478</span></a></li>
+                            <li><a href="#"><span class="icon icon-envelope"></span><span class="text">1191315155@gmail.com</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-migrate-3.0.1.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.easing.1.3.js"></script>
+<script src="js/jquery.waypoints.min.js"></script>
+<script src="js/jquery.stellar.min.js"></script>
+<script src="js/owl.carousel.min.js"></script>
+<script src="js/jquery.magnific-popup.min.js"></script>
+<script src="js/aos.js"></script>
+<script src="js/jquery.animateNumber.min.js"></script>
+<script src="js/bootstrap-datepicker.js"></script>
+<!--<script src="js/jquery.timepicker.min.js"></script>-->
+<script src="js/scrollax.min.js"></script>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
+
+
+
