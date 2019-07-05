@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 
 @RunWith(SpringRunner.class)
@@ -24,7 +25,7 @@ public class HotelmanagerApplicationTests {
     @Autowired
     OrderService orderService;
     @Test
-    public void testForCreatOrder(){
+    public void testForCreatOrder() throws ValidationException {
         CreateOrderDTO dto = new CreateOrderDTO();
         dto.setDateStart("2019-07-01");
         dto.setDateEnd("2019-07-07");

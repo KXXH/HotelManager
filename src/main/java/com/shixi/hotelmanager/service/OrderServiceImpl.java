@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -58,13 +59,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
-    public Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException {
+    public Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException, ValidationException {
         Order order=new Order();
         //填写订单基本信息
         order.setOrderRoomId(dto.getOrderRoomId());
         order.setRoomCount(dto.getRoomCount());
         order.setDateStart(dto.getDateStart());
         order.setDateEnd(dto.getDateEnd());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd ");
+        Date dateStart = sdf.parse(order.getDateStart());
+        Date dateEnd = sdf.parse(order.getDateEnd());
+        if(dateStart.compareTo(dateEnd)>0) {
+            throw new ValidationException("开始日期不能再结束日期之后!");
+        }
         order.setTelephone(dto.getTelephone());
         order.setPersonName(dto.getPersonName());
         order.setPeopleCount(dto.getPeopleCount());
