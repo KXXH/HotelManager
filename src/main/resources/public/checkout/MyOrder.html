@@ -114,11 +114,13 @@
                         <div class="cart-item-info">
                             <h4><a href="single.html"> {{order.hotelChineseName}} {{order.roomName}} {{order.count}}间</a><span>详细信息 :</span></h4>
                             <ul class="qty">
-                                <li><p>{{order.createTime}}</p></li>
-                                <li><p>{{order.dateStart}} - {{order.dateEnd}}</p></li>
+                                <li><p>订单总价 : ￥{{order.price}}</p></li>
+
                             </ul>
                             <div class="delivery">
-                                <p>订单总价 : ￥{{order.price}}</p>
+                                <p>订单创建时间: {{order.createTime}}</p>
+                                &nbsp
+                                <p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p>
                                 <span>订单状态 : {{order.status}}</span>
                                 <div class="clearfix"></div>
                             </div>
