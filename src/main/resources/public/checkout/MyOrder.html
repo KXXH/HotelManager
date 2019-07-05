@@ -104,7 +104,14 @@
     <div class="cart-items" id="order_list">
         <div class="container">
             <h3 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表({{orders.length}})</h3>
-            <div v-for="order in orders">
+            <select class="form-control mb-4" v-model="selected" v-on:change="getList()">
+                <option value="ALL" selected>所有订单</option>
+                <option value="UNPAID">未支付</option>
+                <option value="PAID">已支付</option>
+                <option value="REFUND">已退款</option>
+                <option value="CANCEL">已取消</option>
+            </select>
+            <div v-for="(order,i) in orders">
                 <div class="cart-header wow fadeInUp animated" data-wow-delay=".5s">
                     <div class="alert-close"> </div>
                     <div class="cart-sec simpleCart_shelfItem">
@@ -119,9 +126,12 @@
                             </ul>
                             <div class="delivery">
                                 <p>订单创建时间: {{order.createTime}}</p>
-                                &nbsp
+                                <p>&nbsp;|&nbsp;</p>
                                 <p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p>
                                 <span>订单状态 : {{order.status}}</span>
+                                <p>&nbsp;|&nbsp;</p>
+                                <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.id">前往付款</a>
+                                <a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?id='+order.id">我要退款</a>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -219,10 +229,21 @@
             orders:[],
             currentPage:1,
             pageSize:20,
-            condition:{}
+            condition:{},
+            selected:"ALL"
         },
         methods:{
             getList:function(){
+
+                if(this.selected=="ALL"){
+                    this.condition={};
+                }else{
+                    this.condition={
+                        "eq":this.selected,
+                        "target":"status"
+                    }
+                }
+
                 var j={
                     "currentPage":this.currentPage,
                     "size":this.pageSize,
@@ -246,6 +267,22 @@
                 console.log("随机数"+tem);
 //                      return 'url (images/about.jpg)';
                 return 'images/hotel'+tem+'.jpg';
+            },
+            isRefundEnabled:function (i) {
+                if(order_list.orders[i].status=="已支付"){
+                    var startDate=new Date(order_list.orders[i].dateStart.replace(/-/,"/"));
+                    var endDate=new Date(order_list.orders[i].dateEnd.replace(/-/,"/"));
+                    var today=new Date();
+                    if(today>endDate){
+                        return false;
+                    }else{
+                        return true;
+                    }
+
+                }else{
+                    return false;
+                }
+
             }
         }
     });

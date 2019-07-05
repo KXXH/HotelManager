@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 @Data
 @NoArgsConstructor
 public class OrderReturnDTO extends OrderDTO {
+    private long id;
     private String hotelChineseName;
     private String hotelEnglishName;
     private double price;
@@ -35,6 +36,7 @@ public class OrderReturnDTO extends OrderDTO {
         setPrice(order.getPrice());
         setDateStart(order.getDateStart());
         setDateEnd(order.getDateEnd());
+        setId(order.getId());
         if(order.getCreateTime()!=null)
             setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
         else
