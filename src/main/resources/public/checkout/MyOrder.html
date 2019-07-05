@@ -92,9 +92,9 @@
     <div class="overlay"></div>
     <div class="container" id="container">
         <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
-            <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>{{hotel_english_name}}</a></span></p>
-                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
+            <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }" style="visibility: visible;">
+                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" style="background-color: initial;padding-top: 0;padding-bottom: 0"><span class="mr-2"><a>Order List</a></span></p>
+                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" >我的订单列表</h1>
 
             </div>
         </div>
@@ -103,7 +103,7 @@
 <section class="ftco-section">
     <div class="cart-items" id="order_list">
         <div class="container">
-            <h3 class="wow fadeInUp animated" data-wow-delay=".5s">My Shopping Cart(3)</h3>
+            <h3 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表({{orders.length}})</h3>
             <div v-for="order in orders">
                 <div class="cart-header wow fadeInUp animated" data-wow-delay=".5s">
                     <div class="alert-close"> </div>
