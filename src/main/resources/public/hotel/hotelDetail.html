@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
+	  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	  <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!--<link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">-->
+    <!--<link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">-->
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <!--<link rel="stylesheet" href="css/jquery.timepicker.css">-->
+
+    
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body onload="getHotelInfo()">
+  <script>
+      /*获取到Url里面的参数*/
+      (function ($) {
+          $.getUrlParam = function (name) {
+              var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+              var r = window.location.search.substr(1).match(reg);
+              if (r != null) return unescape(r[2]); return null;
+          }
+      })(jQuery);
+      var urlid = $.getUrlParam('id');
+	  console.clear();
+      console.log(urlid);
+  </script>
+    
+	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+	    <div class="container">
+	      <a class="navbar-brand" href="index.html">Hotel Master</a>
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+	        <span class="oi oi-menu"></span> Menu
+	      </button>
+
+	      <div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+	          <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+	          <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
+				<li class="nav-item active"><a href="hotel.html" class="nav-link">酒店</a></li>
+	          <li class="nav-item"><a href="places.html" class="nav-link">订单</a></li>
+	          <li class="nav-item"><a href="blog.html" class="nav-link">个人信息</a></li>
+	          <li class="nav-item"><a href="contact.html" class="nav-link">关于</a></li>
+	        </ul>
+	      </div>
+	    </div>
+	  </nav>
+    <!-- END nav -->
+    
+    <div class="hero-wrap js-fullheight" style="background-image: url('images/bg_1.jpg');">
+      <div class="overlay"></div>
+      <div class="container" id="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
+          <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+            <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>{{hotel_english_name}}</a></span></p>
+			  <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
+
+          </div>
+        </div>
+      </div>
+    </div>
+		
+		<section class="ftco-section">
+      <div class="container">
+        <div class="row">
+        	<div class="col-lg-3 sidebar order-md-last ftco-animate">
+        		<div class="sidebar-wrap ftco-animate">
+        			<h3 class="heading mb-4">Find Room</h3>
+        			<form action="#">
+        				<div class="fields">
+
+
+		              <div class="form-group">
+		                <input type="text" id="checkin_date" class="form-control checkin_date" placeholder="Date from">
+		              </div>
+		              <div class="form-group">
+		                <input type="text" id="checkout_date" class="form-control checkout_date" placeholder="Date to">
+		              </div>
+		              <div class="form-group">
+		              	<div class="range-slider">
+		              		<!--<span>-->
+										    <!--<input type="number" value="25000" min="0" max="120000"/>	- -->
+										    <!--<input type="number" value="50000" min="0" max="120000"/>-->
+										  <!--</span>-->
+										  <!--<input value="1000" min="0" max="120000" step="500" type="range"/>-->
+										  <!--<input value="50000" min="0" max="120000" step="500" type="range"/>-->
+										  <!--</svg>-->
+										</div>
+		              </div>
+		              <div class="form-group">
+		                <input type="submit" value="Search" class="btn btn-primary py-3 px-5">
+		              </div>
+		            </div>
+	            </form>
+        		</div>
+        		<div class="sidebar-wrap ftco-animate">
+        			<h3 class="heading mb-4">Star Rating</h3>
+        			<form method="post" class="star-rating">
+							  <div class="form-check">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label" for="exampleCheck1">
+										<p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span></p>
+									</label>
+							  </div>
+							  <div class="form-check">
+						      <input type="checkbox" class="form-check-input" id="exampleCheck2">
+						      <label class="form-check-label" for="exampleCheck1">
+						    	   <p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i></span></p>
+						      </label>
+							  </div>
+							  <div class="form-check">
+						      <input type="checkbox" class="form-check-input" id="exampleCheck3">
+						      <label class="form-check-label" for="exampleCheck1">
+						      	<p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+						     </label>
+							  </div>
+							  <div class="form-check">
+							    <input type="checkbox" class="form-check-input" id="exampleCheck4">
+						      <label class="form-check-label" for="exampleCheck1">
+						      	<p class="rate"><span><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+						      </label>
+							  </div>
+							  <div class="form-check">
+						      <input type="checkbox" class="form-check-input" id="exampleCheck5">
+						      <label class="form-check-label" for="exampleCheck1">
+						      	<p class="rate"><span><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></span></p>
+							    </label>
+							  </div>
+							</form>
+        		</div>
+          </div><!-- END-->
+          <div class="col-lg-9">
+			  <div class="row" id="hotel_table">
+				  <div class="col-sm col-md-6 col-lg-4 ftco-animate" v-for="point in points">
+					  <div class="destination">
+
+						  <a href="#" class="img img-2 d-flex justify-content-center align-items-center" v-bind:style="{'background-image': 'url('+computedURL()+')'}">
+							  <div class="icon d-flex justify-content-center align-items-center">
+								  <span class="icon-link"></span>
+							  </div>
+						  </a>
+						  <div class="text p-3">
+							  <div class="d-flex">
+								  <div class="one">
+									  <h3><a href="#">{{point.bedType}}</a></h3>
+									  <p class="rate" v-if="ratingAverage>=8">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>=6">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>=4">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>=2">
+										  <i class="icon-star"></i>
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else-if="ratingAverage>0">
+										  <i class="icon-star"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+									  <p class="rate" v-else>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <i class="icon-star-o"></i>
+										  <span>{{ratesFrom}} Rating</span>
+									  </p>
+								  </div>
+								  <div class="two">
+									  <span class="price per-price">¥{{point.price}}<br><small>/night</small></span>
+								  </div>
+							  </div>
+							  <p class="rate">
+								  设施
+								  <i class="icon-laptop" v-if="point.windows === '1'"></i>
+								  <i class="icon-coffee" v-if="point.breakfast === '1'"></i>
+								  <i class="icon-wifi" v-if="point.wifi === '1'"></i>
+							  </p>
+
+							  <hr>
+							  <p class="bottom-area d-flex">
+								  <span><i class="icon-map-o"></i>总房间数   {{point.count}}</span>
+								  <!--<span class="ml-auto"><a href="#">Book Now</a></span>-->
+								  <!--v-on:click="goto(point.id)"-->
+								  <span class="ml-auto" v-on:click="goto(point.id)"><a>Book Now</a></span>
+							  </p>
+						  </div>
+					  </div>
+					  
+				  </div>
+				  <!--</div>-->
+
+			  </div>
+          </div> <!-- .col-md-8 -->
+        </div>
+      </div>
+    </section> <!-- .section -->
+
+		<section class="ftco-section-parallax">
+      <div class="parallax-img d-flex align-items-center">
+        <div class="container">
+          <div class="row d-flex justify-content-center">
+            <div class="col-md-7 text-center heading-section heading-section-white ftco-animate">
+              <h2>Share with your friends</h2>
+              <p>You can relax in the hotel and find the pleasure of life. The world is so big. Let's go and see it together.</p>
+              <div class="row d-flex justify-content-center mt-5">
+                <div class="col-md-8">
+                  <form action="#" class="subscribe-form">
+                    <div class="form-group d-flex">
+                      <input type="text" class="form-control" placeholder="Enter email address">
+                      <input type="submit" value="Share" class="submit px-3">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="ftco-footer ftco-bg-dark ftco-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Hotel</h2>
+              <p>You can relax in the hotel and find the pleasure of life. The world is so big. Let's go and see it together.</p>
+              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
+                <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4 ml-md-4">
+              <h2 class="ftco-heading-2">Information</h2>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">About Us</a></li>
+                <li><a href="#" class="py-2 d-block">Online enquiry</a></li>
+                <li><a href="#" class="py-2 d-block">Call Us</a></li>
+                <li><a href="#" class="py-2 d-block">General enquiries</a></li>
+                <li><a href="#" class="py-2 d-block">Booking Conditions</a></li>
+                <li><a href="#" class="py-2 d-block">Privacy and Policy</a></li>
+                <li><a href="#" class="py-2 d-block">Refund policy</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+             <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Experience</h2>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">Beach</a></li>
+                <li><a href="#" class="py-2 d-block">Adventure</a></li>
+                <li><a href="#" class="py-2 d-block">Wildlife</a></li>
+                <li><a href="#" class="py-2 d-block">Honeymoon</a></li>
+                <li><a href="#" class="py-2 d-block">Nature</a></li>
+                <li><a href="#" class="py-2 d-block">Party</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+            	<h2 class="ftco-heading-2">Have a Questions?</h2>
+            	<div class="block-23 mb-3">
+	              <ul>
+	                <li><span class="icon icon-map-marker"></span><span class="text">Shuangliu District, Chengdu City, Sichuan Province, China Jiang'an Campus, Sichuan University</span></li>
+	                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+86 15520791478</span></a></li>
+	                <li><a href="#"><span class="icon icon-envelope"></span><span class="text">1191315155@gmail.com</span></a></li>
+	              </ul>
+	            </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+    
+  
+
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+  <script>
+      var title=new Vue({
+          el:"#container",
+          data:{
+              hotel_name:"",
+			  hotel_english_name:"",
+          }
+      });
+      var j={'condition':{'eq': ''+parseInt(urlid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)
+      console.log(j);
+
+      function getHotelInfo() {
+		  $.ajax({
+			  url:'/hotel/search',
+			  type:'POST',
+			  data:JSON.stringify(j),
+			  dataType:"json",
+			  contentType:"application/json; charset=utf-8",
+			  success:function(json) {
+				  console.log(json);
+				  //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
+				  title.hotel_name=json.data[0]["hotelTranslatedName"];
+				  title.hotel_english_name=json.data[0]["hotelName"];
+				  hotel_table.ratingAverage=json.data[0]["ratingAverage"];
+				  hotel_table.ratesFrom=json.data[0]["ratesFrom"];
+			  }
+		  });
+	  }
+
+  </script>
+  <script>
+      var hotel_table=new Vue(//hotel_table.computedURL
+          {
+              el:'#hotel_table',
+              data:{
+                  points:[],
+				  ratingAverage:0,
+				  ratesFrom:0
+              },
+              methods:{
+                  See :function (e)  {
+                      window.location.href = window.location.href+"?roomid="+e;
+                  },
+                  goto:function(id){
+                      window.location.href="/public/hotel/room.html?hotelid="+urlid+"&roomid="+id;//跳转
+                  },
+                  computedURL: function () {
+                      // `this` 指向 vm 实例
+                      var tem=Math.floor((Math.random()*10)%6+1);
+                      console.log("随机数"+tem);
+//                      return 'url (images/about.jpg)';
+                      return 'images/room-'+tem+'.jpg';
+                  }
+              }
+          }
+      );
+      doshow();
+      //var urldata={"hotelId":urlid};
+      //console.log(urldata);
+      function doshow(){
+          $.ajax(
+              {
+                  url:'/hotelRoom/getRooms?hotelId='+urlid,
+                  type:'POST',
+                  dataType:"json",
+                  contentType:"application/json; charset=utf-8",
+                  success:function(json){
+                      console.log(JSON.stringify(json));
+                      console.log(json["rooms"].length);
+                      hotel_table.points=json["rooms"];
+//                    for(var i=0;i<json.data.length;i++){
+//
+//                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
+//                        var marker=new BMap.Marker(point,{
+//                            title:json.data[i].hotelTranslatedName
+//                        });
+//                        markers.push(marker);
+//                        var title=json.data[i].hotelTranslatedName;
+//                        markers[i].addEventListener('click',function(){
+//                            console.log("title=",hotelData[i].title);
+//                            var info=new BMap.InfoWindow(hotelData[i].title);
+//                            marker.openInfoWindow(info);
+//                        });
+//
+//                    }
+                  }
+              });
+      }
+  </script>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery.easing.1.3.js"></script>
+  <script src="js/jquery.waypoints.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.magnific-popup.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/jquery.animateNumber.min.js"></script>
+  <script src="js/bootstrap-datepicker.js"></script>
+  <!--<script src="js/jquery.timepicker.min.js"></script>-->
+  <script src="js/scrollax.min.js"></script>
+
+  <script src="js/main.js"></script>
+    
+  </body>
+</html>

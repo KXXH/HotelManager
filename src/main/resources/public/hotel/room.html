@@ -102,10 +102,32 @@
                 window.open(nexthref);
 
                 window.event.returnValue=false;
-            });
+            }).error(function(json){
+                console.log("hohoho");
+                console.log(JSON.stringify(json));
+                alert(JSON.parse(json.responseText).msg);
+        });
 
         }
         return true;
+    }
+
+    // 提取固定字符之间的字符串
+    function getInnerString(source, prefix, postfix) {
+        var regexp = new RegExp(encodeReg(prefix) + '.+' + encodeReg(postfix), 'gi');
+        var matches = String(source).match(regexp);
+        return matches[0].replace(prefix, '').replace(postfix, '');
+        var formatedMatches = _.map(matches, value => {
+            return value
+                .replace(prefix, '')
+                .replace(postfix, '');
+    });
+        return formatedMatches;
+    }
+
+    //转义影响正则的字符
+    function encodeReg(source) {
+        return String(source).replace(/([.*+?^=!:${}()|[\]/\\])/g,'\\$1');
     }
 </script>
 

@@ -66,11 +66,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setRoomCount(dto.getRoomCount());
         order.setDateStart(dto.getDateStart());
         order.setDateEnd(dto.getDateEnd());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd ");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date dateStart = sdf.parse(order.getDateStart());
         Date dateEnd = sdf.parse(order.getDateEnd());
         if(dateStart.compareTo(dateEnd)>0) {
-            throw new ValidationException("开始日期不能再结束日期之后!");
+            throw new javax.validation.ValidationException("开始日期不能在结束日期之后!");
         }
         order.setTelephone(dto.getTelephone());
         order.setPersonName(dto.getPersonName());

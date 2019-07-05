@@ -7,12 +7,6 @@ import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.*;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.*;
-import com.shixi.hotelmanager.mapper.OrderMapper;
-import com.shixi.hotelmanager.exception.HotelRoomInsufficientException;
-import com.shixi.hotelmanager.exception.OrderNotFoundException;
-import com.shixi.hotelmanager.exception.OrderStatusException;
-import com.shixi.hotelmanager.exception.UserNotFoundException;
-import com.shixi.hotelmanager.exception.*;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,7 +37,7 @@ public class PayController {
     @RequestMapping("/createOrder")
     @ResponseBody
     DefaultReturnDTO createOrder(@Valid CreateOrderDTO dto, BindingResult result) throws javax.xml.bind.ValidationException {
-        if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
+        if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().getDefaultMessage());
         try {
             Order order=orderService.createOrder(dto);
             QueryWrapper<Order> wrapper=new QueryWrapper<>();
