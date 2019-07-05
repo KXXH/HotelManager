@@ -21,7 +21,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("user")
-public class User extends Model<User> {
+public class User extends Model<User> implements Cloneable {
     @NotBlank(groups = {UpdateUserValidation.class})
     @TableId(value="id",type= IdType.AUTO)
     private int id;
@@ -53,6 +53,13 @@ public class User extends Model<User> {
     @Override
     protected Serializable pkVal() {
         return id;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Object object = super.clone();
+        return object;
     }
 
 }

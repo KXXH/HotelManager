@@ -1,0 +1,107 @@
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Hotel Master</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="oi oi-menu"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
+                <li class="nav-item"><a href="/public/hotel/hotel2.html" class="nav-link">酒店</a></li>
+                <li class="nav-item active"><a href="MyOrder.html" class="nav-link">订单</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" data-toggle="modal" data-target="#changePersonInfo" data-whatever="@mdo">个人信息</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" data-toggle="modal" data-target="#changePassword" data-whatever="@mdo">修改密码</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="modal fade" id="changePersonInfo" tabindex="-1" role="dialog" aria-labelledby="changePersonInfoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePersonInfoLabel">修改个人信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="changeInfo_form">
+                    <div class="form-group">
+                        <label for="username" class="col-form-label">用户名:</label>
+                        <input v-model="username" type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">邮箱:</label>
+                        <input v-model="email" type="email" class="form-control" id="email" required>
+                    </div>
+
+                    <div class="form-group" >
+                        <label for="Gender" class="col-form-label">性别:</label>
+                        <select v-model="gender" class="form-control" id="Gender" name="gender" required>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                            <option value="unknown">保密</option>
+                        </select>
+                    </div>
+                    <label for="avatar_img" class="col-form-label">头像:</label>
+                    <div class="form-group" >
+                        <input v-model="avatar" name="avatar" id="Avatar" style="display:none">
+                        <img id="avatar_img" width="30%">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" accept="image/*" class="custom-file-input" id="Smfile" name="smfile" aria-describedby="inputGroupFileAddon01">
+                            <label class="custom-file-label" for="Smfile">Choose file</label>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-info" onclick="upload()">上传</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="changeInfo()">确认修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordLabel">修改密码</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="changePassword_form">
+                    <div class="form-group">
+                        <label for="oldPassword" class="col-form-label">原密码:</label>
+                        <input v-model="oldPassword" type="text" class="form-control" id="oldPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword" class="col-form-label">新密码:</label>
+                        <input v-model="newPassword" type="password" class="form-control" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="verification" class="col-form-label">确认密码:</label>
+                        <input v-model="verification" type="password" class="form-control" id="verification" required>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="changePassword()">确认修改</button>
+            </div>
+        </div>
+    </div>
+</div>

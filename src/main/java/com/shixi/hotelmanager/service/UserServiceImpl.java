@@ -249,7 +249,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public boolean updateUserInfo(User user) throws UserInfoDuplicateException, UserNotFoundException {
         //User currentUser= GetUserInfo.getInfo(baseMapper);
         User currentUser=((UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-        User LastUser = currentUser;
+        User LastUser = new User();
+        setLastUser(currentUser,LastUser);
+        try {
+            LastUser = (User)currentUser.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         if(currentUser == null){
             throw new UserNotFoundException();
         }
@@ -268,6 +274,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         Validator validator= Validation.byDefaultProvider().configure().messageInterpolator(new ResourceBundleMessageInterpolator(new PlatformResourceBundleLocator("error"))).buildValidatorFactory().getValidator();
         Set<ConstraintViolation<User>> constraintViolations=validator.validate(currentUser);
         if(constraintViolations.size()>0){
+            setLastUser(LastUser,currentUser);
+            System.out.println(currentUser.getUsername());
+            System.out.println("已恢复");
             throw new ValidationException(constraintViolations.iterator().next().getMessage());
         }
         try{
@@ -322,5 +331,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
     }
 
+    public void setLastUser(User currentUser,User user){
+        user.setUsername(currentUser.getUsername());
+        user.setEmail(currentUser.getEmail());
+        user.setGender(currentUser.getGender());
+        user.setAvatar(currentUser.getAvatar());
+    }
 
 }

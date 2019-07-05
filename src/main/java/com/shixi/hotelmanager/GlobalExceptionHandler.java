@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public Map<String,String> handle(ValidationException exception) {
         HashMap<String,String>m=new HashMap<>();
         m.put("status","error");
