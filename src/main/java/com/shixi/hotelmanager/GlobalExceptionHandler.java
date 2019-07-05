@@ -2,6 +2,7 @@ package com.shixi.hotelmanager;
 
 import com.shixi.hotelmanager.domain.DTO.InsufficientPermissionDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.BadOrderStatusDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderFailDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserInfoDuplicateDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserNotFoundDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
@@ -80,5 +81,12 @@ public class GlobalExceptionHandler {
     public String handle(SignatureException e, Model model){
         model.addAttribute("message","支付安全校验失败！");
         return "paymentComplete";
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CreateOrderFailDTO handle(HotelRoomInsufficientException e){
+        return new CreateOrderFailDTO("房间不够辣!");
     }
 }

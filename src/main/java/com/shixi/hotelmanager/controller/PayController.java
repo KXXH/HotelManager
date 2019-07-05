@@ -36,7 +36,7 @@ public class PayController {
 
     @RequestMapping("/createOrder")
     @ResponseBody
-    DefaultReturnDTO createOrder(@Valid CreateOrderDTO dto, BindingResult result) throws javax.xml.bind.ValidationException {
+    DefaultReturnDTO createOrder(@Valid CreateOrderDTO dto, BindingResult result) throws javax.xml.bind.ValidationException, HotelRoomInsufficientException {
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().getDefaultMessage());
         try {
             Order order=orderService.createOrder(dto);
@@ -44,8 +44,6 @@ public class PayController {
             wrapper.eq("uuid",order.getUuid());
             order=order.selectOne(wrapper);
             return new CreateOrderSuccessDTO("success",order.getId());
-        } catch (HotelRoomInsufficientException e) {
-            return new CreateOrderFailDTO("Room Insufficient");
         } catch (ParseException e) {
             throw new ValidationException("日期格式错误");
         }
