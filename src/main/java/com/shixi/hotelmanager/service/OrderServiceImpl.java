@@ -58,7 +58,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
-    public boolean createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException {
+    public Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException {
         Order order=new Order();
         //填写订单基本信息
         order.setOrderRoomId(dto.getOrderRoomId());
@@ -188,7 +188,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String orderNo = String.valueOf(order.getUuid());
         rabbitTemplate.convertAndSend("ORDER_DL_EXCHANGE", "DL_KEY", orderNo, messagePostProcessor, correlationData);
         System.out.println(new Date() +  "发送消息，订单号为" + orderNo);
-        return true;
+        return order;
     }
 
     @Override
