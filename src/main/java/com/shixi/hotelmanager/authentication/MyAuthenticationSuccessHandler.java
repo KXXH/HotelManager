@@ -45,7 +45,7 @@ public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             }
             if(url == null){
                 logger.info("跳转主页!");
-                getRedirectStrategy().sendRedirect(request,response,"/home");
+                getRedirectStrategy().sendRedirect(request,response,"/public/checkout/index.html");
             }else{
                 response.sendRedirect(url);
             }

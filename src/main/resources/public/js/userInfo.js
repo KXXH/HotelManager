@@ -1,11 +1,8 @@
+$(function(){
+    $("#nav").load("/public/nav.html");
+});
+
 var userInfo = new Vue({
-    el:"#changeInfo_form",
-    data:{
-        username:"",
-        email:"",
-        gender:"",
-        avatar:""
-    },
     methods: {
         getList: function () {
             $.ajax(
@@ -29,22 +26,13 @@ var userInfo = new Vue({
 
 
 
-var Passwd = new Vue({
-    el:"#changePassword_form",
-    data:{
-        oldPassword:"",
-        newPassword:"",
-        verification:""
-    }
-});
-
 function changePassword() {
     var url = '/user/changePasswd';
 
     var j = {"OldPassword":$('#oldPassword').val(),"NewPassword":$('#newPassword').val(),"Confirmation":$('#verification').val()};
 
     $.post(url,j,function (json) {
-        alert(json.msg);
+        alert("密码不正确!");
         $('#oldPassword').val("");
         $('#newPassword').val("");
         $('#verification').val("");

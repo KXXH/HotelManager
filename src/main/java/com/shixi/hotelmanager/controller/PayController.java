@@ -70,6 +70,9 @@ public class PayController {
         } catch (RefundFailException e) {
             e.printStackTrace();
             return "fail";
+        } catch (OutdatedOrdersException e) {
+            e.printStackTrace();
+            return "fail";
         }
     }
 

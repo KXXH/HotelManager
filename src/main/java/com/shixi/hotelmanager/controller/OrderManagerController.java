@@ -4,6 +4,7 @@ import com.alipay.api.AlipayApiException;
 import com.shixi.hotelmanager.domain.DTO.SearchDTO;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.OrderNotFoundException;
+import com.shixi.hotelmanager.exception.OutdatedOrdersException;
 import com.shixi.hotelmanager.exception.RefundFailException;
 import com.shixi.hotelmanager.service.OrderManagerService;
 import com.shixi.hotelmanager.service.OrderService;
@@ -36,6 +37,9 @@ public class OrderManagerController {
             e.printStackTrace();
             return false;
         } catch (RefundFailException e) {
+            e.printStackTrace();
+            return false;
+        } catch (OutdatedOrdersException e) {
             e.printStackTrace();
             return false;
         }

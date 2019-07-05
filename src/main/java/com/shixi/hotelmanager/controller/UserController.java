@@ -206,7 +206,7 @@ public class UserController {
         }
     }
 
-
+    @ResponseBody
     @RequestMapping("/forgetPassword")
     public DefaultReturnDTO forgetPassword(@Valid ForgetPasswordDTO forgetPasswordDTO, BindingResult bindingResult,HttpSession session) throws UserNotFoundException, UserInfoDuplicateException, VerificationFailException {
         if(bindingResult.hasErrors()){

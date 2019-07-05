@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar"
+     xmlns:v-bind="http://www.w3.org/1999/xhtml">
     <div class="container">
         <a class="navbar-brand" href="index.html">Hotel Master</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
@@ -7,12 +8,13 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
-                <li class="nav-item"><a href="/public/hotel/hotel2.html" class="nav-link">酒店</a></li>
-                <li class="nav-item active"><a href="MyOrder.html" class="nav-link">订单</a></li>
-                <li class="nav-item"><a href="#" class="nav-link" data-toggle="modal" data-target="#changePersonInfo" data-whatever="@mdo">个人信息</a></li>
-                <li class="nav-item"><a href="#" class="nav-link" data-toggle="modal" data-target="#changePassword" data-whatever="@mdo">修改密码</a></li>
+                <li class="nav-item" ><a href="/public/checkout/index.html" class="nav-link">首页</a></li>
+                <li class="nav-item" ><a href="about.html" class="nav-link">搜索</a></li>
+                <li class="nav-item" ><a href="/public/hotel/hotel2.html" class="nav-link">酒店</a></li>
+                <li class="nav-item" ><a href="/public/checkout/MyOrder.html" class="nav-link">订单</a></li>
+                <li class="nav-item" ><a href="#" class="nav-link" data-toggle="modal" data-target="#changePersonInfo" data-whatever="@mdo">个人信息</a></li>
+                <li class="nav-item" ><a href="#" class="nav-link" data-toggle="modal" data-target="#changePassword" data-whatever="@mdo">修改密码</a></li>
+                <li class="nav-item" ><a href="/logout" class="nav-link">登出</a></li>
             </ul>
         </div>
     </div>
@@ -31,7 +33,7 @@
                 <form id="changeInfo_form">
                     <div class="form-group">
                         <label for="username" class="col-form-label">用户名:</label>
-                        <input v-model="username" type="text" class="form-control" id="username" required>
+                        <input v-model="username" type="text" class="form-control" id="username" value="" required>
                     </div>
                     <div class="form-group">
                         <label for="email" class="col-form-label">邮箱:</label>

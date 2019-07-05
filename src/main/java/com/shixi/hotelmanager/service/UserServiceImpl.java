@@ -282,7 +282,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         try{
             saveOrUpdate(currentUser);
         }catch(DuplicateKeyException e){
-            currentUser = LastUser;
+            setLastUser(LastUser,currentUser);
             throw new UserInfoDuplicateException();
         }
         return true;

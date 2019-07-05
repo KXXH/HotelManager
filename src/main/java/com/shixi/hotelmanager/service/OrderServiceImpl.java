@@ -254,13 +254,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException {
+    public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException, OutdatedOrdersException {
         order=order.selectById();
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if (order.getOrderUserId() != user.getId())
             throw new OrderNotFoundException();
 
-        AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
+        Date start = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            start = sdf.parse(order.getDateStart());
+            if (new Date().getTime() > start.getTime())
+                throw new OutdatedOrdersException();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
         request.setBizContent("{" +
                 "    \"trade_no\":\""+order.getOrderId()+"\"," +
