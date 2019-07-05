@@ -58,7 +58,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
-    public boolean createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException {
+    public Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException {
         Order order=new Order();
         //填写订单基本信息
         order.setOrderRoomId(dto.getOrderRoomId());
@@ -149,7 +149,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     DateToLocaleDate(status.getRecordForDate())
             );
             status.setHotelRoomOrdered(status.getHotelRoomOrdered()+order.getRoomCount());
-            if(status.getHotelRoomOrdered()>room.getCount()){
+            if(status.getHotelRoomOrdered()>hotel.getTotalRoomCapacity()){
                 throw new HotelRoomInsufficientException();
             }
             editedHotelStatusList.set(period.getDays(),status);
@@ -188,7 +188,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String orderNo = String.valueOf(order.getUuid());
         rabbitTemplate.convertAndSend("ORDER_DL_EXCHANGE", "DL_KEY", orderNo, messagePostProcessor, correlationData);
         System.out.println(new Date() +  "发送消息，订单号为" + orderNo);
-        return true;
+        return order;
     }
 
     @Override
@@ -255,7 +255,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException {
-
+        order=order.selectById();
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if (order.getOrderUserId() != user.getId())
             throw new OrderNotFoundException();
@@ -263,7 +263,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
         AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
         request.setBizContent("{" +
-                "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
+                "    \"trade_no\":\""+order.getOrderId()+"\"," +
                 "    \"refund_amount\":"+order.getPrice()+"," +
                 "    \"refund_reason\":\"正常退款\"," +
                 "    \"out_request_no\":\"HZ01RF001\"," +

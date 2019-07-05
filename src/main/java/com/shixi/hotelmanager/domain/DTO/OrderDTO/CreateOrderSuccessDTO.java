@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PayOrderDTO extends OrderDTO {
-    @Min(value=1)
-    private Long id;
+public class CreateOrderSuccessDTO extends OrderDTO {
+    private String status;
+    private long id;
 }

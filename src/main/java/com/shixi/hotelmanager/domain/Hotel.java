@@ -97,6 +97,8 @@ public class Hotel extends Model<Hotel> {
 
     private String ratesCurrency;
 
+    private int totalRoomCapacity;
+
     @TableField(exist = false)
     private int remain;
 
