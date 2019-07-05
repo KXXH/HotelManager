@@ -255,7 +255,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException {
-
+        order=order.selectById();
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if (order.getOrderUserId() != user.getId())
             throw new OrderNotFoundException();
@@ -263,7 +263,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         AlipayClient alipayClient=new DefaultAlipayClient("https://openapi.alipaydev.com/gateway.do","2016101100658761",PRIVATE_KEY,"json","UTF-8",ALIPAY_PUBLIC_KEY,"RSA2");
         AlipayTradeRefundRequest request=new AlipayTradeRefundRequest();
         request.setBizContent("{" +
-                "    \"out_trade_no\":\""+order.getOrderId()+"\"," +
+                "    \"trade_no\":\""+order.getOrderId()+"\"," +
                 "    \"refund_amount\":"+order.getPrice()+"," +
                 "    \"refund_reason\":\"正常退款\"," +
                 "    \"out_request_no\":\"HZ01RF001\"," +
