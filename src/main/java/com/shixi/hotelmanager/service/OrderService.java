@@ -11,13 +11,14 @@ import com.shixi.hotelmanager.exception.OrderStatusException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.util.List;
 
 public interface OrderService {
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
-    Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException;
-    String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException;
+    Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException, ValidationException;
+    String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException;
     boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException;
     String checkPaymentStatus(Long orderId) throws OrderNotFoundException, AlipayApiException;
     List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) throws UserNotFoundException;

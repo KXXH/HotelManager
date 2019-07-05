@@ -86,8 +86,8 @@
 <section class="ftco-section">
     <div class="cart-items" id="order_list">
         <div class="container">
-            <h3 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表({{orders.length}})</h3>
-            <select class="form-control mb-4" v-model="selected" v-on:change="getList()">
+            <h3 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表</h3>
+            <select class="form-control mb-4" data-wow-delay=".5s" v-model="selected" v-on:change="orders=[];currentPage=1;getList()">
                 <option value="ALL" selected>所有订单</option>
                 <option value="UNPAID">未支付</option>
                 <option value="PAID">已支付</option>
@@ -95,25 +95,27 @@
                 <option value="CANCEL">已取消</option>
             </select>
             <div v-for="(order,i) in orders">
-                <div class="cart-header wow fadeInUp animated" data-wow-delay=".5s">
-                    <div class="alert-close"> </div>
+                <div class="cart-header wow fadeInUp animated" data-wow-delay=".5s" >
+
                     <div class="cart-sec simpleCart_shelfItem">
                         <div class="cart-item cyc">
-                            <a href="single.html"><img v-bind:src="computedURL()" class="img-responsive" alt=""></a>
+                            <a href="single.html" class="img img-2 d-flex justify-content-center align-items-center"><img style="height: 100%" v-bind:src="computedURL()" class="img-responsive" alt=""></a>
                         </div>
                         <div class="cart-item-info">
                             <h4><a href="single.html"> {{order.hotelChineseName}} {{order.roomName}} {{order.count}}间</a><span>详细信息 :</span></h4>
                             <ul class="qty">
                                 <li><p>订单总价 : ￥{{order.price}}</p></li>
-
+                                <li><p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p></li>
+                                <li v-if="order.createTime!='未知'"><p>订单创建时间: {{order.createTime}}</p></li>
+                                <li v-if="order.status!='未支付'&&order.orderId"><p>支付宝交易号: {{order.orderId}}</p></li>
+                                <li v-if="order.uuid"><p>交易编码: {{order.uuid}}</p></li>
                             </ul>
                             <div class="delivery">
-                                <p>订单创建时间: {{order.createTime}}</p>
-                                <p>&nbsp;|&nbsp;</p>
-                                <p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p>
                                 <span>订单状态 : {{order.status}}</span>
-                                <p>&nbsp;|&nbsp;</p>
+
                                 <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.id">前往付款</a>
+                                <a v-if="order.status=='未支付'">&nbsp;|&nbsp;</a>
+                                <a v-if="order.status=='未支付'" style="color: #f9be37" v-on:click="checkStatus(i)">我已付款</a>
                                 <a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?id='+order.id">我要退款</a>
                                 <div class="clearfix"></div>
                             </div>
@@ -210,19 +212,54 @@
         data:{
             orders:[],
             currentPage:1,
-            pageSize:20,
-            condition:{},
-            selected:"ALL"
+            pageSize:3,
+            condition:{
+                "orderByDesc":"create_time"
+            },
+            selected:"ALL",
+            enableAutoGetMore:true
+        },
+        created:function(){
+            console.log("Vue created!");
+            var self=this;
+            $(window).scroll(function(){
+                console.log("scroll!");
+                var scrollTop=$(this).scrollTop();
+                var scrollHeight=$(document).height();
+                var windowHeight=$(this).height();
+                console.log("scrollTop="+scrollTop);
+                console.log("scrollHeight="+scrollHeight);
+                console.log("windowHeight="+windowHeight);
+                console.log("scrollTop+windowHeight="+(scrollTop+windowHeight));
+                if(Math.abs(scrollTop+windowHeight-scrollHeight)<=10&&self.enableAutoGetMore){
+                    self.currentPage++;
+                    self.getList();
+                    self.enableAutoGetMore=false;
+                    //屏蔽接下来两秒的响应，避免抖动
+                    setTimeout(
+                        function(){
+                            order_list.enableAutoGetMore=true;
+                        },2000
+                    );
+                }
+            });
+            this.getList();
         },
         methods:{
             getList:function(){
 
                 if(this.selected=="ALL"){
-                    this.condition={};
+                    this.condition={
+                        "orderByDesc":"create_time"
+                    };
                 }else{
                     this.condition={
+                        "target":"status",
                         "eq":this.selected,
-                        "target":"status"
+
+                        "and":{
+                            "orderByDesc":"create_time",
+                        }
                     }
                 }
 
@@ -239,7 +276,7 @@
                         dataType:"json",
                         contentType:"application/json; charset=utf-8",
                         success:function(json){
-                            order_list.orders=json.data;
+                            order_list.orders.push.apply(order_list.orders,json.data);
                         }
                     });
             },
@@ -265,11 +302,24 @@
                     return false;
                 }
 
+            },
+            checkStatus:function (i) {
+                var j={'id':order_list.orders[i].id};
+                $.post("/pay/checkStatus",j,function(json){
+                    switch(json.status){
+                        case "UNPAID": order_list.orders[i].status="未支付";alert("系统检测到您还没有付款呢!");break;
+                        case "PAID": order_list.orders[i].status="已支付";alert("您已经成功支付!");break;
+                        case "REFUND": order_list.orders[i].status="已退款";break;
+                        case "CANCEL": order_list.orders[i].status="已取消";break;
+                    }
+                })
             }
         }
     });
 
-    order_list.getList();
+
+
+
 
 
 </script>

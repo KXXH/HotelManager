@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
 public class CreateOrderDTO extends OrderDTO {
     @Min(value = 1)
     private int orderRoomId;
-    @Min(value = 1)
+    @Min(value=1)
     private int roomCount;
     @Pattern(regexp = "\\d{4}-\\d\\d-\\d\\d")
     private String dateStart;

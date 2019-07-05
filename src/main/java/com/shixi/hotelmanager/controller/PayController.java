@@ -10,6 +10,7 @@ import com.shixi.hotelmanager.exception.*;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,51 +36,56 @@ public class PayController {
 
     @RequestMapping("/createOrder")
     @ResponseBody
-    DefaultReturnDTO createOrder(@Valid CreateOrderDTO dto, BindingResult result){
-        if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
+    DefaultReturnDTO createOrder(@Valid CreateOrderDTO dto, BindingResult result) throws javax.xml.bind.ValidationException, HotelRoomInsufficientException {
+        if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().getDefaultMessage());
         try {
             Order order=orderService.createOrder(dto);
             QueryWrapper<Order> wrapper=new QueryWrapper<>();
             wrapper.eq("uuid",order.getUuid());
             order=order.selectOne(wrapper);
             return new CreateOrderSuccessDTO("success",order.getId());
-        } catch (HotelRoomInsufficientException e) {
-            return new CreateOrderFailDTO("Room Insufficient");
         } catch (ParseException e) {
             throw new ValidationException("日期格式错误");
         }
     }
 
     @RequestMapping("/payOrder")
-    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException {
+    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException {
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
-        return orderService.payOrder(dto.getId());
+        try {
+            return orderService.payOrder(dto.getId());
+        }  catch (OrderPaymentAlreadySuccessException e) {
+            return "fail";
+        }
+
     }
 
-    @ResponseBody
+
     @RequestMapping("/refund")
-    public String refund(Order order) throws AlipayApiException {
+    public String refund(Order order,Model model) throws AlipayApiException {
         try {
-            if(orderService.makeFundOrder(order))
-                return "success";
-            else
-                return "fail";
+            if(orderService.makeFundOrder(order)){
+                model.addAttribute("message","退款成功！");
+                return "paymentComplete";
+            }
+
+            else{
+                model.addAttribute("message","退款失败，请咨询客服！");
+                return "paymentComplete";
+            }
         } catch (OrderNotFoundException e) {
-            e.printStackTrace();
-            return "fail";
+            model.addAttribute("message","订单未找到！");
+            return "paymentComplete";
         } catch (RefundFailException e) {
-            e.printStackTrace();
-            return "fail";
-        } catch (OutdatedOrdersException e) {
-            e.printStackTrace();
-            return "fail";
+            model.addAttribute("message","退款失败，请咨询客服！");
+            return "paymentComplete";
         }
     }
 
 
     @RequestMapping("/CallBack/return")
-    @ResponseBody
-    public String returnPage(HttpServletRequest request) throws AlipayApiException, OrderNotFoundException {
+    //@ResponseBody
+    public String returnPage(HttpServletRequest request, Model model) throws AlipayApiException, OrderNotFoundException {
         Map<String,String[]> map1 = request.getParameterMap();
         Enumeration<String> names=request.getParameterNames();
         Map<String,String> map=new HashMap<>();
@@ -95,10 +101,12 @@ public class PayController {
             // TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             //orderService.payOrderComplete(Long.parseLong(map.get("out_trade_no")),map.get("trade_no"));
             orderService.checkPaymentStatus(Long.parseLong(map.get("out_trade_no")));
-            return "success";
+            model.addAttribute("message","支付成功!");
+            return "paymentComplete";
         }else{
             System.out.println("通知校验失败！！");
-            return "failure";
+            model.addAttribute("message","支付失败，请重试!");
+            return "paymentComplete";
             // TODO 验签失败则记录异常日志，并在response中返回failure.
         }
     }

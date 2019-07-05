@@ -2,6 +2,7 @@ package com.shixi.hotelmanager;
 
 import com.shixi.hotelmanager.domain.DTO.InsufficientPermissionDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.BadOrderStatusDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderFailDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserInfoDuplicateDTO;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.UserNotFoundDTO;
 import com.shixi.hotelmanager.domain.DTO.VerificationDTO.VerificationFailDTO;
@@ -9,6 +10,7 @@ import com.shixi.hotelmanager.exception.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.validation.ValidationException;
+import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,5 +75,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BadOrderStatusDTO handle(OrderStatusException e){
         return new BadOrderStatusDTO();
+    }
+
+    @ExceptionHandler
+    public String handle(SignatureException e, Model model){
+        model.addAttribute("message","支付安全校验失败！");
+        return "paymentComplete";
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CreateOrderFailDTO handle(HotelRoomInsufficientException e){
+        return new CreateOrderFailDTO("房间不够辣!");
     }
 }
