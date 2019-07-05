@@ -2,11 +2,9 @@ package com.shixi.hotelmanager.controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.shixi.hotelmanager.domain.DTO.OrderDTO.CreateOrderDTO;
-import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderEvaluateDTO;
-import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderStatusDTO;
-import com.shixi.hotelmanager.domain.DTO.OrderDTO.PayOrderDTO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.shixi.hotelmanager.domain.DTO.DefaultReturnDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.*;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.*;
 import com.shixi.hotelmanager.mapper.OrderMapper;
@@ -15,7 +13,6 @@ import com.shixi.hotelmanager.exception.OrderNotFoundException;
 import com.shixi.hotelmanager.exception.OrderStatusException;
 import com.shixi.hotelmanager.exception.UserNotFoundException;
 import com.shixi.hotelmanager.exception.*;
-import com.shixi.hotelmanager.mapper.OrderMapper;
 import com.shixi.hotelmanager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,16 +40,19 @@ public class PayController {
     
 
     @RequestMapping("/createOrder")
-    @ResponseBody String createOrder(@Valid CreateOrderDTO dto,BindingResult result){
+    @ResponseBody
+    DefaultReturnDTO createOrder(@Valid CreateOrderDTO dto, BindingResult result){
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
         try {
-            orderService.createOrder(dto);
-            return "success";
+            Order order=orderService.createOrder(dto);
+            QueryWrapper<Order> wrapper=new QueryWrapper<>();
+            wrapper.eq("uuid",order.getUuid());
+            order=order.selectOne(wrapper);
+            return new CreateOrderSuccessDTO("success",order.getId());
         } catch (HotelRoomInsufficientException e) {
-            return "fail";
+            return new CreateOrderFailDTO("Room Insufficient");
         } catch (ParseException e) {
-            e.printStackTrace();
-            return "fail";
+            throw new ValidationException("日期格式错误");
         }
     }
 
