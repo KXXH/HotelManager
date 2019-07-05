@@ -52,7 +52,7 @@
         var orderRoomId = roomid;
         var roomCount = $("#check_room_count").val();
 
-        
+
         var temdate = $("#checkin_date").val();
         var tem=new Date(temdate);
         var year=tem.getFullYear();
@@ -98,7 +98,7 @@
                 console.log(anser.id);
                 var nexthref='/pay/payOrder?id='+anser.id;
                 console.log(nexthref);
-                window.location.reload();
+                window.location.href='/public/checkout/MyOrder.html';
                 window.open(nexthref);
 
                 window.event.returnValue=false;
