@@ -104,7 +104,7 @@
     <div class="cart-items" id="order_list">
         <div class="container">
             <h3 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表</h3>
-            <select class="form-control mb-4" data-wow-delay=".5s" v-model="selected" v-on:change="getList()">
+            <select class="form-control mb-4" data-wow-delay=".5s" v-model="selected" v-on:change="orders=[];currentPage=1;getList()">
                 <option value="ALL" selected>所有订单</option>
                 <option value="UNPAID">未支付</option>
                 <option value="PAID">已支付</option>
@@ -275,9 +275,12 @@
                     };
                 }else{
                     this.condition={
+                        "target":"status",
                         "eq":this.selected,
-                        "orderByDesc":"create_time",
-                        "target":"status"
+
+                        "and":{
+                            "orderByDesc":"create_time",
+                        }
                     }
                 }
 
