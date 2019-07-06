@@ -14,7 +14,7 @@ public class OrderAdminReturnDTO extends OrderReturnDTO {
         User user=new User();
         user=user.selectById(order.getOrderUserId());
         if(user!=null){
-            setUserId(user.getUserId());
+            setUserId(user.getId());
             setUsername(user.getUsername());
         }
     }

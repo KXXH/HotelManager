@@ -152,14 +152,16 @@
 </nav>
 <!-- END nav -->
 
-<div class="hero-wrap js-fullheight" style="background-image: url('images/bg_1.jpg');">
-    <div class="overlay"></div>
-    <div class="container" id="container">
-        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
-            <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="index.html">Home</a></span> <span>Hotel</span></p>
-                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
+<div id="bgp">
+    <div class="hero-wrap js-fullheight"  v-bind:style="{'background-image':'url('+title_background_img+')'}">
+        <div class="overlay"></div>
+        <div class="container" id="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
+                <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+                    <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="index.html">Home</a></span> <span>Hotel</span></p>
+                    <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
 
+                </div>
             </div>
         </div>
     </div>
@@ -363,9 +365,19 @@
 
 <script>
     var title=new Vue({
-        el:"#container",
+        el:"#bgp",
         data:{
-            hotel_name:""
+            hotel_name:"",
+            hotel_english_name:"",
+        },
+        created:function(){
+            getHotelInfo();
+        },
+        computed:{
+            title_background_img:function(){
+
+                return 'images/hotel_bg_'+(hotelid%5)+'.jpg';
+            }
         }
     });
     var j={'condition':{'eq': ''+parseInt(hotelid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)

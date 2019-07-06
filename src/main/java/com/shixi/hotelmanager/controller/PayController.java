@@ -50,13 +50,9 @@ public class PayController {
     }
 
     @RequestMapping("/payOrder")
-    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException {
+    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException {
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
-        try {
-            return orderService.payOrder(dto.getId());
-        }  catch (OrderPaymentAlreadySuccessException e) {
-            return "fail";
-        }
+        return orderService.payOrder(dto.getId());
 
     }
 

@@ -89,4 +89,17 @@ public class GlobalExceptionHandler {
     public CreateOrderFailDTO handle(HotelRoomInsufficientException e){
         return new CreateOrderFailDTO("房间不够辣!");
     }
+
+    @ExceptionHandler
+    public String handle(OrderNotFoundException e,Model model){
+        model.addAttribute("message","订单没有找到哦! ");
+        return "paymentComplete";
+    }
+
+    @ExceptionHandler
+    public String handle(OrderPaymentAlreadySuccessException e,Model model){
+        model.addAttribute("message","您已经付款了哦，请不要重新支付");
+        return "paymentComplete";
+    }
+
 }

@@ -196,7 +196,7 @@ public class UserController {
             HttpSession session
             ) throws UserNotFoundException, UserInfoDuplicateException {
         if(result.hasErrors()){
-            throw new ValidationException(result.getAllErrors().iterator().next().toString());
+            throw new ValidationException(result.getAllErrors().iterator().next().getDefaultMessage());
         }
         if(userService.updateTelephone(user,code,session.getId())){
             return new DefaultSuccessDTO();
@@ -210,7 +210,7 @@ public class UserController {
     @RequestMapping("/forgetPassword")
     public DefaultReturnDTO forgetPassword(@Valid ForgetPasswordDTO forgetPasswordDTO, BindingResult bindingResult,HttpSession session) throws UserNotFoundException, UserInfoDuplicateException, VerificationFailException {
         if(bindingResult.hasErrors()){
-            throw new ValidationException(bindingResult.getAllErrors().iterator().next().toString());
+            throw new ValidationException(bindingResult.getAllErrors().iterator().next().getDefaultMessage());
         }
         userService.forgetPasssword(
                 forgetPasswordDTO.getTelephone(),
