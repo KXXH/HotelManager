@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.shixi.hotelmanager.Utils.MD5;
 import com.shixi.hotelmanager.validation.UpdateTelephoneValudation;
 import com.shixi.hotelmanager.validation.UpdateUserValidation;
 import lombok.AllArgsConstructor;
@@ -60,6 +61,10 @@ public class User extends Model<User> implements Cloneable {
     {
         Object object = super.clone();
         return object;
+    }
+
+    public void setPasswordEncode(String password){
+        this.password= MD5.md5(password);
     }
 
 }

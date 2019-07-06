@@ -3,6 +3,7 @@ package com.shixi.hotelmanager.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shixi.hotelmanager.Utils.GetUserInfo;
+import com.shixi.hotelmanager.Utils.MD5;
 import com.shixi.hotelmanager.domain.Condition;
 import com.shixi.hotelmanager.domain.DTO.UserDTO.ChangePasswdDTO;
 import com.shixi.hotelmanager.domain.User;
@@ -99,7 +100,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         } else {
             User user = new User();
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPasswordEncode(password);
             user.setAvatar(avatar);
             user.setEmail(email);
             user.setGender(gender);
@@ -119,6 +120,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     @Override
     public boolean addUser(User user) throws UserInfoDuplicateException {
         try{
+            user.setPasswordEncode(user.getPassword());
             save(user);
         }catch(DuplicateKeyException e){
             throw new UserInfoDuplicateException();
@@ -234,9 +236,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         String realOldPasswd = user.getPassword();
         logger.info("旧密码:"+realOldPasswd);
         logger.info("输入旧密码:"+changePasswdDTO.getOldPassword());
-        if (changePasswdDTO.getOldPassword().equals(realOldPasswd)){
+
+        if (MD5.verify(changePasswdDTO.getOldPassword(),realOldPasswd)){
             if(changePasswdDTO.getNewPassword().equals(changePasswdDTO.getConfirmation())){
-                user.setPassword(changePasswdDTO.getNewPassword());
+                user.setPasswordEncode(changePasswdDTO.getNewPassword());
                 baseMapper.updateById(user);
                 return 1;
             }
@@ -322,7 +325,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 if(user==null){
                     throw new UserNotFoundException();
                 }
-                user.setPassword(newPassword);
+                user.setPasswordEncode(newPassword);
                 updateById(user);
                 return true;
             }catch(DuplicateKeyException e){
