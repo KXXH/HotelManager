@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,String> handle(ValidationException exception) {
         HashMap<String,String>m=new HashMap<>();
         m.put("status","error");
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public UserInfoDuplicateDTO handle(UserInfoDuplicateException exception){
         return new UserInfoDuplicateDTO();
     }
@@ -89,4 +89,17 @@ public class GlobalExceptionHandler {
     public CreateOrderFailDTO handle(HotelRoomInsufficientException e){
         return new CreateOrderFailDTO("房间不够辣!");
     }
+
+    @ExceptionHandler
+    public String handle(OrderNotFoundException e,Model model){
+        model.addAttribute("message","订单没有找到哦! ");
+        return "paymentComplete";
+    }
+
+    @ExceptionHandler
+    public String handle(OrderPaymentAlreadySuccessException e,Model model){
+        model.addAttribute("message","您已经付款了哦，请不要重新支付");
+        return "paymentComplete";
+    }
+
 }

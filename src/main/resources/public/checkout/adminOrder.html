@@ -7,29 +7,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="/public/js/userInfo.js"></script>
     <!--<link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">-->
     <!--<link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">-->
 
     <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
 
-    <link rel="stylesheet" href="/public/hotel/css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" href="/public/hotel/css/animate.css">
-
-    <link rel="stylesheet" href="/public/hotel/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="/public/hotel/css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="/public/hotel/css/magnific-popup.css">
-
-    <link rel="stylesheet" href="/public/hotel/css/aos.css">
-
-    <link rel="stylesheet" href="/public/hotel/css/ionicons.min.css">
-
-    <link rel="stylesheet" href="/public/hotel/css/bootstrap-datepicker.css">
     <!--<link rel="stylesheet" href="css/jquery.timepicker.css">-->
 
 
     <link rel="stylesheet" href="/public/hotel/css/flaticon.css">
     <link rel="stylesheet" href="/public/hotel/css/icomoon.css">
+    <!--<link rel="stylesheet" href="/public/checkout/css/style.css">-->
     <link rel="stylesheet" href="/public/hotel/css/style.css">
 
     <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
@@ -65,28 +53,16 @@
         });
     </script>
 </head>
-<body onload="userInfo.getList()">
+<body>
 
 
-<div id="nav"></div>
+
 
 <!-- END nav -->
-<div class="hero-wrap js-fullheight" style="background-image: url('/public/hotel/images/order_bg.jpg');">
-    <div class="overlay"></div>
-    <div class="container" id="container">
-        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
-            <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }" style="visibility: visible;">
-                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" style="background-color: initial;padding-top: 0;padding-bottom: 0"><span class="mr-2"><a>Order List</a></span></p>
-                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" >我的订单列表</h1>
 
-            </div>
-        </div>
-    </div>
-</div>
-<section class="ftco-section" style="padding-top: 0px">
     <div class="cart-items" id="order_list">
         <div class="container">
-            <h3 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表</h3>
+            <h2 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表</h2>
             <select class="form-control mb-4" data-wow-delay=".5s" v-model="selected" v-on:change="orders=[];currentPage=1;getList()">
                 <option value="ALL" selected>所有订单</option>
                 <option value="UNPAID">未支付</option>
@@ -102,10 +78,13 @@
                             <a href="single.html" class="img img-2 d-flex justify-content-center align-items-center"><img style="height: 100%" v-bind:src="computedURL()" class="img-responsive" alt=""></a>
                         </div>
                         <div class="cart-item-info">
-                            <h4><a href="single.html"> {{order.hotelChineseName}} {{order.roomName}} {{order.count}}间</a><span>详细信息 :</span></h4>
+                            <h4><a href="single.html"> {{order.hotelChineseName}} {{order.roomName}} {{order.count}}间</a><span></span></h4>
+                            <h2>详细信息 :</h2>
                             <ul class="qty">
                                 <li><p>订单总价 : ￥{{order.price}}</p></li>
                                 <li><p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p></li>
+                                <li v-if="order.userId"><p>用户ID: {{order.userId}}</p></li>
+                                <li v-if="order.username"><p>用户名: {{order.username}}</p></li>
                                 <li v-if="order.createTime!='未知'"><p>订单创建时间: {{order.createTime}}</p></li>
                                 <li v-if="order.status!='未支付'&&order.orderId"><p>支付宝交易号: {{order.orderId}}</p></li>
                                 <li v-if="order.uuid"><p>交易编码: {{order.uuid}}</p></li>
@@ -113,10 +92,8 @@
                             <div class="delivery">
                                 <span>订单状态 : {{order.status}}</span>
 
-                                <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.id">前往付款</a>
-                                <a v-if="order.status=='未支付'">&nbsp;|&nbsp;</a>
-                                <a v-if="order.status=='未支付'" style="color: #f9be37" v-on:click="checkStatus(i)">我已付款</a>
-                                <a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?uuid='+order.uuid">我要退款</a>
+                                <!--<a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?id='+order.id">我要退款</a>-->
+                                <a v-if="isRefundEnabled(i)"  v-on:click="gotorefund(order.id)">给用户退款</a>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -126,66 +103,11 @@
             </div>
         </div>
     </div>
-</section> <!-- .section -->
 
 
-<footer class="ftco-footer ftco-bg-dark ftco-section">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Hotel</h2>
-                    <p>You can relax in the hotel and find the pleasure of life. The world is so big. Let's go and see it together.</p>
-                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                        <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-                        <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-                        <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4 ml-md-4">
-                    <h2 class="ftco-heading-2">Information</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="py-2 d-block">About Us</a></li>
-                        <li><a href="#" class="py-2 d-block">Online enquiry</a></li>
-                        <li><a href="#" class="py-2 d-block">Call Us</a></li>
-                        <li><a href="#" class="py-2 d-block">General enquiries</a></li>
-                        <li><a href="#" class="py-2 d-block">Booking Conditions</a></li>
-                        <li><a href="#" class="py-2 d-block">Privacy and Policy</a></li>
-                        <li><a href="#" class="py-2 d-block">Refund policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Experience</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="py-2 d-block">Beach</a></li>
-                        <li><a href="#" class="py-2 d-block">Adventure</a></li>
-                        <li><a href="#" class="py-2 d-block">Wildlife</a></li>
-                        <li><a href="#" class="py-2 d-block">Honeymoon</a></li>
-                        <li><a href="#" class="py-2 d-block">Nature</a></li>
-                        <li><a href="#" class="py-2 d-block">Party</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Have a Questions?</h2>
-                    <div class="block-23 mb-3">
-                        <ul>
-                            <li><span class="icon icon-map-marker"></span><span class="text">Shuangliu District, Chengdu City, Sichuan Province, China Jiang'an Campus, Sichuan University</span></li>
-                            <li><a href="#"><span class="icon icon-phone"></span><span class="text">+86 15520791478</span></a></li>
-                            <li><a href="#"><span class="icon icon-envelope"></span><span class="text">1191315155@gmail.com</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-    </div>
-</footer>
+
+
 
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
@@ -193,6 +115,8 @@
 <!--//search jQuery-->
 <!--smooth-scrolling-of-move-up-->
 <script type="text/javascript">
+
+    //console.log(document.getElementById("123123").className)
 
     $(document).ready(function() {
 
@@ -270,7 +194,7 @@
                 };
                 $.ajax(
                     {
-                        url:'/orders/search',
+                        url:'/admin/order/search',
                         type:'POST',
                         data:JSON.stringify(j),
                         dataType:"json",
@@ -302,6 +226,17 @@
                     return false;
                 }
 
+            },
+            gotorefund:function (i) {
+                var herft=window.location.href;
+                $.get('http://localhost:8280/admin/order/refund?id='+i,function (json) {
+                    if (json==true){
+                        alert("已为该用户退款！");
+                        order_list.data[i].status="已退款!";
+                    }else{
+                        alert("退款失败！");
+                    }
+                });
             },
             checkStatus:function (i) {
                 var j={'id':order_list.orders[i].id};

@@ -43,20 +43,16 @@ public class PayController {
             QueryWrapper<Order> wrapper=new QueryWrapper<>();
             wrapper.eq("uuid",order.getUuid());
             order=order.selectOne(wrapper);
-            return new CreateOrderSuccessDTO("success",order.getId());
+            return new CreateOrderSuccessDTO("success",order.getUuid());
         } catch (ParseException e) {
             throw new ValidationException("日期格式错误");
         }
     }
 
     @RequestMapping("/payOrder")
-    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException {
+    @ResponseBody String payOrder(@Valid PayOrderDTO dto, BindingResult result) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException {
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
-        try {
-            return orderService.payOrder(dto.getId());
-        }  catch (OrderPaymentAlreadySuccessException e) {
-            return "fail";
-        }
+        return orderService.payOrder(dto.getId());
 
     }
 
@@ -77,6 +73,9 @@ public class PayController {
             model.addAttribute("message","订单未找到！");
             return "paymentComplete";
         } catch (RefundFailException e) {
+            model.addAttribute("message","退款失败，请咨询客服！");
+            return "paymentComplete";
+        } catch (OutdatedOrdersException e) {
             model.addAttribute("message","退款失败，请咨询客服！");
             return "paymentComplete";
         }
@@ -100,7 +99,7 @@ public class PayController {
             System.out.println("map:"+map.toString());
             // TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             //orderService.payOrderComplete(Long.parseLong(map.get("out_trade_no")),map.get("trade_no"));
-            orderService.checkPaymentStatus(Long.parseLong(map.get("out_trade_no")));
+            orderService.checkPaymentStatus(map.get("out_trade_no"));
             model.addAttribute("message","支付成功!");
             return "paymentComplete";
         }else{

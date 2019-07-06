@@ -32,7 +32,10 @@ function changePassword() {
     var j = {"OldPassword":$('#oldPassword').val(),"NewPassword":$('#newPassword').val(),"Confirmation":$('#verification').val()};
 
     $.post(url,j,function (json) {
-        alert("密码不正确!");
+        if(json.status=="ok")
+            alert("修改密码成功!");
+        else
+            alert(json.msg);
         $('#oldPassword').val("");
         $('#newPassword').val("");
         $('#verification').val("");
@@ -47,9 +50,11 @@ function changeInfo() {
         }
         else{
             alert(json.msg);
-            userInfo.getList();
         }
-
+    }).error(function(json){
+        console.log(JSON.stringify(json));
+        alert(JSON.parse(json.responseText).msg);
+        userInfo.getList();
     })
 }
 function upload() {

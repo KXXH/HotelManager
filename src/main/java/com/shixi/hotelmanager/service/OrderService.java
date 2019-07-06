@@ -18,12 +18,13 @@ import java.util.List;
 public interface OrderService {
     @Transactional(rollbackFor = {HotelRoomInsufficientException.class})
     Order createOrder(CreateOrderDTO dto) throws HotelRoomInsufficientException, ParseException, ValidationException;
-    String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException;
-    boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException;
-    String checkPaymentStatus(Long orderId) throws OrderNotFoundException, AlipayApiException;
+    String payOrder(String orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException;
+    boolean payOrderComplete(String orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException;
+    String checkPaymentStatus(String orderId) throws OrderNotFoundException, AlipayApiException;
     List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) throws UserNotFoundException;
+    List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition,boolean isAdmin) throws UserNotFoundException;
     @Transactional(rollbackFor = {RefundFailException.class})
-    boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException;
+    boolean refundOrder(String Id,String orderStatus) throws RefundFailException, OrderNotFoundException;
     boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException, OutdatedOrdersException;
     boolean makeEvaluate(String evaluate,String OrderId) throws OrderNotFoundException;
 }

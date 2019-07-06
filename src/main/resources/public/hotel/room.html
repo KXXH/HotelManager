@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <script src="/public/js/userInfo.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -30,7 +31,7 @@
     <link rel="stylesheet" href="css/style.css">
 
 </head>
-<body>
+<body onload="userInfo.getList()">
 <script>
     /*获取到Url里面的参数*/
     (function ($) {
@@ -131,35 +132,18 @@
     }
 </script>
 
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="index.html">Adventure</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="oi oi-menu"></span> Menu
-        </button>
+<div id="nav"></div>
 
-        <div class="collapse navbar-collapse" id="ftco-nav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="places.html" class="nav-link">Places</a></li>
-                <li class="nav-item active"><a href="hotel.html" class="nav-link">Hotels</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<!-- END nav -->
+<div id="bgp">
+    <div class="hero-wrap js-fullheight"  v-bind:style="{'background-image':'url('+title_background_img+')'}">
+        <div class="overlay"></div>
+        <div class="container" id="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
+                <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+                    <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="index.html">Home</a></span> <span>Hotel</span></p>
+                    <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
 
-<div class="hero-wrap js-fullheight" style="background-image: url('images/bg_1.jpg');">
-    <div class="overlay"></div>
-    <div class="container" id="container">
-        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
-            <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="index.html">Home</a></span> <span>Hotel</span></p>
-                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
-
+                </div>
             </div>
         </div>
     </div>
@@ -178,10 +162,10 @@
                             </div>
 
                             <div class="form-group">
-                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center ">
+                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
                             <div class="form-group">
-                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center ">
+                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
 
                             <div class="form-group">
@@ -363,9 +347,19 @@
 
 <script>
     var title=new Vue({
-        el:"#container",
+        el:"#bgp",
         data:{
-            hotel_name:""
+            hotel_name:"",
+            hotel_english_name:"",
+        },
+        created:function(){
+            getHotelInfo();
+        },
+        computed:{
+            title_background_img:function(){
+
+                return 'images/hotel_bg_'+(hotelid%5)+'.jpg';
+            }
         }
     });
     var j={'condition':{'eq': ''+parseInt(hotelid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)
@@ -385,6 +379,67 @@
 
 </script>
 <script>
+    var flag=true;
+    function checkRoomAvailable(){
+        var roomCount = $("#check_room_count").val();
+        var temdate = $("#checkin_date").val();
+        if(temdate.length<=0) return;
+        var tem=new Date(temdate);
+        var year=tem.getFullYear();
+        var month=tem.getMonth()+1;
+        var day=tem.getDate();
+        var dateStart =year+"-";
+        if(month<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+month+"-";
+        if(day<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+day;
+
+        temdate = $("#checkout_date").val();
+        if(temdate.length<=0) return;
+        tem=new Date(temdate);//-24*60*60*1000
+        tem=new Date(tem-24*60*60*1000);
+        year=tem.getFullYear();
+        month=tem.getMonth()+1;
+        day=tem.getDate();
+        var dateEnd =year+"-";
+        if(month<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+month+"-";
+        if(day<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+day;
+        var url="/hotelRoom/remain";
+        var j={
+            "startDate":dateStart,
+            "endDate":dateEnd,
+            "bedType":hotel_table.points[0].bedType,
+            "hotelId":hotel_table.points[0].theRoomHotelId,
+            "roomWanted":roomCount&&roomCount.length>0?roomCount:1
+        }
+        $.ajax({
+            url:url,
+            type:'POST',
+            data:JSON.stringify(j),
+            dataType:"json",
+            contentType:"application/json; charset=utf-8",
+            success:function(json) {
+                //console.log(json);
+                //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
+                //title.hotel_name=json.data[0]["hotelTranslatedName"];
+
+                if(flag&&(json.length<=0||json[0].num<=(roomCount&&roomCount.length>0?roomCount:1))){
+                    alert("房间不够辣!");
+                    flag=false;
+                    setTimeout(function(){flag=true},1000);
+                }
+            }
+        });
+
+    }
+
+
     var hotel_table=new Vue(//hotel_table.computedURL
         {
             el:'#hotel_table',

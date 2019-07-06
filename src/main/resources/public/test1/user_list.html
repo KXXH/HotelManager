@@ -83,7 +83,8 @@
                             drag: false,
                             resize: false,
                             content: '' + json["msg"],
-                            ok: true,
+                            ok: true
+//                            cancel:false
                         });
                         var table = document.getElementById("table_list1");
                         table.className="table";
@@ -112,8 +113,8 @@
                             var cell9 = row.insertCell(8);
                             cell9.innerHTML=json["users"][i].password;//cell9.innerHTML = "0";
                             var cell10 = row.insertCell(9);
-                            cell10.innerHTML = "<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
-                                "\t\t\t\t\t\t\t\t<a href=\"javascript:del('" + json["users"][i].id + "');\">删除</a>";
+                            cell10.innerHTML="<a href=\"javascript:edit('" +json["users"][i].idCard+"');\">编辑</a>\n" +
+                                "<a href=\"javascript:del('"+json["users"][i].id+"');\">删除</a>";
                         }
                     }
                 });
@@ -131,18 +132,19 @@
 
         /** Excel导出  **/
         function exportExcel(){
-            if( confirm('您确定要导出吗？') ){
-                var fyXqCode = $("#fyXq").val();
-                var fyXqName = $('#fyXq option:selected').text();
-//	 		alert(fyXqCode);
-                if(fyXqCode=="" || fyXqCode==null){
-                    $("#fyXqName").val("");
-                }else{
-//	 			alert(fyXqCode);
-                    $("#fyXqName").val(fyXqName);
-                }
-                $("#submitForm").attr("action", "/xngzf/archives/exportExcelFangyuan.action").submit();
-            }
+//            if( confirm('您确定要导出吗？') ){
+//                var fyXqCode = $("#fyXq").val();
+//                var fyXqName = $('#fyXq option:selected').text();
+////	 		alert(fyXqCode);
+//                if(fyXqCode=="" || fyXqCode==null){
+//                    $("#fyXqName").val("");
+//                }else{
+////	 			alert(fyXqCode);
+//                    $("#fyXqName").val(fyXqName);
+//                }
+//                $("#submitForm").attr("action", "/xngzf/archives/exportExcelFangyuan.action").submit();
+//            }
+            window.print();
         }
 
         /** 编辑 **/
@@ -160,6 +162,7 @@
                 title: '消息',
                 width: 433,
                 height:400
+//                cancel:true
             });
             d.show();
             d.content(con);
@@ -205,10 +208,11 @@
             if(allIDCheck.length>0) {
                 allIDCheck = allIDCheck.substring(0, allIDCheck.length-1);
                 // 赋给隐藏域
-                $("#allIDCheck").val(allIDCheck);
+//                $("#allIDCheck").val(allIDCheck);
                 if(confirm("您确定要批量删除这些记录吗？")){
                     // 提交form
-                    $("#submitForm").attr("action", "/xngzf/archives/batchDelFangyuan.action").submit();
+//                    $("#submitForm").attr("action", "/xngzf/archives/batchDelFangyuan.action").submit();
+
                 }
             }
         }
@@ -257,7 +261,7 @@
                         <select name="fangyuanEntity.fyHxCode" id="gender" class="ui_select01">
                             <option value="">--请选择--</option>
                             <option value="male">男</option>
-                            <option value="famale">女</option>
+                            <option value="female">女</option>
                         </select>
                         电话号码&nbsp;&nbsp;<input type="text" id="telephone" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
                         邮箱地址&nbsp;&nbsp;<input type="text" id="email" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
@@ -267,7 +271,7 @@
                         <input type="button" value="查询" class="ui_input_btn01" onclick="search();" />
                         <input type="button" value="新增" class="ui_input_btn01" id="addBtn" />
                         <input type="button" value="删除" class="ui_input_btn01" onclick="batchDel();" />
-                        <input type="button" value="导入" class="ui_input_btn01" id="importBtn" />
+                        <!--<input type="button" value="导入" class="ui_input_btn01" id="importBtn" />-->
                         <input type="button" value="导出" class="ui_input_btn01" onclick="exportExcel();" />
                     </div>
                 </div>
@@ -299,7 +303,8 @@
                         console.log(JSON.stringify(json[i].username));
                         var row=table.insertRow(i+1);
                         var cell1=row.insertCell(0);
-                        cell1.innerHTML="<td><input type=\"checkbox\" name=\"IDCheck\" value=\"14458579642011\" class=\"acb\" /></td>";
+//                            cell1.innerHTML="<td><input type=\"checkbox\" name=\"IDCheck\" value=\"14458579642011\" class=\"acb\" /></td>";
+                            cell1.innerHTML="<td><input type=\"checkbox\" name=\"IDCheck\" value=\""+json[i].id+"\" class=\"acb\" /></td>";
                         var cell2=row.insertCell(1);
                         cell2.innerHTML=json[i].id;
                         var cell3=row.insertCell(2);
@@ -339,19 +344,19 @@
                 <div class="ui_frt">
                     <!--    如果是第一页，则只显示下一页、尾页 -->
 
-                    <input type="button" value="首页" class="ui_input_btn01" />
-                    <input type="button" value="上一页" class="ui_input_btn01" />
-                    <input type="button" value="下一页" class="ui_input_btn01"
-                           onclick="jumpNormalPage(2);" />
-                    <input type="button" value="尾页" class="ui_input_btn01"
-                           onclick="jumpNormalPage(9);" />
+                    <!--<input type="button" value="首页" class="ui_input_btn01" />-->
+                    <!--<input type="button" value="上一页" class="ui_input_btn01" />-->
+                    <!--<input type="button" value="下一页" class="ui_input_btn01"-->
+                           <!--onclick="jumpNormalPage(2);" />-->
+                    <!--<input type="button" value="尾页" class="ui_input_btn01"-->
+                           <!--onclick="jumpNormalPage(9);" />-->
 
 
 
-                    <!--     如果是最后一页，则只显示首页、上一页 -->
+                    <!--&lt;!&ndash;     如果是最后一页，则只显示首页、上一页 &ndash;&gt;-->
 
-                    转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页
-                    <input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />
+                    <!--转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页-->
+                    <!--<input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />-->
                 </div>
             </div>
         </div>
