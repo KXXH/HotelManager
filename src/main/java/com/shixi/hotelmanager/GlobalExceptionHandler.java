@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public UserInfoDuplicateDTO handle(UserInfoDuplicateException exception){
         return new UserInfoDuplicateDTO();
     }

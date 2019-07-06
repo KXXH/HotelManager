@@ -145,6 +145,9 @@
             else {
                 alert(json.msg);
             }
+        }).error(function(json){
+            console.log(JSON.stringify(json));
+            alert(JSON.parse(json.responseText).msg);
         })
     }
     function upload() {

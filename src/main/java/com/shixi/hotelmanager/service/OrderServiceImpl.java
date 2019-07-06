@@ -273,7 +273,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         queryWrapper.eq("uuid",order.getUuid());
         order=order.selectOne(queryWrapper);
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-        if (order.getOrderUserId() != user.getId())
+        if (order.getOrderUserId() != user.getId()&&!user.getRole().equals("ADMIN"))
             throw new OrderNotFoundException();
 
         Date start = null;
