@@ -83,6 +83,8 @@
                             <ul class="qty">
                                 <li><p>订单总价 : ￥{{order.price}}</p></li>
                                 <li><p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p></li>
+                                <li v-if="order.userId"><p>用户ID: {{order.userId}}</p></li>
+                                <li v-if="order.username"><p>用户名: {{order.username}}</p></li>
                                 <li v-if="order.createTime!='未知'"><p>订单创建时间: {{order.createTime}}</p></li>
                                 <li v-if="order.status!='未支付'&&order.orderId"><p>支付宝交易号: {{order.orderId}}</p></li>
                                 <li v-if="order.uuid"><p>交易编码: {{order.uuid}}</p></li>
