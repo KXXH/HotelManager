@@ -29,8 +29,9 @@
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+	  <script src="/public/js/userInfo.js"></script>
   </head>
-  <body onload="getHotelInfo()">
+  <body onload="getHotelInfo();userInfo.getList()">
   <script>
       /*获取到Url里面的参数*/
       (function ($) {
@@ -44,40 +45,24 @@
 	  console.clear();
       console.log(urlid);
   </script>
-    
-	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Hotel Master</a>
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
 
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
-	          <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
-				<li class="nav-item active"><a href="hotel.html" class="nav-link">酒店</a></li>
-	          <li class="nav-item"><a href="places.html" class="nav-link">订单</a></li>
-	          <li class="nav-item"><a href="blog.html" class="nav-link">个人信息</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">关于</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
+  <div id="nav"></div>
     <!-- END nav -->
     
-    <div class="hero-wrap js-fullheight" style="background-image: url('images/bg_1.jpg');">
-      <div class="overlay"></div>
-      <div class="container" id="container">
-        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
-          <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-            <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>{{hotel_english_name}}</a></span></p>
-			  <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
+    <div id="bgp">
+		<div class="hero-wrap js-fullheight" v-bind:style="{'background-image':'url('+title_background_img+')'}">
+			<div class="overlay"></div>
+			<div class="container" id="container">
+				<div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
+					<div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+						<p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>{{hotel_english_name}}</a></span></p>
+						<h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" v-text="hotel_name" >{{hotel_name}}</h1>
 
-          </div>
-        </div>
-      </div>
-    </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 		
 		<section class="ftco-section">
       <div class="container">
@@ -329,11 +314,20 @@
 
   <script>
       var title=new Vue({
-          el:"#container",
+          el:"#bgp",
           data:{
               hotel_name:"",
 			  hotel_english_name:"",
-          }
+          },
+          created:function(){
+          	getHotelInfo();
+		  },
+		  computed:{
+          	title_background_img:function(){
+
+				return 'images/hotel_bg_'+(urlid%5)+'.jpg';
+			}
+		  }
       });
       var j={'condition':{'eq': ''+parseInt(urlid) ,'target':'hotel_id'},'currentPage':1,'size':20};//parseInt(urlid)
       console.log(j);
