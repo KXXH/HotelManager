@@ -266,11 +266,11 @@
                         <th>图片2</th>
                         <script>
 //                            var j={'condition':{'like':'Hotel','orderByAsc':'hotel_name','target':'hotel_name','and':{'low':'350','target':'id','or':{'like':'chain','target':'chain_name'}}},'currentPage':2,'size':20}
-                            var j={'page_size':10};
+//                            var j={'current_page':1,'page_size':10};
                             $.ajax({
                                 url:'/hotel/get',
                                 type:'POST',
-                                data:JSON.stringify(j),
+//                                data:JSON.stringify(j),
                                 dataType:"json",
                                 contentType:"application/json; charset=utf-8",
                                 success:function(json) {//json.data[i]["chainName"]
@@ -311,31 +311,31 @@
 
             </div>
             <div class="ui_tb_h30">
-                <div class="ui_flt" style="height: 30px; line-height: 30px;">
-                    共有
-                    <span class="ui_txt_bold04">90</span>
-                    条记录，当前第
-                    <span class="ui_txt_bold04">1
-						/
-						9</span>
-                    页
-                </div>
+                <!--<div class="ui_flt" style="height: 30px; line-height: 30px;">-->
+                    <!--共有-->
+                    <!--<span class="ui_txt_bold04">90</span>-->
+                    <!--条记录，当前第-->
+                    <!--<span class="ui_txt_bold04">1-->
+						<!--/-->
+						<!--9</span>-->
+                    <!--页-->
+                <!--</div>-->
                 <div class="ui_frt">
                     <!--    如果是第一页，则只显示下一页、尾页 -->
 
-                    <input type="button" value="首页" class="ui_input_btn01" />
-                    <input type="button" value="上一页" class="ui_input_btn01" />
-                    <input type="button" value="下一页" class="ui_input_btn01"
-                           onclick="jumpNormalPage(2);" />
-                    <input type="button" value="尾页" class="ui_input_btn01"
-                           onclick="jumpNormalPage(9);" />
+                    <!--<input type="button" value="首页" class="ui_input_btn01" />-->
+                    <!--<input type="button" value="上一页" class="ui_input_btn01" />-->
+                    <!--<input type="button" value="下一页" class="ui_input_btn01"-->
+                           <!--onclick="jumpNormalPage(2);" />-->
+                    <!--<input type="button" value="尾页" class="ui_input_btn01"-->
+                           <!--onclick="jumpNormalPage(9);" />-->
 
 
 
-                    <!--     如果是最后一页，则只显示首页、上一页 -->
+                    <!--&lt;!&ndash;     如果是最后一页，则只显示首页、上一页 &ndash;&gt;-->
 
-                    转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页
-                    <input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />
+                    <!--转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页-->
+                    <!--<input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />-->
                 </div>
             </div>
         </div>
