@@ -199,12 +199,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public String payOrder(Long orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException {
+    public String payOrder(String orderId) throws OrderNotFoundException, UserNotFoundException, OrderStatusException, AlipayApiException, OrderPaymentAlreadySuccessException {
         User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if(user==null) throw new UserNotFoundException();
         //用户只能支付自己创建的订单
         QueryWrapper<Order> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("id",orderId).eq("order_user_id",user.getId());
+        queryWrapper.eq("uuid",orderId).eq("order_user_id",user.getId());
         Order order=getOne(queryWrapper);
         if(order==null) throw new OrderNotFoundException();
 
@@ -230,7 +230,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         request.setNotifyUrl("http://localhost:8280/pay/CallBack/notify");//在公共参数中设置回跳和通知地址
 
         request.setBizContent("{" +
-                "    \"out_trade_no\":\""+order.getId()+"\"," +
+                "    \"out_trade_no\":\""+order.getUuid()+"\"," +
                 "    \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
                 "    \"total_amount\":"+order.getPrice()+"," +
                 "    \"subject\":\""+hotel.getHotelName()+" Order\"," +
@@ -253,8 +253,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException {
-        Order order=getById(orderId);
+    public boolean payOrderComplete(String orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException {
+        QueryWrapper<Order> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("uuid",orderId);
+        Order order=getOne(queryWrapper);
         if(order==null){
             throw new OrderNotFoundException();
         }
@@ -267,7 +269,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException, OutdatedOrdersException {
-        order=order.selectById();
+        QueryWrapper<Order> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("uuid",order.getUuid());
+        order=order.selectOne(queryWrapper);
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         if (order.getOrderUserId() != user.getId())
             throw new OrderNotFoundException();
@@ -295,11 +299,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         AlipayTradeRefundResponse response = alipayClient.execute(request);
         if(response.isSuccess()) {
             Order order1 = new Order();
-            QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+            queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("order_id",order.getOrderId());
             order1 = order1.selectOne(queryWrapper);
 
-            if(refundOrder(Long.valueOf(order1.getId()),"REFUND"))
+            if(refundOrder(order1.getUuid(),"REFUND"))
                 return true;
             else
                 return false;
@@ -310,11 +314,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = {RefundFailException.class})
-    public boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException {
+    public boolean refundOrder(String Id,String orderStatus) throws RefundFailException, OrderNotFoundException {
         //根据订单号获取订单
         Order order = new Order();
         QueryWrapper<Order> query = new QueryWrapper<>();
-        query.eq("id",Id);
+        query.eq("uuid",Id);
         order = order.selectOne(query);
         if (order == null)
             throw new OrderNotFoundException();
@@ -358,10 +362,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public String checkPaymentStatus(Long orderId) throws OrderNotFoundException, AlipayApiException {
+    public String checkPaymentStatus(String orderId) throws OrderNotFoundException, AlipayApiException {
         User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         QueryWrapper<Order> wrapper=new QueryWrapper<>();
-        wrapper.eq("id",orderId).eq("order_user_id",user.getId());
+        wrapper.eq("uuid",orderId).eq("order_user_id",user.getId());
         Order order=getOne(wrapper);
         //order不能为空
         if(order==null) throw new OrderNotFoundException();
@@ -372,7 +376,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
 
         request.setBizContent("{" +
-                "    \"out_trade_no\":\""+order.getId()+"\"" +
+                "    \"out_trade_no\":\""+order.getUuid()+"\"" +
                 "  }");
 
         AlipayTradeQueryResponse response = alipayClient.execute(request);

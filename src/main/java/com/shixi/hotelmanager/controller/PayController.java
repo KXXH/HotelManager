@@ -43,7 +43,7 @@ public class PayController {
             QueryWrapper<Order> wrapper=new QueryWrapper<>();
             wrapper.eq("uuid",order.getUuid());
             order=order.selectOne(wrapper);
-            return new CreateOrderSuccessDTO("success",order.getId());
+            return new CreateOrderSuccessDTO("success",order.getUuid());
         } catch (ParseException e) {
             throw new ValidationException("日期格式错误");
         }
@@ -99,7 +99,7 @@ public class PayController {
             System.out.println("map:"+map.toString());
             // TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             //orderService.payOrderComplete(Long.parseLong(map.get("out_trade_no")),map.get("trade_no"));
-            orderService.checkPaymentStatus(Long.parseLong(map.get("out_trade_no")));
+            orderService.checkPaymentStatus(map.get("out_trade_no"));
             model.addAttribute("message","支付成功!");
             return "paymentComplete";
         }else{
