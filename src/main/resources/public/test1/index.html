@@ -1,8 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>SCT-后台系统</title>
+	<title>酒店信息管理系统</title>
 	<link href="style/authority/main_css.css" rel="stylesheet" type="text/css" />
 	<link href="style/authority/zTreeStyle.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="scripts/jquery/jquery-1.7.1.js"></script>
@@ -12,7 +13,7 @@
 		/**退出系统**/
 		function logout(){
 			if(confirm("您确定要退出本系统吗？")){
-				window.location.href = "login.html";
+				window.location.href = "http://localhost:8280/toLogin";
 			}
 		}
 		
@@ -35,9 +36,9 @@
 			 if (ua.indexOf("360se") > -1){
 			  	art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'由于360浏览器功能限制，加入收藏夹功能失效', ok:true,});
 			 }else if (ua.indexOf("msie 8") > -1){
-			  	window.external.AddToFavoritesBar('${dynamicURL}/authority/loginInit.action','西宁市公共租赁住房信息管理系统管理');//IE8
+			  	window.external.AddToFavoritesBar('${dynamicURL}/authority/loginInit.action','酒店信息管理系统');//IE8
 			 }else if (document.all){
-			  	window.external.addFavorite('${dynamicURL}/authority/loginInit.action','西宁市公共租赁住房信息管理系统管理');
+			  	window.external.addFavorite('${dynamicURL}/authority/loginInit.action','酒店信息管理系统');
 			 }else{
 			  	art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'添加失败，请用ctrl+D进行添加', ok:true,});
 			 }
@@ -214,53 +215,20 @@
 					}
 				}
 			});*/
-            data = [{"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":3,"resourceName":"基础数据","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":37,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":19,"resourceName":"出租方设置","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":37,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":20,"resourceName":"租金评定设置","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":2,"resourceName":"摇号配租","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":16,"resourceName":"签约入住","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":24,"resourceName":"公租收费","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":34,"resourceName":"日常业务","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":55,"resourceName":"解约退租","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":30,"resourceName":"统计报表","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":37,"resourceName":"系统参数","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":30,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":31,"resourceName":"公租房楼盘表概况","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":55,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":44,"resourceName":"退租申请","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":24,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":26,"resourceName":"日常合同扣租","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":17,"resourceName":"通知书审核","resourceOrder":0,"resourceType":""},
-            {"accessPath":"house_list.html","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":7,"resourceName":"房源管理","resourceOrder":0,"resourceType":""},
-            {"accessPath":"hotel_list.html","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":8,"resourceName":"承租方管理","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":2,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":5,"resourceName":"房源导出","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":18,"resourceName":"电子合同管理","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":24,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":59,"resourceName":"日常合同续费","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":34,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":35,"resourceName":"房屋资产盘查","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":55,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":45,"resourceName":"物业结算","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":30,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":46,"resourceName":"公租房租赁变动概况","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":30,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":47,"resourceName":"公租房增减变动情况","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":55,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":43,"resourceName":"退租验房","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":34,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":36,"resourceName":"园区企业盘查","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":24,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":42,"resourceName":"维修费用审核","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":33,"resourceName":"租金核算","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":2,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":6,"resourceName":"租户导出","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":32,"resourceName":"家庭成员管理","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":39,"resourceName":"施工单位管理","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":2,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":9,"resourceName":"配租导入","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":52,"resourceName":"租金缴费","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":24,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":25,"resourceName":"租金费用调整","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":34,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":51,"resourceName":"园区企业查询","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":55,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":29,"resourceName":"清账核算","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":30,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":50,"resourceName":"公租房租金收入概况","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":37,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":38,"resourceName":"维修单位设置","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":30,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":48,"resourceName":"个人缴费记录","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":24,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":53,"resourceName":"维修费用报销","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":40,"resourceName":"入住验房","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":41,"resourceName":"入住确认","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":24,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":56,"resourceName":"租金调整审核","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":30,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":49,"resourceName":"房租缴纳明细","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":55,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":28,"resourceName":"合同解约","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":55,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":54,"resourceName":"财务清账","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":60,"resourceName":"合同续订","resourceOrder":0,"resourceType":""},
-            {"accessPath":"","checked":false,"delFlag":0,"parentID":16,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":58,"resourceName":"合同查询","resourceOrder":0,"resourceType":""}];
+            data = [{"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":3,"resourceName":"基础信息","resourceOrder":0,"resourceType":""},
+
+                {"accessPath":"","checked":false,"delFlag":0,"parentID":1,"resourceCode":"","resourceDesc":"","resourceGrade":2,"resourceID":2,"resourceName":"相关文档","resourceOrder":0,"resourceType":""},
+
+                {"accessPath":"user_list.html","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":7,"resourceName":"用户信息","resourceOrder":0,"resourceType":""},
+
+                {"accessPath":"hotel_list.html","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":8,"resourceName":"酒店信息","resourceOrder":0,"resourceType":""},
+
+                {"accessPath":"introduce.html","checked":false,"delFlag":0,"parentID":2,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":5,"resourceName":"联系我们","resourceOrder":0,"resourceType":""},
+
+
+                {"accessPath":"http://localhost:8280/public/checkout/adminOrder.html","checked":false,"delFlag":0,"parentID":3,"resourceCode":"","resourceDesc":"","resourceGrade":3,"resourceID":32,"resourceName":"订单信息","resourceOrder":0,"resourceType":""}
+
+            ];
             // 如果返回数据不为空，加载"业务模块"目录
             if(data != null){
                 // 将返回的数据赋给zTree
@@ -289,7 +257,7 @@
 <body onload="getDate01()">
     <div id="top">
 		<div id="top_logo">
-			<img alt="logo" src="images/common/logo.jpg" width="274" height="49" style="vertical-align:middle;">
+			<img alt="logo" src="images/common/logo.jpg" width="75" height="50" style="vertical-align:middle;">
 		</div>
 		<div id="top_links">
 			<div id="top_op">

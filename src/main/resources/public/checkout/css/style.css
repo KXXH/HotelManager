@@ -1692,6 +1692,12 @@ h4.panel-title a {
     color: #FF590F;
     margin-bottom: 1.5em;
 }
+.cart-items h2 {
+	font-size: 2em;
+	font-weight: 900;
+	color: #1A5CC6;
+	margin-bottom: 1.5em;
+}
 .cart-sec{	
 	margin-bottom:3em;
 }
