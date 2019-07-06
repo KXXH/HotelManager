@@ -1,7 +1,9 @@
 package com.shixi.hotelmanager.controller;
 
 import com.alipay.api.AlipayApiException;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderReturnDTO;
 import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchDTO;
+import com.shixi.hotelmanager.domain.DTO.OrderDTO.OrderSearchResultDTO;
 import com.shixi.hotelmanager.domain.DTO.SearchDTO;
 import com.shixi.hotelmanager.domain.Order;
 import com.shixi.hotelmanager.exception.OrderNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,10 +39,14 @@ public class OrderManagerController {
     }
 
     @RequestMapping("/search")
-    public List<Order> search(@RequestBody @Valid OrderSearchDTO dto, BindingResult result) throws UserNotFoundException {
+    public OrderSearchResultDTO search(@RequestBody @Valid OrderSearchDTO dto, BindingResult result) throws UserNotFoundException {
         if(result.hasErrors()) throw new ValidationException(result.getAllErrors().iterator().next().toString());
+        List<OrderReturnDTO> returnDTOS=new ArrayList<>();
         List<Order> searchResult=orderService.searchOrder(dto.getCurrentPage(),dto.getSize(),dto.getCondition(),true);
-        return searchResult;
+        for(Order order:searchResult){
+            returnDTOS.add(new OrderReturnDTO(order));
+        }
+        return new OrderSearchResultDTO(returnDTOS);
     }
 
     @RequestMapping("/refund")
