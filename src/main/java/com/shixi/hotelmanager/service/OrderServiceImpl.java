@@ -269,7 +269,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException, OutdatedOrdersException {
         order=order.selectById();
         User user = ((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-        if (order.getOrderUserId() != user.getId())
+        if (order.getOrderUserId() != user.getId()&&!user.getRole().equals("ADMIN"))
             throw new OrderNotFoundException();
 
         Date start = null;
