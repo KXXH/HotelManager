@@ -148,7 +148,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "admin/muiltDelete")
-    public Map<String,String> deleteUsers(@RequestBody UserDeleteDTO userDeleteDTO){
+    public Map<String,String> deleteUsers(UserDeleteDTO userDeleteDTO){
         ArrayList ids = userDeleteDTO.getIds();
         Map<String,String> m = new HashMap<>();
         int result = userService.deleteByids(ids);
