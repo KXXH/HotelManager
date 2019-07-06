@@ -135,18 +135,19 @@
 
         /** Excel导出  **/
         function exportExcel(){
-            if( confirm('您确定要导出吗？') ){
-                var fyXqCode = $("#fyXq").val();
-                var fyXqName = $('#fyXq option:selected').text();
-//	 		alert(fyXqCode);
-                if(fyXqCode=="" || fyXqCode==null){
-                    $("#fyXqName").val("");
-                }else{
-//	 			alert(fyXqCode);
-                    $("#fyXqName").val(fyXqName);
-                }
-                $("#submitForm").attr("action", "/xngzf/archives/exportExcelFangyuan.action").submit();
-            }
+//            if( confirm('您确定要导出吗？') ){
+//                var fyXqCode = $("#fyXq").val();
+//                var fyXqName = $('#fyXq option:selected').text();
+////	 		alert(fyXqCode);
+//                if(fyXqCode=="" || fyXqCode==null){
+//                    $("#fyXqName").val("");
+//                }else{
+////	 			alert(fyXqCode);
+//                    $("#fyXqName").val(fyXqName);
+//                }
+//                $("#submitForm").attr("action", "/xngzf/archives/exportExcelFangyuan.action").submit();
+//            }
+            window.print();
         }
 
         /** 删除 **/
@@ -241,9 +242,9 @@
                     </div>
                     <div id="box_bottom">
                         <input type="button" value="查询" class="ui_input_btn01" onclick="search();" />
-                        <input type="button" value="新增" class="ui_input_btn01" id="addBtn" />
-                        <input type="button" value="删除" class="ui_input_btn01" onclick="batchDel();" />
-                        <input type="button" value="导入" class="ui_input_btn01" id="importBtn" />
+                        <!--<input type="button" value="新增" class="ui_input_btn01" id="addBtn" />-->
+                        <!--<input type="button" value="删除" class="ui_input_btn01" onclick="batchDel();" />-->
+                        <!--<input type="button" value="导入" class="ui_input_btn01" id="importBtn" />-->
                         <input type="button" value="导出" class="ui_input_btn01" onclick="exportExcel();" />
                     </div>
                 </div>
@@ -262,14 +263,14 @@
                         <th>退房时间</th>
                         <th>地址</th>
                         <th>图片</th>
-                        <th>操作</th>
+                        <th>图片2</th>
                         <script>
 //                            var j={'condition':{'like':'Hotel','orderByAsc':'hotel_name','target':'hotel_name','and':{'low':'350','target':'id','or':{'like':'chain','target':'chain_name'}}},'currentPage':2,'size':20}
-
+                            var j={'page_size':10};
                             $.ajax({
                                 url:'/hotel/get',
                                 type:'POST',
-//                                data:JSON.stringify(j),
+                                data:JSON.stringify(j),
                                 dataType:"json",
                                 contentType:"application/json; charset=utf-8",
                                 success:function(json) {//json.data[i]["chainName"]
@@ -292,13 +293,14 @@
                                         var cell7 = row.insertCell(6);
 
                                         var str = json.data[i]["photo1"];
-//                                        var index1 = str.indexOf("?");
-//                                        str = str.substr(0,index1);
-                                        cell7.innerHTML = "<a href="+ str +">酒店图片</a>\n"
+                                        cell7.innerHTML = "<a href="+ str +">酒店图片1</a>\n"
 
                                         var cell8 = row.insertCell(7);
-                                        cell8.innerHTML = "<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
-                                            "\t\t\t\t\t\t\t\t<a href=\"javascript:del('" + json.data[i]["id"] + "');\">删除</a>";
+                                        var str2 = json.data[i]["photo2"];
+                                        cell8.innerHTML = "<a href="+ str2 +">酒店图片2</a>\n"
+//                                        var cell8 = row.insertCell(7);
+//                                        cell8.innerHTML = "<a href=\"house_edit.html?fyID=14458579642011\" class=\"edit\">编辑</a>\n" +
+//                                            "\t\t\t\t\t\t\t\t<a href=\"javascript:del('" + json.data[i]["id"] + "');\">删除</a>";
                                     }
                                 }
                             });
