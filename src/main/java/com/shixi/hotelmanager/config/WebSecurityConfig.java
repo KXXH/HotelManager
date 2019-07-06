@@ -55,9 +55,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/public/js/**","/public/assets/**","/public/images/**", "public/css/**",
                         "/login.html","/public/register.html","/register/**","/verification/**",
                         "/user/forgetPassword/**","/public/forgetPassword.html").permitAll()
-                .antMatchers("/user/**").access("hasRole('USER')")
+                .regexMatchers("^.*admin.*$").access("hasRole('ADMIN')")
+                //.antMatchers("/user/**").access("hasRole('USER')")
                 //.hasIpAddress()//读取配置权限配置
-                .antMatchers("/admin/**").access("hasRole('ADMIN')")
+                //.antMatchers("/admin/**").access("hasRole('ADMIN')")
                 .anyRequest().authenticated()
                 //自定义登录界面
                 .and().formLogin().loginPage("/toLogin").loginProcessingUrl("/login")
