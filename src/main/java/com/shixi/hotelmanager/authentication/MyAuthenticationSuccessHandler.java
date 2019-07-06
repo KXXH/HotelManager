@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -17,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 @Component("myAuthenticationSuccessHandler")
 public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -36,6 +38,9 @@ public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         if (LoginType.REDIRECT.equals(myProperties.getLoginType())){
             //response.setContentType("application/json;charset=UTF-8");
             //response.getWriter().write(objectMapper.writeValueAsString(authentication));
+
+            Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+
             RequestCache requestCache = new HttpSessionRequestCache();
             SavedRequest savedRequest = requestCache.getRequest(request,response);
             String url = null;
@@ -45,7 +50,12 @@ public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             }
             if(url == null){
                 logger.info("跳转主页!");
-                getRedirectStrategy().sendRedirect(request,response,"/public/checkout/index.html");
+                if (roles.contains("ROLE_ADMIN")){
+                    getRedirectStrategy().sendRedirect(request,response,"/public/test1/index.html");
+                }else{
+                    getRedirectStrategy().sendRedirect(request,response,"/public/checkout/index.html");
+                }
+
             }else{
                 response.sendRedirect(url);
             }

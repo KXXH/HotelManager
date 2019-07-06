@@ -79,6 +79,9 @@ public class PayController {
         } catch (RefundFailException e) {
             model.addAttribute("message","退款失败，请咨询客服！");
             return "paymentComplete";
+        } catch (OutdatedOrdersException e) {
+            model.addAttribute("message","退款失败，请咨询客服！");
+            return "paymentComplete";
         }
     }
 

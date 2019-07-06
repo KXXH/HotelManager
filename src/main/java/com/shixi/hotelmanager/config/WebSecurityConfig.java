@@ -52,7 +52,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //允许基于HttpServletRequest使用限制访问
         http.authorizeRequests()
                 //不需要身份认证
-                .antMatchers("/").permitAll()
                 .antMatchers("/public/js/**","/public/assets/**","/public/images/**", "public/css/**",
                         "/login.html","/public/register.html","/register/**","/verification/**",
                         "/user/forgetPassword/**","/public/forgetPassword.html").permitAll()
