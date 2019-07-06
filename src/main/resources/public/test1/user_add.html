@@ -13,6 +13,7 @@
     <script type="text/javascript" src="scripts/artDialog/artDialog.js?skin=default"></script>
     <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.js"></script>
     <script type="text/javascript">
+        var flag=true;
         $(document).ready(function() {
             /*
              * 提交
@@ -53,6 +54,7 @@
                 // 给房屋坐落地址赋值
                 //$("#fyZldz").val($('#fyDh option:selected').text()  + fyCh + "-" + fyFh);
                 // 异步判断该房室是否存在，如果已存在，给用户已提示哦
+                $.ajaxSettings.async = false;
                 var data={"userId":userId,"username":username, "IdCard":IdCard, "gender":gender, "telephone":telephone, "email":email, "password":password, "avatar":avatar,"role":role};
                 $.post("/user/admin/addUser",data,function(json){
                     if(json["status"]=="error"){
@@ -74,15 +76,35 @@
                             case 'NotBlank':output+=' 该信息不可为空';break;
                             case 'Pattern':output+=' 格式不匹配';break;
                             case 'Length':output+=' 长度不匹配';break;
+                        }if(flag) {
+                            flag = false;
+                            setTimeout(function () {
+                                flag = true
+                            }, 2000);
+                            art.dialog({
+                                icon: 'error',
+                                title: '出错提示',
+                                drag: false,
+                                resize: false,
+                                content: ' ' + output,
+                                ok: true,
+                            });
                         }
-                        art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+output, ok:true,});
                     }
                     else{
-                        art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功添加', ok:true,});
+                        if(flag){
+                            flag=false;
+                            setTimeout(function () {
+                                flag = true
+                            }, 2000);
+                            art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功添加', ok:true,});
+                        }
+
                     }
                 });
+                $.ajaxSettings.async = true;
             }
-            return true;
+            return false;
         }
     </script>
 </head>
@@ -165,8 +187,8 @@
                 <td>&nbsp;</td>
                 <td class="ui_text_lt">
                     <!--&nbsp;<input id="submitbutton" type="submit" value="提交" class="ui_input_btn01"/>-->
-                    &nbsp;<button id="submitbutton"  type="submit" value="提交" class="ui_input_btn01" onclick="checkFyFhSubmit()">提交</button>
-                    &nbsp;<input id="cancelbutton" type="button" value="取消" class="ui_input_btn01"/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="submitbutton"  type="submit" value="提交" class="ui_input_btn01" onclick="checkFyFhSubmit()">提交</button>
+                    <!--&nbsp;<input id="cancelbutton" type="button" value="取消" class="ui_input_btn01"/>-->
                 </td>
             </tr>
         </table>
