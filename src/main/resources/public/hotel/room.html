@@ -178,10 +178,10 @@
                             </div>
 
                             <div class="form-group">
-                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center ">
+                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
                             <div class="form-group">
-                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center ">
+                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center " onblur="checkRoomAvailable()">
                             </div>
 
                             <div class="form-group">
@@ -385,6 +385,65 @@
 
 </script>
 <script>
+
+    function checkRoomAvailable(){
+        var roomCount = $("#check_room_count").val();
+        var temdate = $("#checkin_date").val();
+        if(temdate.length<=0) return;
+        var tem=new Date(temdate);
+        var year=tem.getFullYear();
+        var month=tem.getMonth()+1;
+        var day=tem.getDate();
+        var dateStart =year+"-";
+        if(month<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+month+"-";
+        if(day<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+day;
+
+        temdate = $("#checkout_date").val();
+        if(temdate.length<=0) return;
+        tem=new Date(temdate);//-24*60*60*1000
+        tem=new Date(tem-24*60*60*1000);
+        year=tem.getFullYear();
+        month=tem.getMonth()+1;
+        day=tem.getDate();
+        var dateEnd =year+"-";
+        if(month<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+month+"-";
+        if(day<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+day;
+        var url="/hotelRoom/remain";
+        var j={
+            "startDate":dateStart,
+            "endDate":dateEnd,
+            "bedType":hotel_table.points[0].bedType,
+            "hotelId":hotel_table.points[0].theRoomHotelId,
+            "roomWanted":roomCount&&roomCount.length>0?roomCount:1
+        }
+        $.ajax({
+            url:url,
+            type:'POST',
+            data:JSON.stringify(j),
+            dataType:"json",
+            contentType:"application/json; charset=utf-8",
+            success:function(json) {
+                //console.log(json);
+                //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
+                //title.hotel_name=json.data[0]["hotelTranslatedName"];
+
+                if(json.length<=0||json[0].num<=(roomCount&&roomCount.length>0?roomCount:1)){
+                    alert("房间不够辣!");
+                }
+            }
+        });
+
+    }
+
+
     var hotel_table=new Vue(//hotel_table.computedURL
         {
             el:'#hotel_table',

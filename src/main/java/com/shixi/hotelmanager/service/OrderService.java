@@ -22,6 +22,7 @@ public interface OrderService {
     boolean payOrderComplete(Long orderId,String tradeNo) throws OrderNotFoundException, OrderStatusException;
     String checkPaymentStatus(Long orderId) throws OrderNotFoundException, AlipayApiException;
     List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) throws UserNotFoundException;
+    List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition,boolean isAdmin) throws UserNotFoundException;
     @Transactional(rollbackFor = {RefundFailException.class})
     boolean refundOrder(Long Id,String orderStatus) throws RefundFailException, OrderNotFoundException;
     boolean makeFundOrder(Order order) throws AlipayApiException, OrderNotFoundException, RefundFailException, OutdatedOrdersException;
