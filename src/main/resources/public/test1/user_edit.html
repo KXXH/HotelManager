@@ -55,20 +55,9 @@
             var role = $("#role").val();
             if(username!="" && IdCard!="" && gender!="" && password!="")
             {
-                // 给房屋坐落地址赋值
-                //$("#fyZldz").val($('#fyDh option:selected').text()  + fyCh + "-" + fyFh);
-                // 异步判断该房室是否存在，如果已存在，给用户已提示哦
+
                 console.log(ID);
                 var data={"id":ID,"userId":userId,"username":username, "IdCard":IdCard, "gender":gender, "telephone":telephone, "email":email, "password":password, "avatar":avatar,"role":role};
-
-//                $.post("/admin/user/updateUser",data,function(json){
-//                    if(json["status"]=="error"){
-//                        art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+json["msg"], ok:true,});
-//                    }
-//                    else{
-//                        art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功修改', ok:true,});
-//                    }
-//                });
 
                 $.ajax({
                     async:false,
@@ -224,11 +213,7 @@
                                 "                    </select>")
                         }
                     </script>
-                    <!--<select name="fangyuanEntity.fyHxCode" id="gender" class="ui_select01">-->
-                    <!--<option value="unknown">&#45;&#45;请选择&#45;&#45;</option>-->
-                    <!--<option value="male">男</option>-->
-                    <!--<option value="female">女</option>-->
-                    <!--</select>-->
+
                 </td>
             </tr>
             <tr>

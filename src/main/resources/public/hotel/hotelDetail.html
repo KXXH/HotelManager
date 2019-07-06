@@ -82,13 +82,7 @@
 		              </div>
 		              <div class="form-group">
 		              	<div class="range-slider">
-		              		<!--<span>-->
-										    <!--<input type="number" value="25000" min="0" max="120000"/>	- -->
-										    <!--<input type="number" value="50000" min="0" max="120000"/>-->
-										  <!--</span>-->
-										  <!--<input value="1000" min="0" max="120000" step="500" type="range"/>-->
-										  <!--<input value="50000" min="0" max="120000" step="500" type="range"/>-->
-										  <!--</svg>-->
+
 										</div>
 		              </div>
 		              <div class="form-group">
@@ -391,21 +385,6 @@
                       console.log(JSON.stringify(json));
                       console.log(json["rooms"].length);
                       hotel_table.points=json["rooms"];
-//                    for(var i=0;i<json.data.length;i++){
-//
-//                        var point=new BMap.Point(json.data[i].longitude,json.data[i].latitude);
-//                        var marker=new BMap.Marker(point,{
-//                            title:json.data[i].hotelTranslatedName
-//                        });
-//                        markers.push(marker);
-//                        var title=json.data[i].hotelTranslatedName;
-//                        markers[i].addEventListener('click',function(){
-//                            console.log("title=",hotelData[i].title);
-//                            var info=new BMap.InfoWindow(hotelData[i].title);
-//                            marker.openInfoWindow(info);
-//                        });
-//
-//                    }
                   }
               });
       }
