@@ -17,6 +17,7 @@
     <script type="text/javascript" src="scripts/artDialog/artDialog.js?skin=default"></script>
     <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.js"></script>
     <script type="text/javascript">
+        var flag=true;
         $(document).ready(function() {
             /*
              * 提交
@@ -77,10 +78,23 @@
                     dataType:'json',
                     success:function(json){
                         if(json["status"]=="error"){
-                            art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+json["msg"], ok:true,});
+                            if(flag) {
+                                flag = false;
+                                setTimeout(function () {
+                                    flag = true
+                                }, 2000);
+                                art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+json["msg"], ok:true,});
+                            }
+
                         }
                         else{
-                            art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功修改', ok:true,});
+                            if(flag) {
+                                flag = false;
+                                setTimeout(function () {
+                                    flag = true
+                                }, 2000);
+                                art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功修改', ok:true,});
+                            }
                         }
 
                     }
