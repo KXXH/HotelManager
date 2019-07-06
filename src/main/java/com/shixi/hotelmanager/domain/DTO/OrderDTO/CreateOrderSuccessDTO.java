@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateOrderSuccessDTO extends OrderDTO {
     private String status;
-    private long id;
+    private String id;
 }

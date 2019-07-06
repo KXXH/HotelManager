@@ -62,4 +62,13 @@ public class Order extends Model<Order> {
 
     private String evaluate;
     private String buyerAlipay;
+
+    public void setUuid(String uuid){
+        this.uuid=uuid.replaceAll("-","");
+    }
+
+    public String getUuid(){
+        return uuid.replaceAll("-","");
+    }
+
 }

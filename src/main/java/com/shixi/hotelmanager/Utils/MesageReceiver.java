@@ -39,7 +39,7 @@ public class MesageReceiver {
         if (order == null)
             return;
         try {
-            orderService.refundOrder(Long.valueOf(order.getId()),"CANCEL");
+            orderService.refundOrder(order.getUuid(),"CANCEL");
         } catch (RefundFailException e) {
             e.printStackTrace();
         } catch (OrderNotFoundException e) {
