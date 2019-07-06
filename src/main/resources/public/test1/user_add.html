@@ -56,7 +56,26 @@
                 var data={"userId":userId,"username":username, "IdCard":IdCard, "gender":gender, "telephone":telephone, "email":email, "password":password, "avatar":avatar,"role":role};
                 $.post("/user/admin/addUser",data,function(json){
                     if(json["status"]=="error"){
-                        art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+json["msg"], ok:true,});
+                        var msg=json["msg"][0].codes[0].split('.');
+                        var output;
+                        switch (msg[2]){
+                            case 'userId':output='用户ID有误';break;
+                            case 'role':output='角色有误';break;
+                            case 'username':output='用户名字有误';break;
+                            case 'telephone':output='电话有误';break;
+                            case 'password':output='密码有误';break;
+                            case 'gender':output='性别有误';break;
+                            case 'IdCard':output='身份证号有误';break;
+                            case 'avatar':output='头像有误';break;
+                            default:output='';break;
+                        }
+                        switch (msg[0]){
+                            case 'typeMismatch':output+=' 数据类型不匹配';break;
+                            case 'NotBlank':output+=' 该信息不可为空';break;
+                            case 'Pattern':output+=' 格式不匹配';break;
+                            case 'Length':output+=' 长度不匹配';break;
+                        }
+                        art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+output, ok:true,});
                     }
                     else{
                         art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功添加', ok:true,});
