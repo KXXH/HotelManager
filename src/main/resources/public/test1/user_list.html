@@ -212,22 +212,7 @@
                 if(confirm("您确定要批量删除这些记录吗？")){
                     // 提交form
 //                    $("#submitForm").attr("action", "/xngzf/archives/batchDelFangyuan.action").submit();
-                    $.ajax({
-                        async:true,
-                        type:"post",
-                        url:"/user/admin/muiltDelete",
-                        data: ,
-                        dataType:'json',
-                        success:function(json){
-                            if(json["status"]=="error"){
-                                art.dialog({icon:'error', title:'出错提示', drag:false, resize:false, content:' '+json["msg"], ok:true,});
-                            }
-                            else{
-                                art.dialog({icon:'success', title:'友情提示', drag:false, resize:false, content:' 成功修改', ok:true,});
-                            }
 
-                        }
-                    })
                 }
             }
         }
