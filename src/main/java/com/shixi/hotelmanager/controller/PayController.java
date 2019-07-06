@@ -62,7 +62,7 @@ public class PayController {
 
 
     @RequestMapping("/refund")
-    public String refund(Order order,Model model) throws AlipayApiException {
+    public String refund(Order order,Model model) throws AlipayApiException, OutdatedOrdersException {
         try {
             if(orderService.makeFundOrder(order)){
                 model.addAttribute("message","退款成功！");
