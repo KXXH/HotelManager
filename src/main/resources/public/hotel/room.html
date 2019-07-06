@@ -181,7 +181,7 @@
                                 入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
                             <div class="form-group">
-                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center " onblur="checkRoomAvailable()">
+                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
 
                             <div class="form-group">
@@ -385,7 +385,7 @@
 
 </script>
 <script>
-
+    var flag=true;
     function checkRoomAvailable(){
         var roomCount = $("#check_room_count").val();
         var temdate = $("#checkin_date").val();
@@ -435,8 +435,10 @@
                 //document.write(" <h1 class=\"mb-3 bread\" data-scrollax=\"properties: { translateY: '30%', opacity: 1.6 }\">"+json.data[0]["hotelTranslatedName"]+"</h1>");
                 //title.hotel_name=json.data[0]["hotelTranslatedName"];
 
-                if(json.length<=0||json[0].num<=(roomCount&&roomCount.length>0?roomCount:1)){
+                if(flag&&(json.length<=0||json[0].num<=(roomCount&&roomCount.length>0?roomCount:1))){
                     alert("房间不够辣!");
+                    flag=false;
+                    setTimeout(function(){flag=true},1000);
                 }
             }
         });
