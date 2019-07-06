@@ -92,10 +92,6 @@
                             <div class="delivery">
                                 <span>订单状态 : {{order.status}}</span>
 
-                                <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.id">前往付款</a>
-                                <a v-if="order.status=='未支付'">&nbsp;|&nbsp;</a>
-                                <a v-if="order.status=='未支付'" style="color: #f9be37" v-on:click="checkStatus(i)">用户已付款</a>
-
                                 <!--<a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?id='+order.id">我要退款</a>-->
                                 <a v-if="isRefundEnabled(i)"  v-on:click="gotorefund(order.id)">给用户退款</a>
                                 <div class="clearfix"></div>
@@ -233,9 +229,14 @@
             },
             gotorefund:function (i) {
                 var herft=window.location.href;
-                window.location.href='http://localhost:8280/pay/refund?id='+i;
-                window.location.href=herft;
-                confirm('退款成功！');
+                $.get('http://localhost:8280/admin/order/refund?id='+i,function (json) {
+                    if (json==true){
+                        alert("已为该用户退款！");
+                        order_list.data[i].status="已退款!";
+                    }else{
+                        alert("退款失败！");
+                    }
+                });
             },
             checkStatus:function (i) {
                 var j={'id':order_list.orders[i].id};

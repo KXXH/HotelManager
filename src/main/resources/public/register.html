@@ -115,7 +115,11 @@
             }else{
                 alert(data.msg);
             }
-        });
+        }).error(function(json) {
+            console.log(JSON.stringify(json));
+            alert(JSON.parse(json.responseText).msg);
+        })
+
     });
 
     var user = new Vue({

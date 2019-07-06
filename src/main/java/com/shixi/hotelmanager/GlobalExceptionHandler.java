@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,String> handle(ValidationException exception) {
         HashMap<String,String>m=new HashMap<>();
         m.put("status","error");
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public UserInfoDuplicateDTO handle(UserInfoDuplicateException exception){
         return new UserInfoDuplicateDTO();
     }
