@@ -464,10 +464,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition) throws UserNotFoundException {
-        Page<Order> p=new Page<>(currentPage,size);
-        User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-        if(user==null) throw new UserNotFoundException();
-        return page(p,buildWrapper(condition).eq("order_user_id",user.getId())).getRecords();
+        return searchOrder(currentPage,size,condition,false);
     }
 
     private QueryWrapper<Order> setCondition(OrderSearchConditionType conditionType, QueryWrapper<Order> wrapper){
@@ -500,5 +497,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
         }
         return wrapper;
+    }
+
+    @Override
+    public List<Order> searchOrder(int currentPage, int size, OrderSearchConditionType condition, boolean isAdmin) throws UserNotFoundException {
+        if(!isAdmin){
+            Page<Order> p=new Page<>(currentPage,size);
+            User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+            if(user==null) throw new UserNotFoundException();
+            return page(p,buildWrapper(condition).eq("order_user_id",user.getId())).getRecords();
+        }else{
+            Page<Order> p=new Page<>(currentPage,size);
+            //User user=((UserDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+            //if(user==null) throw new UserNotFoundException();
+            return page(p,buildWrapper(condition)).getRecords();
+        }
     }
 }

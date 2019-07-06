@@ -178,10 +178,10 @@
                             </div>
 
                             <div class="form-group">
-                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center ">
+                                入住时间<input type="text" id="checkin_date" class="form-control checkin_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
                             <div class="form-group">
-                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center ">
+                                退房时间<input type="text" id="checkout_date" class="form-control checkout_date" placeholder="" style="text-align:center " onchange="checkRoomAvailable()">
                             </div>
 
                             <div class="form-group">
@@ -385,6 +385,45 @@
 
 </script>
 <script>
+
+    function checkRoomAvailable(){
+        var temdate = $("#checkin_date").val();
+        var tem=new Date(temdate);
+        var year=tem.getFullYear();
+        var month=tem.getMonth()+1;
+        var day=tem.getDate();
+        var dateStart =year+"-";
+        if(month<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+month+"-";
+        if(day<10)
+            dateStart =dateStart+"0";
+        dateStart =dateStart+""+day;
+
+        temdate = $("#checkout_date").val();
+        tem=new Date(temdate);//-24*60*60*1000
+        tem=new Date(tem-24*60*60*1000);
+        year=tem.getFullYear();
+        month=tem.getMonth()+1;
+        day=tem.getDate();
+        var dateEnd =year+"-";
+        if(month<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+month+"-";
+        if(day<10)
+            dateEnd =dateEnd+"0";
+        dateEnd =dateEnd+""+day;
+        var url="/hotelRoom/remain";
+        var j={
+            "startDate":dateStart,
+            "endDate":dateEnd,
+            "bedType":hotel_table.points[0].bedType,
+            "hotelId":hotel_table.points[0].theRoomHotelId,
+            "roomWanted":
+        }
+    }
+
+
     var hotel_table=new Vue(//hotel_table.computedURL
         {
             el:'#hotel_table',
