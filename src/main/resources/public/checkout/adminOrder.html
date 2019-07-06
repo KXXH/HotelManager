@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--<link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">-->
+    <!--<link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">-->
+
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+
+    <link rel="stylesheet" href="/public/hotel/css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="/public/hotel/css/animate.css">
+
+    <link rel="stylesheet" href="/public/hotel/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/public/hotel/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/public/hotel/css/magnific-popup.css">
+
+    <link rel="stylesheet" href="/public/hotel/css/aos.css">
+
+    <link rel="stylesheet" href="/public/hotel/css/ionicons.min.css">
+
+    <link rel="stylesheet" href="/public/hotel/css/bootstrap-datepicker.css">
+    <!--<link rel="stylesheet" href="css/jquery.timepicker.css">-->
+
+
+    <link rel="stylesheet" href="/public/hotel/css/flaticon.css">
+    <link rel="stylesheet" href="/public/hotel/css/icomoon.css">
+    <!--<link rel="stylesheet" href="/public/checkout/css/style.css">-->
+    <link rel="stylesheet" href="/public/hotel/css/style.css">
+
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+    function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!--//for-mobile-apps -->
+    <!--Custom Theme files -->
+
+    <!--//Custom Theme files -->
+    <!--js-->
+    <script src="js/modernizr.custom.js"></script>
+    <!--//js-->
+    <!--cart-->
+    <script src="js/simpleCart.min.js"></script>
+    <!--cart-->
+    <!--animation-effect-->
+    <link href="css/animate.min.css" rel="stylesheet">
+    <script src="js/wow.min.js"></script>
+    <script>
+        new WOW().init();
+    </script>
+    <!--//animation-effect-->
+
+    <!--//close-button-->
+    <!--start-smooth-scrolling-->
+    <script type="text/javascript" src="js/move-top.js"></script>
+    <script type="text/javascript" src="js/easing.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $(".scroll").click(function(event){
+                event.preventDefault();
+                $('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+            });
+        });
+    </script>
+</head>
+<body>
+
+
+
+
+<!-- END nav -->
+
+<section class="ftco-section">
+    <div class="cart-items" id="order_list">
+        <div class="container">
+            <h2 class="wow fadeInUp animated" data-wow-delay=".5s">订单列表</h2>
+            <select class="form-control mb-4" data-wow-delay=".5s" v-model="selected" v-on:change="orders=[];currentPage=1;getList()">
+                <option value="ALL" selected>所有订单</option>
+                <option value="UNPAID">未支付</option>
+                <option value="PAID">已支付</option>
+                <option value="REFUND">已退款</option>
+                <option value="CANCEL">已取消</option>
+            </select>
+            <div v-for="(order,i) in orders">
+                <div class="cart-header wow fadeInUp animated" data-wow-delay=".5s" >
+
+                    <div class="cart-sec simpleCart_shelfItem">
+                        <div class="cart-item cyc">
+                            <a href="single.html" class="img img-2 d-flex justify-content-center align-items-center"><img style="height: 100%" v-bind:src="computedURL()" class="img-responsive" alt=""></a>
+                        </div>
+                        <div class="cart-item-info">
+                            <h4><a href="single.html"> {{order.hotelChineseName}} {{order.roomName}} {{order.count}}间</a><span></span></h4>
+                            <h2>详细信息 :</h2>
+                            <ul class="qty">
+                                <li><p>订单总价 : ￥{{order.price}}</p></li>
+                                <li><p>预定时间范围: {{order.dateStart}} - {{order.dateEnd}}</p></li>
+                                <li v-if="order.createTime!='未知'"><p>订单创建时间: {{order.createTime}}</p></li>
+                                <li v-if="order.status!='未支付'&&order.orderId"><p>支付宝交易号: {{order.orderId}}</p></li>
+                                <li v-if="order.uuid"><p>交易编码: {{order.uuid}}</p></li>
+                            </ul>
+                            <div class="delivery">
+                                <span>订单状态 : {{order.status}}</span>
+
+                                <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.id">前往付款</a>
+                                <a v-if="order.status=='未支付'">&nbsp;|&nbsp;</a>
+                                <a v-if="order.status=='未支付'" style="color: #f9be37" v-on:click="checkStatus(i)">用户已付款</a>
+
+                                <!--<a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?id='+order.id">我要退款</a>-->
+                                <a v-if="isRefundEnabled(i)"  v-on:click="gotorefund(order.id)">给用户退款</a>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> <!-- .section -->
+
+
+
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+<script src="js/main.js"></script>
+<!--//search jQuery-->
+<!--smooth-scrolling-of-move-up-->
+<script type="text/javascript">
+
+    //console.log(document.getElementById("123123").className)
+
+    $(document).ready(function() {
+
+        var defaults = {
+            containerID: 'toTop', // fading element id
+            containerHoverID: 'toTopHover', // fading element hover id
+            scrollSpeed: 1200,
+            easingType: 'linear'
+        };
+
+        $().UItoTop({ easingType: 'easeOutQuart' });
+
+    });
+
+    var order_list=new Vue({
+        el:"#order_list",
+        data:{
+            orders:[],
+            currentPage:1,
+            pageSize:3,
+            condition:{
+                "orderByDesc":"create_time"
+            },
+            selected:"ALL",
+            enableAutoGetMore:true
+        },
+        created:function(){
+            console.log("Vue created!");
+            var self=this;
+            $(window).scroll(function(){
+                console.log("scroll!");
+                var scrollTop=$(this).scrollTop();
+                var scrollHeight=$(document).height();
+                var windowHeight=$(this).height();
+                console.log("scrollTop="+scrollTop);
+                console.log("scrollHeight="+scrollHeight);
+                console.log("windowHeight="+windowHeight);
+                console.log("scrollTop+windowHeight="+(scrollTop+windowHeight));
+                if(Math.abs(scrollTop+windowHeight-scrollHeight)<=10&&self.enableAutoGetMore){
+                    self.currentPage++;
+                    self.getList();
+                    self.enableAutoGetMore=false;
+                    //屏蔽接下来两秒的响应，避免抖动
+                    setTimeout(
+                        function(){
+                            order_list.enableAutoGetMore=true;
+                        },2000
+                    );
+                }
+            });
+            this.getList();
+        },
+        methods:{
+            getList:function(){
+
+                if(this.selected=="ALL"){
+                    this.condition={
+                        "orderByDesc":"create_time"
+                    };
+                }else{
+                    this.condition={
+                        "target":"status",
+                        "eq":this.selected,
+
+                        "and":{
+                            "orderByDesc":"create_time",
+                        }
+                    }
+                }
+
+                var j={
+                    "currentPage":this.currentPage,
+                    "size":this.pageSize,
+                    "condition":this.condition
+                };
+                $.ajax(
+                    {
+                        url:'/orders/search',
+                        type:'POST',
+                        data:JSON.stringify(j),
+                        dataType:"json",
+                        contentType:"application/json; charset=utf-8",
+                        success:function(json){
+                            order_list.orders.push.apply(order_list.orders,json.data);
+                        }
+                    });
+            },
+            computedURL: function () {
+                // `this` 指向 vm 实例
+                var tem=Math.floor((Math.random()*10)%6+1);
+                console.log("随机数"+tem);
+//                      return 'url (images/about.jpg)';
+                return 'images/hotel'+tem+'.jpg';
+            },
+            isRefundEnabled:function (i) {
+                if(order_list.orders[i].status=="已支付"){
+                    var startDate=new Date(order_list.orders[i].dateStart.replace(/-/,"/"));
+                    var endDate=new Date(order_list.orders[i].dateEnd.replace(/-/,"/"));
+                    var today=new Date();
+                    if(today>endDate){
+                        return false;
+                    }else{
+                        return true;
+                    }
+
+                }else{
+                    return false;
+                }
+
+            },
+            gotorefund:function (i) {
+                var herft=window.location.href;
+                window.location.href='http://localhost:8280/pay/refund?id='+i;
+                window.location.href=herft;
+                confirm('退款成功！');
+            },
+            checkStatus:function (i) {
+                var j={'id':order_list.orders[i].id};
+                $.post("/pay/checkStatus",j,function(json){
+                    switch(json.status){
+                        case "UNPAID": order_list.orders[i].status="未支付";alert("系统检测到您还没有付款呢!");break;
+                        case "PAID": order_list.orders[i].status="已支付";alert("您已经成功支付!");break;
+                        case "REFUND": order_list.orders[i].status="已退款";break;
+                        case "CANCEL": order_list.orders[i].status="已取消";break;
+                    }
+                })
+            }
+        }
+    });
+
+
+
+
+
+
+</script>
+<script src="/public/hotel/js/jquery.min.js"></script>
+<script src="/public/hotel/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/public/hotel/js/popper.min.js"></script>
+<script src="/public/hotel/js/bootstrap.min.js"></script>
+<script src="/public/hotel/js/jquery.easing.1.3.js"></script>
+<script src="/public/hotel/js/jquery.waypoints.min.js"></script>
+<script src="/public/hotel/js/jquery.stellar.min.js"></script>
+<script src="/public/hotel/js/owl.carousel.min.js"></script>
+<script src="/public/hotel/js/jquery.magnific-popup.min.js"></script>
+<script src="/public/hotel/js/aos.js"></script>
+<script src="/public/hotel/js/jquery.animateNumber.min.js"></script>
+<script src="/public/hotel/js/bootstrap-datepicker.js"></script>
+<!--<script src="js/jquery.timepicker.min.js"></script>-->
+<script src="/public/hotel/js/scrollax.min.js"></script>
+
+<script src="/public/hotel/js/main.js"></script>
+
+</body>
+</html>

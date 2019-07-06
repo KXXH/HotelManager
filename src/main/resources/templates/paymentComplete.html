@@ -4,6 +4,7 @@
     <title>Adventure - Free Bootstrap 4 Template by Colorlib</title>
 	  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	  <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+      <script src="/public/js/userInfo.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -31,25 +32,7 @@
   </head>
   <body>
     
-	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Hotel Master</a>
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
-
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
-	          <li class="nav-item"><a href="about.html" class="nav-link">搜索</a></li>
-				<li class="nav-item active"><a href="hotel.html" class="nav-link">酒店</a></li>
-	          <li class="nav-item"><a href="places.html" class="nav-link">订单</a></li>
-	          <li class="nav-item"><a href="blog.html" class="nav-link">个人信息</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">关于</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
+<div id="nav"></div>
     <!-- END nav -->
     
     <div class="hero-wrap js-fullheight" style="background-image: url('/public/hotel/images/bg_1.jpg');">
@@ -57,7 +40,7 @@
       <div class="container" id="container">
         <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center" data-scrollax-parent="true">
           <div class="col-md-9 text-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-            <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a>返回首页</a></span></p>
+            <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span class="mr-2"><a href="/public/checkout/index.html">返回首页</a></span></p>
 			  <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" th:text="${message}" ></h1>
 
           </div>
