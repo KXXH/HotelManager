@@ -113,7 +113,7 @@
                             <div class="delivery">
                                 <span>订单状态 : {{order.status}}</span>
 
-                                <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.id">前往付款</a>
+                                <a v-if="order.status=='未支付'"  v-bind:href="'/pay/payOrder?id='+order.uuid">前往付款</a>
                                 <a v-if="order.status=='未支付'">&nbsp;|&nbsp;</a>
                                 <a v-if="order.status=='未支付'" style="color: #f9be37" v-on:click="checkStatus(i)">我已付款</a>
                                 <a v-if="isRefundEnabled(i)"  v-bind:href="'/pay/refund?uuid='+order.uuid">我要退款</a>
@@ -304,7 +304,7 @@
 
             },
             checkStatus:function (i) {
-                var j={'id':order_list.orders[i].id};
+                var j={'id':order_list.orders[i].uuid};
                 $.post("/pay/checkStatus",j,function(json){
                     switch(json.status){
                         case "UNPAID": order_list.orders[i].status="未支付";alert("系统检测到您还没有付款呢!");break;
