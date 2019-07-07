@@ -36,3 +36,4 @@ mvnw
 .mvn/**
 *.log
 LOG_HOME_IS_UNDEFINED/**
+out/**
